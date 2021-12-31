@@ -85,8 +85,17 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
     # logging.info('dataset summary:')
     logging.info(f'dataset summary:\n{dataframe.describe()}')
 
+    if prop_sliding_window >= 1.0:
+        sliding_step = int(prop_sliding_window)
+    elif prop_sliding_window > 0:
+        sliding_step = int(prop_sliding_window * max_len)
+    elif prop_sliding_window == -1.0:
+        sliding_step = max_len
+    else:
+        logging.critical(f"illegal prop_sliding_window value{prop_sliding_window}")
+        raise ValueError
     # sliding_step = int(prop_sliding_window * max_len) if prop_sliding_window != -1.0 else max_len
-    sliding_step = 20
+    # sliding_step = 20 
 
     def process(df: pd.DataFrame, column, data):
         s = df.loc[:, column]
