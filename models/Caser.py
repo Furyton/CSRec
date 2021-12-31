@@ -47,7 +47,7 @@ class CaserModel(BaseModel):
         self.loss_type = args.loss_type
 
         # define layers and loss
-        self.user_embedding = nn.Embedding(self.n_user, self.embedding_size, padding_idx=0)
+        self.user_embedding = nn.Embedding(self.n_user, self.embedding_size)
         self.item_embedding = nn.Embedding(self.n_item + 1, self.embedding_size, padding_idx=0)
 
         # vertical conv layer
