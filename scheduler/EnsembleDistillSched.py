@@ -1,3 +1,38 @@
+"""
+Current target:
+__init__:
+
+    generate one dataloader
+    generate models
+    generate optims
+    generate one lr_sched
+
+    generate trainers
+
+    load state dict
+
+    generate an ensembler
+_fit:
+    create logger service
+
+    dataloader, lr_sched, [(model, optim, trainers, logger, tag), ...]
+
+    take above as input of an ensembler
+
+    tag is the prefix
+
+    train ensembler
+
+_eval:
+
+    test ensembler
+
+set up all these manully without any config
+
+use voting ensembler for now
+"""
+
+# from sklearn import ensemble
 import logging
 import torch
 import dataloaders
@@ -17,7 +52,7 @@ from utils import get_exist_path, get_path
 from configuration.config import *
 
 
-class EnsembleDistillScheduler(_BaseSched):
+class EnsembleDistillSched(_BaseSched):
     def __init__(self, args, export_root: str) -> None:
         super().__init__()
         self.args = args
@@ -29,18 +64,18 @@ class EnsembleDistillScheduler(_BaseSched):
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
-        self.tag_list = self.model_code_list = ['gru4rec', 'deepfm'] #list(MODELS.keys())
+        self.tag_list = self.model_code_list = ['gru4rec', 'deepfm', 'caser'] #list(MODELS.keys())
         self.tag = VoteEnsembleTrainer.code()
 
         self.model_list = generate_model(args, self.tag_list, self.dataset, self.device)
         self.optim_list = generate_optim(args, args.optimizer, self.model_list)
 
-        self.gru4rec_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/gru4rec_logs/checkpoint/best_acc_model.pth"
-        self.caser_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/caser_logs/checkpoint/best_acc_model.pth"
-        self.deepfm_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_cont1_deepfm_2021-12-11_0/deepfm_logs/checkpoint/best_acc_model.pth"
+        # self.gru4rec_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/gru4rec_logs/checkpoint/best_acc_model.pth"
+        # self.caser_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/caser_logs/checkpoint/best_acc_model.pth"
+        # self.deepfm_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_cont1_deepfm_2021-12-11_0/deepfm_logs/checkpoint/best_acc_model.pth"
 
-        load_state_from_given_path(self.model_list[0], self.gru4rec_path, self.device)
-        load_state_from_given_path(self.model_list[1], self.deepfm_path, self.device)
+        # load_state_from_given_path(self.model_list[0], self.gru4rec_path, self.device)
+        # load_state_from_given_path(self.model_list[1], self.deepfm_path, self.device)
 
         # if args.model_state_path is not None:
         #     state_dict = torch.load(args.model_state_path, map_location=torch.device(self.device))

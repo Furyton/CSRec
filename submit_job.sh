@@ -2,7 +2,7 @@
 
 SAVED_PATH=__slurm_log
 
-JOB_NAME=base_caser
+JOB_NAME=debug_caser
 # JOB_NAME=pop_gru_T_2_alpha_40_cont_1
 # JOB_NAME=caser_soft_gru_T_4_alpha_25_cont_1
 

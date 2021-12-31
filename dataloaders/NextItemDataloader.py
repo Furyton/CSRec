@@ -22,7 +22,7 @@ class NextItemDataloader(AbstractDataloader):
 
         logging.info("there are {} items in this dataset, {} interaction".format(args.num_items, self.user_count))
 
-        code = args.train_negative_sampler_code
+        # code = args.train_negative_sampler_code
         # train_negative_sampler = negative_sampler_factory(code, self.train, self.val, self.test, self.user_count, self.item_count, args.train_negative_sample_size, args.train_negative_sampling_seed, self.save_folder, args.dataset_name)
 
 
@@ -95,18 +95,28 @@ class NextItemDataloader(AbstractDataloader):
 
 class NextTrainDataset(data_utils.Dataset):
     def __init__(self, u2seq, u2rating, max_len, num_items):
-        self.u2seq = u2seq
-        self.u2rating = u2rating
-        self.users = range(len(u2seq))
+        self.u2seq = deepcopy(u2seq)
+        self.u2rating = deepcopy(u2rating)
+        self.users = list(range(len(u2seq)))
         self.max_len = max_len
         self.num_items = num_items
+        self._augment()
+
+    def _augment(self):
+        for u, seq, rating in zip(deepcopy(self.users), deepcopy(self.u2seq), deepcopy(self.u2rating)):
+            append_seq = [seq[:idx+1] for idx in range(1, len(seq) - 1)]
+            append_rating = [rating[:idx+1] for idx in range(1, len(rating) - 1)]
+
+            self.u2seq += append_seq
+            self.u2rating += append_rating
+            self.users += [u] * len(append_seq)
 
     def __len__(self):
         return len(self.users)
 
     def __getitem__(self, index):
         user = self.users[index]
-        seq, rating = self._getseq(user)
+        seq, rating = self._getseq(index)
 
         tokens = seq[-self.max_len - 1: -1]
         labels = seq[-1]
@@ -135,10 +145,10 @@ class NextTrainDataset(data_utils.Dataset):
 
 class NextEvalDataset(data_utils.Dataset):
     def __init__(self, u2seq, u2rating, u2answer, max_len, negative_samples):
-        self.u2seq = u2seq
+        self.u2seq = deepcopy(u2seq)
         self.users = range(len(u2seq))
-        self.u2rating = u2rating
-        self.u2answer = u2answer
+        self.u2rating = deepcopy(u2rating)
+        self.u2answer = deepcopy(u2answer)
         self.max_len = max_len
         self.negative_samples = negative_samples
 
@@ -166,10 +176,10 @@ class NextEvalDataset(data_utils.Dataset):
 
 class NextEvalDataset_Without_Neg(data_utils.Dataset):
     def __init__(self, u2seq, u2rating, u2answer, max_len):
-        self.u2seq = u2seq
+        self.u2seq = deepcopy(u2seq)
         self.users = range(len(u2seq))
-        self.u2rating = u2rating
-        self.u2answer = u2answer
+        self.u2rating = deepcopy(u2rating)
+        self.u2answer = deepcopy(u2answer)
         self.max_len = max_len
 
     def __len__(self):

@@ -64,18 +64,18 @@ class EnsembleScheduler(_BaseSched):
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
-        self.tag_list = self.model_code_list = ['gru4rec', 'deepfm'] #list(MODELS.keys())
+        self.tag_list = self.model_code_list = ['gru4rec', 'deepfm', 'caser'] #list(MODELS.keys())
         self.tag = VoteEnsembleTrainer.code()
 
         self.model_list = generate_model(args, self.tag_list, self.dataset, self.device)
         self.optim_list = generate_optim(args, args.optimizer, self.model_list)
 
-        self.gru4rec_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/gru4rec_logs/checkpoint/best_acc_model.pth"
-        self.caser_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/caser_logs/checkpoint/best_acc_model.pth"
-        self.deepfm_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_cont1_deepfm_2021-12-11_0/deepfm_logs/checkpoint/best_acc_model.pth"
+        # self.gru4rec_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/gru4rec_logs/checkpoint/best_acc_model.pth"
+        # self.caser_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_ensemble_cont1_ensemble_caser_gru_2021-12-09_0/caser_logs/checkpoint/best_acc_model.pth"
+        # self.deepfm_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_cont1_deepfm_2021-12-11_0/deepfm_logs/checkpoint/best_acc_model.pth"
 
-        load_state_from_given_path(self.model_list[0], self.gru4rec_path, self.device)
-        load_state_from_given_path(self.model_list[1], self.deepfm_path, self.device)
+        # load_state_from_given_path(self.model_list[0], self.gru4rec_path, self.device)
+        # load_state_from_given_path(self.model_list[1], self.deepfm_path, self.device)
 
         # if args.model_state_path is not None:
         #     state_dict = torch.load(args.model_state_path, map_location=torch.device(self.device))
