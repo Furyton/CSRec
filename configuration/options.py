@@ -38,7 +38,7 @@ parser.add_argument('--dataloader_type', type=str, default='mask', choices=DATAL
 parser.add_argument('--train_batch_size', type=int, default=64)
 parser.add_argument('--val_batch_size', type=int, default=64)
 parser.add_argument('--test_batch_size', type=int, default=64)
-parser.add_argument('--prop_sliding_window', type=float, default=0.1)
+parser.add_argument('--prop_sliding_window', type=float, default=0.1, help='-1.0 means taking max_len as sliding step, 0~1 indicates prop, >1 means sliding step')
 parser.add_argument('--worker_number', type=int, default=1)
 ################
 # NegativeSampler
