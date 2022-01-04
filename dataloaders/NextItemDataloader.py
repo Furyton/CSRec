@@ -128,7 +128,7 @@ class NextTrainDataset(data_utils.Dataset):
 
         # padding
         padding_len = self.max_len - len(tokens) 
-
+ 
         # tokens = [0] * padding_len + tokens
         tokens = tokens + [0] * padding_len
 

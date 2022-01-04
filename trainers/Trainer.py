@@ -46,7 +46,7 @@ class Trainer(_AbstractBaseTrainer):
 
         self.epoch = 0
 
-        self.loss = BasicLoss()
+        self.loss_fct = BasicLoss()
         self.iter_per_epoch = len(self.train_loader) * self.batch_size
         self.tot_iter = self.num_epochs * self.iter_per_epoch
 
@@ -76,14 +76,13 @@ class Trainer(_AbstractBaseTrainer):
 
             logging.info("duration: " + str(time.time() - t) + 's')
 
-
         self.close_training()
 
     def calculate_loss(self, batch):
         batch = [x.to(self.device) for x in batch]
         # seqs, labels, rating = batch
 
-        return self.loss.calculate_loss(self.model, batch)
+        return self.loss_fct.calculate_loss(self.model, batch)
 
     def _get_lr(self):
         for param_group in self.optimizer.param_groups:
@@ -182,7 +181,7 @@ class Trainer(_AbstractBaseTrainer):
             log_data = self._create_log_data(average_metrics)
 
             self.logger.log_val(log_data)
-            
+
             logging.info(average_metrics)
     
     def _test(self):

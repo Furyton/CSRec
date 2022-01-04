@@ -1,7 +1,5 @@
 from abc import *
 
-from models.base import BaseModel
-
 class _AbstractBaseTrainer(metaclass=ABCMeta):
     def __init__(self, args, device):
         self.args = args
