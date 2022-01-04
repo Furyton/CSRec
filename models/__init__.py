@@ -9,6 +9,8 @@ from models.GRU4rec import GRU4RecModel
 from models.pop import POPModel
 from models.NextItNet import NextItNet
 
+from models.auxiliary_models.PriorPreferModel import PriorModel
+
 MODELS = {
     BERTModel.code(): BERTModel,
     POPModel.code(): POPModel,
@@ -16,6 +18,8 @@ MODELS = {
     CaserModel.code(): CaserModel,
     DeepFM.code(): DeepFM,
     NextItNet.code(): NextItNet,
+
+    PriorModel.code(): PriorModel,
 }
 
 def model_factory(args, model_type: str, dataset: list) -> BaseModel:

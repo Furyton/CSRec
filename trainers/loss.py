@@ -7,16 +7,16 @@ import torch.nn.functional as F
 
 from models.base import BaseModel
 
-def neg_sample(seq, labels, num_item, sample_size):
-    negs = set()
-    seen = set(labels)
+# def neg_sample(seq, labels, num_item, sample_size):
+#     negs = set()
+#     seen = set(labels)
 
-    while len(negs) < sample_size:
-        candidate = np.random.randint(0, num_item) + 1
-        while candidate in seen or candidate in negs:
-            candidate = np.random.randint(0, num_item) + 1
-        negs.add(candidate)
-    return negs
+#     while len(negs) < sample_size:
+#         candidate = np.random.randint(0, num_item) + 1
+#         while candidate in seen or candidate in negs:
+#             candidate = np.random.randint(0, num_item) + 1
+#         negs.add(candidate)
+#     return negs
     # keys = range(1, num_item + 1)
     # sample_id = np.random.choice(keys, sample_size + len(seen), replace=False)
     # sample_ids = [x for x in sample_id if x not in seen]
@@ -24,13 +24,19 @@ def neg_sample(seq, labels, num_item, sample_size):
     # return sample_ids[:sample_size]
 
 class SoftLoss:
+    r"""
+        no sample
+    """
+
     def __init__(self, mentor: BaseModel, args) -> None:
         self.mentor = mentor
         self.alpha = args.alpha
         self.T = args.T
         self.num_item = args.num_items
         self.device = args.device
-    
+
+        self.mentor.eval()
+
     def calculate_loss(self, model: BaseModel, batch):
         seqs = batch[0]
         labels = batch[1]
@@ -61,6 +67,7 @@ class SoftLoss:
             # batch_size * n_item, next item type
 
             cl = labels[labels > 0]
+            pred = pred_logits
 
             if len(soft_target.size()) == 3:
                 # B * L * N
@@ -72,11 +79,10 @@ class SoftLoss:
 
         soft_target = 0.5 * ((soft_target / self.T).softmax(dim=-1) + cl_onehot)
 
-        KL_loss = F.kl_div(F.log_softmax(pred, dim=-1), soft_target, reduction='batchmean')
+        KL_loss = F.kl_div(F.log_softmax(pred[:, 1:], dim=-1), soft_target[:, 1:], reduction='batchmean')
 
         if ~torch.isinf(KL_loss):
             loss = (1 - self.alpha) * pred_loss + self.alpha * KL_loss + reg_loss
-
         else:
             loss = pred_loss + reg_loss
         
@@ -91,6 +97,63 @@ class BasicLoss:
         output = model.calculate_loss(batch)
 
         return sum(output[1:])
+
+class DVAELoss:
+    r"""
+    DVAELoss for multiclass
+
+    note: L = \alpha KL(f||g) + (1-\alpha)KL(g||f) + h^Tf
+    """
+    def __init__(self, prior_model: BaseModel, auxiliary_model: BaseModel, args, trainable: bool=False) -> None:
+        self.prior_model = prior_model
+        self.auxiliary_model = auxiliary_model
+        self.trainable = trainable
+
+        self.alpha = args.dvae_alpha
+        self.device = args.device
+
+        if not self.trainable:
+            self.auxiliary_model.eval()
+
+    def calculate_loss(self, model: BaseModel, batch):
+        seqs = batch[0]
+        labels = batch[1]
+
+        if not self.trainable:
+            with torch.no_grad():
+                g = self.auxiliary_model(batch)
+        else:
+            g = self.auxiliary_model(batch)
+
+        h = self.prior_model(batch)
+
+        output = model.calculate_loss(batch)
+
+        f = output[0]
+        pred_loss = output[1]
+        reg_loss = 0.
+
+        if len(output) > 2:
+            reg_loss = sum(output[2:])
+
+        assert(len(f.size()) == 2 and f.size() == h.size() and f.size() == g.size())
+
+        f = f[:, 1:]
+        g = g[:, 1:]
+        h = h[:, 1:]
+
+        # g: B x n_item
+        # h: B x n_item
+        # f: B x n_item
+
+        KL_Loss_1 = F.kl_div(F.log_softmax(g, dim=-1), f, reduction='batchmean')
+        KL_Loss_2 = F.kl_div(F.log_softmax(f, dim=-1), g, reduction='batchmean')
+
+        KL_loss = self.alpha * KL_Loss_1 + (1. - self.alpha) * KL_Loss_2
+
+        expectation_loss = (f * h).sum(-1).mean()
+
+        return KL_loss + expectation_loss + reg_loss
 
 # class LE:
 #     def __init__(self, model, args):
