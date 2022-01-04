@@ -10,9 +10,10 @@ state dict loader
 import argparse
 import collections
 import logging
-from numpy import isin
+from typing import Iterator
 
 import torch
+from torch.nn.parameter import Parameter
 from configuration.config import *
 from dataloaders import dataloader_factory
 from models import model_factory
@@ -20,6 +21,7 @@ from models.base import BaseModel
 
 from utils import get_path
 
+from itertools import chain
 
 def generate_dataloader(args):
     return dataloader_factory(args)
@@ -78,7 +80,8 @@ def generate_model( args: argparse.Namespace,
 
 def generate_optim( args: argparse.Namespace,
                     optim_code_or_list, 
-                    models):
+                    models,
+                    one_optim: bool=False):
     r"""
     Args:
         args: global config
@@ -86,6 +89,8 @@ def generate_optim( args: argparse.Namespace,
         optim_code_or_list: optimizer_code -> str, or a list of optimizer_code s
 
         models: a single model->BaseModel or a list of models
+
+        one_optim: default False, if #optim = 1, #models > 1, optimize all `models`'s parameters in one optim
     return:
         the same logic as `generate_model`, except for `n_optim = len(models)`
     """
@@ -98,16 +103,20 @@ def generate_optim( args: argparse.Namespace,
         logging.fatal(f"{models} is not acceptable.")
         raise ValueError
 
-    n_optim = len(model_list)
+    if one_optim:
+        n_optim = 1
+    else:
+        n_optim = len(model_list)
 
     optim_code_list: list
     is_list: bool
 
     if isinstance(optim_code_or_list, (str, )):
-        is_list = (n_optim != 1)
+        is_list = (n_optim != 1) and not one_optim
  
         optim_code_list = [optim_code_or_list] * n_optim
     elif isinstance(optim_code_or_list, collections.Iterable):
+        assert(not one_optim or (one_optim and len(optim_code_or_list) == 1))
         optim_code_list = list(optim_code_or_list)
 
         is_list = True
@@ -117,17 +126,21 @@ def generate_optim( args: argparse.Namespace,
 
     optim_list = []
 
-    def _gen_optim(code: str, model: BaseModel):
+    def _gen_optim(code: str, params: Iterator[Parameter]):
         if code.lower() == "adam":
-            return torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+            return torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         elif code.lower() == "sgd":
-            return torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, momentum=args.momentum)
+            return torch.optim.SGD(params, lr=args.lr, weight_decay=args.weight_decay, momentum=args.momentum)
         else:
             logging.fatal(f"{code} optimizer has not been implemented yed.")
             raise NotImplementedError
 
+    if one_optim:
+        params = [model.parameters() for model in model_list]
+        return _gen_optim(optim_code_list[0], chain(*params))
+
     for optim_code, model in zip(optim_code_list, model_list):
-        optim_list.append(_gen_optim(optim_code, model))
+        optim_list.append(_gen_optim(optim_code, model.parameters()))
     
     return optim_list if is_list else optim_list[0]
 
