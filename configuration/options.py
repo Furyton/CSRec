@@ -18,6 +18,8 @@ parser.add_argument('--rand_seed', type=int, default=2021, help="random seed for
 parser.add_argument('--test_state_path', type=str, default=None, help="model state dict path for test")
 
 parser.add_argument('--model_state_path', type=str, default=None, help="model state dict path for training")
+
+parser.add_argument('--mentor_state_path', type=str, default=None, help="mentor model state dict path for training")
 ################
 # Dataset
 ################
@@ -86,6 +88,7 @@ parser.add_argument('--enable_sample', type=bool, default=False)
 parser.add_argument('--samples_ratio', type=float, default=0.5)
 
 parser.add_argument('--model_code', type=str, default='bert', choices=MODELS.keys())
+parser.add_argument('--mentor_code', type=str, default='bert', choices=MODELS.keys())
 # parser.add_argument('--model_init_seed', type=int, default=None)
 
 parser.add_argument('--max_len', type=int, default=50, help='Length of sequence, better preserve the same for all models for the sake of faireness')
@@ -94,8 +97,8 @@ parser.add_argument('--training_stage', type=str, default=NORMAL_STAGE, choices=
 
 # SOFT REC #
 # parser.add_argument('--enable_kd', type=bool, default=False, help='Use knowledge distillation')
-# parser.add_argument('--T', type=float, default=1, help='temperature')
-# parser.add_argument('--alpha', type=float, default=0.1, help='trade off between original loss and KL div')
+parser.add_argument('--T', type=float, default=1, help='temperature')
+parser.add_argument('--alpha', type=float, default=0.1, help='trade off between original loss and KL div')
 
 ################
 # Experiment

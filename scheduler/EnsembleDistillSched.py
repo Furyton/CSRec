@@ -1,38 +1,3 @@
-"""
-Current target:
-__init__:
-
-    generate one dataloader
-    generate models
-    generate optims
-    generate one lr_sched
-
-    generate trainers
-
-    load state dict
-
-    generate an ensembler
-_fit:
-    create logger service
-
-    dataloader, lr_sched, [(model, optim, trainers, logger, tag), ...]
-
-    take above as input of an ensembler
-
-    tag is the prefix
-
-    train ensembler
-
-_eval:
-
-    test ensembler
-
-set up all these manully without any config
-
-use voting ensembler for now
-"""
-
-# from sklearn import ensemble
 import logging
 import torch
 import dataloaders

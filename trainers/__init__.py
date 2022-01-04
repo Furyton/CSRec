@@ -4,17 +4,22 @@
 
 
 import logging
+
 import torch.optim as optm
 import torch.utils.data as data_utils
+from loggers import LoggerService
 from models.base import BaseModel
 
-from loggers import LoggerService
+from trainers.DistillTrainer import DistillTrainer
+from trainers.DVAETrainer import DVAETrainer
 from trainers.Trainer import Trainer
 from trainers.VoteEnsembleTrainer import VoteEnsembleTrainer
 
 TRAINERS = {
     Trainer.code(): Trainer,
     VoteEnsembleTrainer.code(): VoteEnsembleTrainer,
+    DistillTrainer.code(): DistillTrainer,
+    DVAETrainer.code(): DVAETrainer,
 }
 
 
@@ -65,6 +70,21 @@ def trainer_factory(args,
                         logger,
                         device)
     
+    if trainer_code.lower() in [DVAETrainer.code(), DistillTrainer.code()]:
+        assert(isinstance(model_or_model_list, list) and isinstance(tag_or_tag_list, list) and lr_sched and optim and logger)
+
+        return trainer( args,
+                        optim,
+                        lr_sched,
+                        train_loader,
+                        val_loader,
+                        test_loader,
+                        model_or_model_list,
+                        tag_or_tag_list,
+                        logger,
+                        device,
+                        accum_iter)
+
     logging.fatal(f"{trainer_code} has not been implemented yet.")
 
     raise NotImplementedError

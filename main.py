@@ -4,6 +4,7 @@ from os import path
 
 from configuration.options import args, parser
 from scheduler.BasicSched import BasicScheduler
+from scheduler.DistillSched import DistillScheduler
 from scheduler.EnsembleSched import EnsembleScheduler
 from utils import *
 
@@ -96,8 +97,9 @@ if __name__ == '__main__':
 
     export_root = setup_train(args)
 
-    sched = BasicScheduler(args, export_root)
+    # sched = BasicScheduler(args, export_root)
     # sched = EnsembleScheduler(args, export_root)
+    sched = DistillScheduler(args, export_root)
 
     sched.run()
     # if args.mode == 'train':
