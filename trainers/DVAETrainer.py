@@ -4,7 +4,7 @@ import torch.optim as optm
 import torch.utils.data as data_utils
 from configuration.config import *
 from loggers import LoggerService
-from trainers.Trainer import Trainer
+from trainers.BasicTrainer import Trainer
 
 from trainers.loss import DVAELoss
 from trainers.utils import assert_model_device
@@ -44,6 +44,8 @@ class DVAETrainer(Trainer):
         self.model = self.model_list[0]
         self.auxiliary_model = self.model_list[1]
         self.prior_model = self.model_list[2]
+
+        self.epoch = 0
 
         for model, tag in zip(self.model_list, self.tag_list):
             assert_model_device(model, self.device, tag, args.device_idx)

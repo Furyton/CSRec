@@ -19,7 +19,7 @@ from abc import ABCMeta, abstractmethod
 
 # from torch import nn
 
-class _BaseSched(metaclass=ABCMeta):
+class BaseSched(metaclass=ABCMeta):
     def __init__(self) -> None:
         pass
 

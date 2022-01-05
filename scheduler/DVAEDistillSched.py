@@ -1,18 +1,22 @@
 import logging
 
 from dataloaders import dataloader_factory
-from loggers import BestModelLogger, LoggerService, MetricGraphPrinter, RecentModelLogger
+from loggers import (BestModelLogger, LoggerService, MetricGraphPrinter,
+                     RecentModelLogger)
 from torch.utils.tensorboard import SummaryWriter
-from trainers import trainer_factory
-from trainers.Trainer import Trainer
+from trainers import BaseTrainer, trainer_factory
+from trainers.BasicTrainer import Trainer
+from trainers.DVAETrainer import DVAETrainer
+from trainers.DistillTrainer import DistillTrainer
 
-from scheduler.BaseSched import _BaseSched
+from scheduler.BaseSched import BaseSched
+from scheduler.Routine import Routine
 from scheduler.utils import (generate_lr_scheduler, generate_model,
                              generate_optim, load_state_from_given_path)
 from utils import get_exist_path, get_path
 
 
-class DVAEScheduler(_BaseSched):
+class DVAEDistillScheduler(BaseSched):
     def __init__(self, args, export_root: str):
         super().__init__()
 
@@ -20,69 +24,130 @@ class DVAEScheduler(_BaseSched):
         self.metric_ks = args.metric_ks
         self.best_metric = args.best_metric
         self.device = args.device
-        self.tag = args.model_code
+        self.teacher_code = args.mentor_code
+        self.model_code = args.model_code
         self.mode = args.mode # test or train
 
-        logging.debug(f"DVAEScheduler attribs: tag={self.tag}")
+        self.auxiliary_tag = "auxiliary_" + self.teacher_code
+        self.teacher_tag = "teacher_" + self.teacher_code
+        self.model_tag = "student_" + self.model_code
+
+        logging.debug(f"DVAEDistillScheduler attribs: auxiliary tag={self.auxiliary_tag}, teacher tag={self.teacher_tag}, student tag={self.model_tag}")
 
         self.export_root = get_path(export_root)
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloader_factory(args)
 
+        self._generate_auxliary_trainer()
+        self._generate_teacher_trainer()
+        self._genearte_student_trainer()
 
-        self.model = generate_model(args, self.tag, self.dataset, self.device)
-        self.optim = generate_optim(args, args.optimizer, self.model)
+        self.routine = Routine(['auxiliary', 'teacher', 'student'], [self.a_trainer, self.t_trainer, self.s_trainer], self.args, self.export_root)
 
-        self.writer, self.logger = self._create_logger_service(self.tag)
-
-        logging.info(str(self.model))
-
-        if args.mode == 'test':
-            self.accum_iter = 0
-            self.test_state_path = args.test_state_path
-        else:
-            self.accum_iter = load_state_from_given_path(self.model, args.model_state_path, self.device, self.optim, must_exist=False)
-
-        self.trainer = trainer_factory(args,
-                                       Trainer.code(),
-                                       self.model,
-                                       self.tag,
-                                       self.train_loader,
-                                       self.val_loader,
-                                       self.test_loader,
-                                       self.device,
-                                       self.logger,
-                                       generate_lr_scheduler(self.optim, args),
-                                       self.optim,
-                                       self.accum_iter)
-
-        self.trainer: Trainer
-    
-    
     def run(self):
-        if self.mode == 'train':
-            self._fit()
-
-        self._evaluate()
+        self._fit()
         self._close_writer()
 
     def _close_writer(self):
-        self.writer.close()
+        self.a_writer.close()
+        self.t_writer.close()
+        self.s_writer.close()
         
     def _fit(self):
-        logging.info("Start training.")
-
-        self.trainer.train()
+        self.routine.run_routine()
 
     def _evaluate(self):
-        if self.mode == 'test':
-            results = self.trainer.test_with_given_state_path(self.test_state_path)
-        else:
-            results = self.trainer.test(self.export_root)
+        logging.debug("haven't implemented.")
+        pass
 
-        logging.info(f"!!Final Result!!: {results}")
+    def _generate_auxliary_trainer(self):
+        
+        self.auxiliary = generate_model(self.args, self.teacher_code, self.dataset, self.device)
 
-        # result_folder = self.export_root.joinpath()
+        self.a_optimizer = generate_optim(self.args, self.args.optimizer, self.auxiliary)
+
+        self.a_writer, self.a_logger = self._create_logger_service(self.auxiliary_tag)
+
+        # here mentor state path is only used for auxiliary model, not teacher model in v1
+
+        self.a_accum_iter = load_state_from_given_path(self.auxiliary_tag, self.args.mentor_state_path, self.device, self.a_optimizer, must_exist=False)
+
+        logging.debug("auxiliary model: \n" + str(self.auxiliary))
+
+        self.a_trainer = trainer_factory(self.args,
+                        Trainer.code(),
+                        self.auxiliary,
+                        self.auxiliary_tag,
+                        self.train_loader,
+                        self.val_loader,
+                        self.test_loader,
+                        self.device,
+                        self.a_logger,
+                        generate_lr_scheduler(self.a_optimizer, self.args),
+                        self.a_optimizer,
+                        self.a_accum_iter)
+
+        self.a_trainer: BaseTrainer
+
+    def _generate_teacher_trainer(self):
+        self.prior = generate_model(self.args, 'prior', self.dataset, self.device)
+
+        self.teacher = generate_model(self.args, self.teacher_code, self.dataset, self.device)
+
+        self.t_optimizer = generate_optim(self.args, self.args.optimizer, [self.prior, self.teacher], one_optim=True)
+
+        self.t_writer, self.t_logger = self._create_logger_service(self.teacher_tag)
+
+        self.t_accum_iter = 0
+
+        # TODO
+        # move `load state` to trainer
+        # enable to load state for prior and teacher
+
+        logging.debug("prior model: \n" + str(self.prior))
+
+        logging.debug("teacher model: \n" + str(self.teacher))
+
+        self.t_trainer = trainer_factory(self.args,
+                        DVAETrainer.code(),
+                        [self.teacher, self.auxiliary, self.prior],
+                        [self.teacher_tag, self.auxiliary_tag, 'prior'],
+                        self.train_loader,
+                        self.val_loader,
+                        self.test_loader,
+                        self.device,
+                        self.t_logger,
+                        generate_lr_scheduler(self.t_optimizer, self.args),
+                        self.t_optimizer,
+                        self.t_accum_iter)
+        
+        self.t_trainer: BaseTrainer
+
+    def _genearte_student_trainer(self):
+
+        self.student = generate_model(self.args, self.model_code, self.dataset, self.device)
+        self.s_optimizer = generate_optim(self.args, self.args.optimizer, self.student)
+
+        self.s_writer, self.s_logger = self._create_logger_service(self.model_tag)
+
+        self.s_accum_iter = load_state_from_given_path(self.student, self.args.model_state_path, self.device, self.s_optimizer, must_exist=False)
+
+        logging.debug("student model: \n" + str(self.student))
+
+        self.s_trainer = trainer_factory(self.args,
+                                DistillTrainer.code(),
+                                [self.student, self.teacher],
+                                [self.model_tag, self.teacher_tag],
+                                self.train_loader,
+                                self.val_loader,
+                                self.test_loader,
+                                self.device,
+                                self.s_logger,
+                                generate_lr_scheduler(self.s_optimizer, self.args),
+                                self.s_optimizer,
+                                self.s_accum_iter)
+
+        self.s_trainer: BaseTrainer
 
     def _create_logger_service(self, prefix: str, metric_only: bool = False):
         """

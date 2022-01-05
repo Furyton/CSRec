@@ -9,7 +9,7 @@ class POPModel(BaseModel):
         super(POPModel, self).__init__(dataset, device, max_len)
 
         # module with no parameter will cause a lot of problems
-        # it is easy to solve, but takes a lot special handings
+        # it is easy to solve, but takes a lot special handlings
         # adding a fake param seems to be an elegent solution :)
 
         self.fake_parameter = torch.nn.Linear(1, 1, False)

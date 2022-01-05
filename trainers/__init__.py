@@ -12,7 +12,7 @@ from models.base import BaseModel
 
 from trainers.DistillTrainer import DistillTrainer
 from trainers.DVAETrainer import DVAETrainer
-from trainers.Trainer import Trainer
+from trainers.BasicTrainer import Trainer
 from trainers.VoteEnsembleTrainer import VoteEnsembleTrainer
 
 TRAINERS = {

@@ -43,16 +43,16 @@ from loggers import (BestModelLogger, LoggerService, MetricGraphPrinter,
 from models import MODELS
 from torch.utils.tensorboard import SummaryWriter
 from trainers import VoteEnsembleTrainer
-from trainers.Trainer import Trainer
+from trainers.BasicTrainer import Trainer
 
-from scheduler.BaseSched import _BaseSched
+from scheduler.BaseSched import BaseSched
 from scheduler.utils import (generate_lr_scheduler, generate_model,
                              generate_optim, load_state_from_given_path)
 from utils import get_exist_path, get_path
 from configuration.config import *
 
 
-class EnsembleScheduler(_BaseSched):
+class EnsembleScheduler(BaseSched):
     def __init__(self, args, export_root: str) -> None:
         super().__init__()
         self.args = args

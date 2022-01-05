@@ -93,7 +93,9 @@ parser.add_argument('--mentor_code', type=str, default='bert', choices=MODELS.ke
 
 parser.add_argument('--max_len', type=int, default=50, help='Length of sequence, better preserve the same for all models for the sake of faireness')
 
-parser.add_argument('--training_stage', type=str, default=NORMAL_STAGE, choices=[PRETRAIN_STAGE, FINE_TUNE_STAGE, NORMAL_STAGE])
+# parser.add_argument('--training_stage', type=str, default=NORMAL_STAGE, choices=[PRETRAIN_STAGE, FINE_TUNE_STAGE, NORMAL_STAGE])
+
+parser.add_argument('--training_routine', type=str, default=None)
 
 # SOFT REC #
 # parser.add_argument('--enable_kd', type=bool, default=False, help='Use knowledge distillation')

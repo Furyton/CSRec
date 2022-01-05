@@ -16,8 +16,6 @@ class PriorModel(BaseModel):
     def __init__(self, args, dataset: list, device: str, max_len: int):
         super(PriorModel, self).__init__(dataset, device, max_len)
 
-        raise NotImplementedError("prior model")
-
         self.hidden_size = args.hidden_size
 
         self.observed_embedding = nn.Embedding(self.n_item + 1, self.hidden_size, padding_idx=0)

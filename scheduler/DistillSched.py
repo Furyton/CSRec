@@ -3,16 +3,17 @@ import logging
 from dataloaders import dataloader_factory
 from loggers import BestModelLogger, LoggerService, MetricGraphPrinter, RecentModelLogger
 from torch.utils.tensorboard import SummaryWriter
+from scheduler.Routine import Routine
 from trainers import trainer_factory
 from trainers.DistillTrainer import DistillTrainer
-from trainers.Trainer import Trainer
+from trainers.BasicTrainer import Trainer
 
-from scheduler.BaseSched import _BaseSched
+from scheduler.BaseSched import BaseSched
 from scheduler.utils import (generate_lr_scheduler, generate_model,
                              generate_optim, load_state_from_given_path)
 from utils import get_exist_path, get_path
 
-class DistillScheduler(_BaseSched):
+class DistillScheduler(BaseSched):
     def __init__(self, args, export_root: str):
         super().__init__()
 
@@ -84,11 +85,14 @@ class DistillScheduler(_BaseSched):
         self.t_trainer: Trainer
         self.s_trainer: DistillTrainer
 
-    def run(self):
-        if self.mode == 'train':
-            self._fit()
+        self.routine = Routine(['teacher', 'student'], [self.t_trainer, self.s_trainer], self.args, self.export_root)
 
-        self._evaluate()
+    def run(self):
+        # if self.mode == 'train':
+        #     self._fit()
+
+        # self._evaluate()
+        self._fit()
         self._close_writer()
 
     def _close_writer(self):
@@ -96,25 +100,28 @@ class DistillScheduler(_BaseSched):
         self.s_writer.close()
         
     def _fit(self):
-        logging.info("Start training teacher.")
+        self.routine.run_routine()
+        # logging.info("Start training teacher.")
 
-        self.t_trainer.train()
+        # self.t_trainer.train()
 
-        results = self.t_trainer.test(self.export_root)
+        # results = self.t_trainer.test(self.export_root)
 
-        logging.info(f"teacher results: {results}")
+        # logging.info(f"teacher results: {results}")
 
-        logging.info("Start training student.")
+        # logging.info("Start training student.")
 
-        self.s_trainer.train()
+        # self.s_trainer.train()
 
     def _evaluate(self):
-        if self.mode == 'test':
-            results = self.s_trainer.test_with_given_state_path(self.test_state_path)
-        else:
-            results = self.s_trainer.test(self.export_root)
+        logging.debug("haven't implemented.")
+        pass
+        # if self.mode == 'test':
+        #     results = self.s_trainer.test_with_given_state_path(self.test_state_path)
+        # else:
+        #     results = self.s_trainer.test(self.export_root)
 
-        logging.info(f"!!Final Result!!: {results}")
+        # logging.info(f"!!Final Result!!: {results}")
 
         # result_folder = self.export_root.joinpath()
 

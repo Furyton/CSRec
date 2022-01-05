@@ -6,7 +6,7 @@ from configuration.config import *
 from loggers import LoggerService
 
 from trainers.loss import SoftLoss
-from trainers.Trainer import Trainer
+from trainers.BasicTrainer import Trainer
 from trainers.utils import assert_model_device
 
 
