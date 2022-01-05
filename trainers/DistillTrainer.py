@@ -37,6 +37,8 @@ class DistillTrainer(Trainer):
         self.logger = logger
         self.accum_iter = accum_iter
 
+        self.epoch = 0
+
         self.model = self.model_list[0]
         self.auxiliary_model = self.model_list[1]
 
