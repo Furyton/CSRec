@@ -9,12 +9,12 @@ from models.base import BaseModel
 from scheduler.utils import (get_best_state_path, get_state_dict_from,
                              load_state_from_local)
 
-from trainers._BaseTrainer import _AbstractBaseTrainer
+from trainers.BaseTrainer import AbstractBaseTrainer
 from trainers.utils import recalls_ndcgs_and_mrr_for_ks
 from utils import AverageMeterSet, get_path
 
 
-class VoteEnsembleTrainer(_AbstractBaseTrainer):
+class VoteEnsembleTrainer(AbstractBaseTrainer):
     def __init__(self,
                  args,
                  train_loader: data_utils.DataLoader,
@@ -51,7 +51,7 @@ class VoteEnsembleTrainer(_AbstractBaseTrainer):
 
     def close_training(self):
         for trainer in self.trainer_list:
-            trainer: _AbstractBaseTrainer
+            trainer: AbstractBaseTrainer
 
             trainer.close_training()
 
@@ -94,7 +94,7 @@ class VoteEnsembleTrainer(_AbstractBaseTrainer):
     def _train_one_epoch(self):
         # self.model.train()
         for idx, (tag, trainer) in enumerate(zip(self.tag_list, self.trainer_list)):
-            trainer: _AbstractBaseTrainer 
+            trainer: AbstractBaseTrainer 
 
             trainer.epoch = self.epoch
 
@@ -388,7 +388,7 @@ class VoteEnsembleTrainer(_AbstractBaseTrainer):
 
         for tag, trainer in zip(self.tag_list, self.trainer_list):
             tag: str
-            trainer: _AbstractBaseTrainer
+            trainer: AbstractBaseTrainer
 
             data_dict[tag] = trainer._create_log_data()
 

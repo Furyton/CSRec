@@ -1,6 +1,6 @@
 from abc import *
 
-class _AbstractBaseTrainer(metaclass=ABCMeta):
+class AbstractBaseTrainer(metaclass=ABCMeta):
     def __init__(self, args, device):
         self.args = args
         self.device = device

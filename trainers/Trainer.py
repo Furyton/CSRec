@@ -10,14 +10,14 @@ from configuration.config import *
 from models.base import BaseModel
 from scheduler.utils import get_best_state_path, load_state_from_given_path, load_state_from_local
 
-from trainers._BaseTrainer import _AbstractBaseTrainer
+from trainers.BaseTrainer import AbstractBaseTrainer
 from loggers import LoggerService
 from trainers.loss import BasicLoss 
 from trainers.utils import assert_model_device, recalls_ndcgs_and_mrr_for_ks
 from utils import AverageMeterSet, get_exist_path
 
 
-class Trainer(_AbstractBaseTrainer):
+class Trainer(AbstractBaseTrainer):
     def __init__(self,
                  args,
                  model: BaseModel,
