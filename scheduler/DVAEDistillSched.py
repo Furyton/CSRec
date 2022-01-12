@@ -70,7 +70,7 @@ class DVAEDistillScheduler(BaseSched):
 
         # here mentor state path is only used for auxiliary model, not teacher model in v1
 
-        self.a_accum_iter = load_state_from_given_path(self.auxiliary_tag, self.args.mentor_state_path, self.device, self.a_optimizer, must_exist=False)
+        self.a_accum_iter = load_state_from_given_path(self.auxiliary, self.args.mentor_state_path, self.device, self.a_optimizer, must_exist=False)
 
         logging.debug("auxiliary model: \n" + str(self.auxiliary))
 
@@ -121,7 +121,7 @@ class DVAEDistillScheduler(BaseSched):
                         self.t_optimizer,
                         self.t_accum_iter)
         
-        self.t_trainer: BaseTrainer
+        self.t_trainer: DVAETrainer
 
     def _genearte_student_trainer(self):
 

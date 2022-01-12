@@ -100,7 +100,7 @@ class NextTrainDataset(data_utils.Dataset):
         self.users = list(range(len(u2seq)))
         self.max_len = max_len
         self.num_items = num_items
-        self._augment()
+        # self._augment()
 
     def _augment(self):
         for u, seq, rating in zip(deepcopy(self.users), deepcopy(self.u2seq), deepcopy(self.u2rating)):

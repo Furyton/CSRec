@@ -21,14 +21,13 @@ class BasicScheduler(BaseSched):
         self.best_metric = args.best_metric
         self.device = args.device
         self.tag = args.model_code
-        self.mode = args.mode # test or train
+        self.mode = args.mode  # test or train
 
         logging.debug(f"BasicScheduler attribs: tag={self.tag}")
 
         self.export_root = get_path(export_root)
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloader_factory(args)
-
 
         self.model = generate_model(args, self.tag, self.dataset, self.device)
         self.optim = generate_optim(args, args.optimizer, self.model)
@@ -41,7 +40,8 @@ class BasicScheduler(BaseSched):
             self.accum_iter = 0
             self.test_state_path = args.test_state_path
         else:
-            self.accum_iter = load_state_from_given_path(self.model, args.model_state_path, self.device, self.optim, must_exist=False)
+            self.accum_iter = load_state_from_given_path(self.model, args.model_state_path, self.device, self.optim,
+                                                         must_exist=False)
 
         self.trainer = trainer_factory(args,
                                        Trainer.code(),
@@ -57,8 +57,7 @@ class BasicScheduler(BaseSched):
                                        self.accum_iter)
 
         self.trainer: Trainer
-    
-    
+
     def run(self):
         if self.mode == 'train':
             self._fit()
@@ -68,7 +67,7 @@ class BasicScheduler(BaseSched):
 
     def _close_writer(self):
         self.writer.close()
-        
+
     def _fit(self):
         logging.info("Start training.")
 
@@ -138,5 +137,3 @@ class BasicScheduler(BaseSched):
             val_loggers.append(BestModelLogger(model_checkpoint, metric_key=self.best_metric))
 
         return log_folder, writer, train_loggers, val_loggers
-
-

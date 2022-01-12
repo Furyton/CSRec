@@ -23,10 +23,10 @@ class PriorModel(BaseModel):
 
         self.apply(self._init_weights)
 
-    def _init_weights(m):
+    def _init_weights(self, m):
         if isinstance(m, nn.Embedding):
-            # nn.init.kaiming_uniform_(a=2, mode='fan_in', nonlinearity='leaky_relu', tensor=m.weight)
-            nn.init.xavier_uniform_(m.weight)
+            nn.init.kaiming_uniform_(a=2, mode='fan_in', nonlinearity='leaky_relu', tensor=m.weight)
+            # nn.init.xavier_uniform_(m.weight)
 
     @classmethod
     def code(cls):

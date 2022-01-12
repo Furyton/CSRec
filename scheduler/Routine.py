@@ -34,7 +34,7 @@ class Routine:
     def _nxt_routine(self):
         assert(self._current_routine != FINISH_STAGE)
 
-        self._current_routine = self._next_routine(self._current_routine)
+        self._current_routine = self._next_routine[self._current_routine]
 
         # return self._current_routine
 

@@ -6,6 +6,15 @@ from torch.nn.init import xavier_normal_, xavier_uniform_
 
 from models.base import BaseModel
 
+
+def _init_weights(module):
+    if isinstance(module, nn.Embedding):
+        xavier_normal_(module.weight)
+    elif isinstance(module, nn.GRU):
+        xavier_uniform_(module.weight_hh_l0)
+        xavier_uniform_(module.weight_ih_l0)
+
+
 class GRU4RecModel(BaseModel):
     def __init__(self, args, dataset, device, max_len):
         super(GRU4RecModel, self).__init__(dataset, device, max_len)
@@ -36,18 +45,11 @@ class GRU4RecModel(BaseModel):
             raise NotImplementedError
 
         # parameters initialization
-        self.apply(self._init_weights)
+        self.apply(_init_weights)
 
     @classmethod
     def code(cls):
         return 'gru4rec'
-
-    def _init_weights(self, module):
-        if isinstance(module, nn.Embedding):
-            xavier_normal_(module.weight)
-        elif isinstance(module, nn.GRU):
-            xavier_uniform_(module.weight_hh_l0)
-            xavier_uniform_(module.weight_ih_l0)
 
     def log2feats(self, x):
         item_seq_emb = self.item_embedding(x)

@@ -1,6 +1,4 @@
 import logging
-import numpy as np
-from scipy.fftpack import diff
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
@@ -37,7 +35,16 @@ class SoftLoss:
 
         self.mentor.eval()
 
+        self.nan = 0
+        self.not_nan = 0
+        self.debug = 0
+        self.accum_iter = 0
+
+    def debug_summary(self):
+        logging.debug(f"loss nan summary: nan {self.nan} times, not nan {self.not_nan} times, ratio nan / (nan + not_nan) = {1.0 * self.nan / (self.nan + self.not_nan)}")
+
     def calculate_loss(self, model: BaseModel, batch):
+        self.accum_iter += 1
         seqs = batch[0]
         labels = batch[1]
 
@@ -79,19 +86,32 @@ class SoftLoss:
 
         soft_target = 0.5 * ((soft_target / self.T).softmax(dim=-1) + cl_onehot)
 
+        if self.accum_iter % 10000 < 5 and self.accum_iter != 0:
+            if self.debug != 0:
+                with torch.no_grad():
+                    self.debug -= 1
+                    
+                    logging.debug(f"soft_target max in softmax: {soft_target.softmax(dim=-1).max()}, argmax {soft_target.softmax(dim=-1).argmax()}")
+                    logging.debug(f"pred max in softmax: {pred.softmax(dim=-1).max()}, argmax {pred.softmax(dim=-1).argmax()}")
+
         KL_loss = F.kl_div(F.log_softmax(pred[:, 1:], dim=-1), soft_target[:, 1:], reduction='batchmean')
 
         if ~torch.isinf(KL_loss):
             loss = (1 - self.alpha) * pred_loss + self.alpha * KL_loss + reg_loss
+            self.not_nan += 1
         else:
             loss = pred_loss + reg_loss
+            self.nan += 1
         
         return loss
 
 class BasicLoss:
     def __init__(self, **kwargs) -> None:
         pass
-    
+
+    def debug_summary(self):
+        pass
+
     def calculate_loss(self, model: BaseModel, batch):
         # output = (predict logits, predict loss, reg loss, ...)
         output = model.calculate_loss(batch)
@@ -114,8 +134,19 @@ class DVAELoss:
 
         if not self.trainable:
             self.auxiliary_model.eval()
+        
+        self.debug = 0
+
+        self.nan = 0
+        self.not_nan = 0
+
+        self.accum_iter = 0
+
+    def debug_summary(self):
+        logging.debug(f"loss nan summary: nan {self.nan} times, not nan {self.not_nan} times, ratio nan / (nan + not_nan) = {1.0 * self.nan / (self.nan + self.not_nan)}")
 
     def calculate_loss(self, model: BaseModel, batch):
+        self.accum_iter += 1
         seqs = batch[0]
         labels = batch[1]
 
@@ -151,9 +182,32 @@ class DVAELoss:
 
         KL_loss = self.alpha * KL_Loss_1 + (1. - self.alpha) * KL_Loss_2
 
-        expectation_loss = (f * h).sum(-1).mean()
+        expectation_loss = (f.softmax(dim=-1) * h.softmax(dim=-1)).sum()
 
-        return KL_loss + expectation_loss + reg_loss
+        if self.accum_iter % 10000 < 5 and self.accum_iter != 0:
+            if self.debug != 0:
+                with torch.no_grad():
+                    self.debug -= 1
+
+                    # logging.debug(f"f: \n" + str(f))
+                    # logging.debug(f"g: \n" + str(g))
+                    # logging.debug(f"h: \n" + str(h))
+
+                    logging.debug(f"KL_loss1: \n" + str(KL_Loss_1))
+                    logging.debug(f"KL_loss2: \n" + str(KL_Loss_2))
+                    logging.debug(f"expectation_loss: \n" + str(expectation_loss))
+
+                    logging.debug(f"max in g softmax: {g.softmax(dim=-1).max()} argmax: {g.softmax(dim=-1).argmax()}")
+                    logging.debug(f"max in f softmax: {f.softmax(dim=-1).max()} argmax: {f.softmax(dim=-1).argmax()}")
+                    logging.debug(f"max in h softmax: {h.softmax(dim=-1).max()} argmax: {h.softmax(dim=-1).argmax()}")
+
+        if ~torch.isnan(KL_loss):
+            self.not_nan += 1
+            return pred_loss + expectation_loss + reg_loss
+        else:
+            self.nan += 1
+            return pred_loss + KL_loss + expectation_loss + reg_loss
+
 
 # class LE:
 #     def __init__(self, model, args):

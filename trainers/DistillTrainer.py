@@ -52,6 +52,10 @@ class DistillTrainer(Trainer):
 
         logging.info('{} iter per epoch'.format(self.iter_per_epoch))
 
+    def train(self):
+        super().train()
+
+        self.loss_fct.debug_summary()
 
     @classmethod
     def code(cls):
