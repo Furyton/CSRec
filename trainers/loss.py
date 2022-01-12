@@ -37,7 +37,7 @@ class SoftLoss:
 
         self.nan = 0
         self.not_nan = 0
-        self.debug = 0
+        self.debug = 40
         self.accum_iter = 0
 
     def debug_summary(self):
@@ -86,7 +86,7 @@ class SoftLoss:
 
         soft_target = 0.5 * ((soft_target / self.T).softmax(dim=-1) + cl_onehot)
 
-        if self.accum_iter % 10000 < 5 and self.accum_iter != 0:
+        if self.accum_iter % 1000 < 2 and self.accum_iter != 0:
             if self.debug != 0:
                 with torch.no_grad():
                     self.debug -= 1
@@ -149,6 +149,7 @@ class DVAELoss:
         self.accum_iter += 1
         seqs = batch[0]
         labels = batch[1]
+        batch_size = len(seqs)
 
         if not self.trainable:
             with torch.no_grad():
@@ -181,8 +182,8 @@ class DVAELoss:
         KL_Loss_2 = F.kl_div(F.log_softmax(f, dim=-1), g, reduction='batchmean')
 
         KL_loss = self.alpha * KL_Loss_1 + (1. - self.alpha) * KL_Loss_2
-
-        expectation_loss = (f.softmax(dim=-1) * h.softmax(dim=-1)).sum()
+        h: torch.Tensor
+        expectation_loss = (f.softmax(dim=-1) * F.log_softmax(h, dim=-1)).sum() / batch_size
 
         if self.accum_iter % 10000 < 5 and self.accum_iter != 0:
             if self.debug != 0:
