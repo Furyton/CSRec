@@ -21,6 +21,8 @@ class PriorModel(BaseModel):
         self.observed_embedding = nn.Embedding(self.n_item + 1, self.hidden_size, padding_idx=0)
         self.prior_item_embedding = nn.Embedding(self.n_item + 1, self.hidden_size, padding_idx=0)
 
+        self.max_in_col = torch.tensor([[-10.] * (self.n_item + 1)], device=self._device)
+
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -35,14 +37,24 @@ class PriorModel(BaseModel):
     def forward(self, batch):
         seqs = batch[0] # not used in v1
         labels = batch[1] # B x 1
+        batch_size = len(seqs)
 
         observed_part = self.observed_embedding(labels).squeeze(1)
 
-        return torch.matmul(observed_part, self.prior_item_embedding.weight.transpose(0, 1))
+        # B x (N + 1)
+        output = torch.matmul(observed_part, self.prior_item_embedding.weight.transpose(0, 1))
+
+        # tmp = output.detach().clone()
+
+        max_in_col = torch.max(output, dim=0).values.max(self.max_in_col)
+
+        self.max_in_col = max_in_col.detach().clone()
+
+        return output, max_in_col.repeat((batch_size, 1))
 
 
     def calculate_loss(self, batch):
-        logging.warn("Can't calculate loss on its own.")
+        logging.warning("Can't calculate loss on its own.")
 
         raise RuntimeError("Can't calculate loss on its own")
 
