@@ -24,11 +24,12 @@ class DVAEDistillScheduler(BaseSched):
         self.metric_ks = args.metric_ks
         self.best_metric = args.best_metric
         self.device = args.device
-        self.teacher_code = args.mentor_code
+        self.auxiliary_code = args.mentor_code
+        self.teacher_code = args.mentor2_code
         self.model_code = args.model_code
         self.mode = args.mode # test or train
 
-        self.auxiliary_tag = "auxiliary_" + self.teacher_code
+        self.auxiliary_tag = "auxiliary_" + self.auxiliary_code
         self.teacher_tag = "teacher_" + self.teacher_code
         self.model_tag = "student_" + self.model_code
 
@@ -62,7 +63,7 @@ class DVAEDistillScheduler(BaseSched):
 
     def _generate_auxliary_trainer(self):
         
-        self.auxiliary = generate_model(self.args, self.teacher_code, self.dataset, self.device)
+        self.auxiliary = generate_model(self.args, self.auxiliary_code, self.dataset, self.device)
 
         self.a_optimizer = generate_optim(self.args, self.args.optimizer, self.auxiliary)
 
