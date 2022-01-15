@@ -87,6 +87,8 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
     if dataframe.columns.isin([TIMESTAMP]).any():
         logging.info("sorting according to timestamp")
 
+        dataframe[TIMESTAMP] = pd.to_datetime(dataframe.loc[:, TIMESTAMP].copy())
+
         dataframe = dataframe.sort_values(by=[SESSION_ID, TIMESTAMP], ignore_index=True).drop(columns=TIMESTAMP).copy()
 
     dataframe = drop_cold(dataframe, args.min_length, args.min_item_inter, do_remap)
