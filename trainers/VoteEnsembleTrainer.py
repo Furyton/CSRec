@@ -138,7 +138,7 @@ class VoteEnsembleTrainer(AbstractBaseTrainer):
 
     @torch.no_grad()
     def early_exit(self, batch):
-        threshold = 0.05
+        threshold = 0.1
         batch_size = batch[0].size(0)
 
         stacked_pred = torch.stack([ model.full_sort_predict(batch).softmax(dim=-1) for model in self.model_list ], dim=-1)
@@ -203,10 +203,10 @@ class VoteEnsembleTrainer(AbstractBaseTrainer):
     def get_average_full_sort_predict(self, batch):
         # return self.early_exit(batch)
 
-        # return self.weighted_mix(batch)
+        return self.weighted_mix(batch)
 
         predict = [ model.full_sort_predict(batch).softmax(dim=-1) for model in self.model_list ]
-        weight_list = [0.8, 0.2]
+        weight_list = [0.75, 0.25]
 
         predict = [model.full_sort_predict(batch).softmax(dim=-1) for idx, model in enumerate(self.model_list)]
 

@@ -1,3 +1,4 @@
+import math
 import torch
 
 from collections import Counter
@@ -27,6 +28,7 @@ class POPModel(BaseModel):
         pop = [0] * (self.itemnum + 1)
 
         for i, v in self.popularity.items():
+            # pop[i] = math.log2( v + 2. )
             pop[i] = v
 
         # item id starts at 1

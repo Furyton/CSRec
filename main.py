@@ -7,6 +7,7 @@ from scheduler.BasicSched import BasicScheduler
 from scheduler.DVAEDistillSched import DVAEDistillScheduler
 from scheduler.DVAEEnsembleDistillSched import DVAEEnsembleDistillScheduler
 from scheduler.DistillSched import DistillScheduler
+from scheduler.EnsembleDistillSched import EnsembleDistillScheduler
 from scheduler.EnsembleSched import EnsembleScheduler
 from utils import *
 
