@@ -134,7 +134,7 @@ class DVAEEnsembleDistillScheduler(BaseSched):
 
         self.s_accum_iter = load_state_from_given_path(self.student, self.args.model_state_path, self.device, self.s_optimizer, must_exist=False)
 
-        self.mix_teacher = Ensembler([self.auxiliary, self.teacher], [0.3, 0.7])
+        self.mix_teacher = Ensembler(self.device, [self.auxiliary, self.teacher], [0.8, 0.2])
         self.mix_teacher_tag = "mix_" + self.auxiliary_code + "_" + self.teacher_code
 
         logging.debug("student model: \n" + str(self.student))
