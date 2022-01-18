@@ -84,7 +84,7 @@ def fix_random_seed_as(seed):
     # torch.cuda.manual_seed_all(random_seed)
     # np.random.seed(random_seed)
     # cudnn.deterministic = True
-    # cudnn.benchmark = False
+    cudnn.benchmark = False
 
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)

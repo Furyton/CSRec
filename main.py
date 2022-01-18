@@ -18,10 +18,17 @@ if __name__ == '__main__':
 
     export_root = setup_train(args)
 
-    # sched = BasicScheduler(args, export_root)
-    # sched = EnsembleScheduler(args, export_root)
-    # sched = DistillScheduler(args, export_root)
-    # sched = DVAEDistillScheduler(args, export_root)
-    sched = DVAEEnsembleDistillScheduler(args, export_root)
+    if args.sched.lower() == "basic":
+        sched = BasicScheduler(args, export_root)
+    elif args.sched.lower() == "ensemble":
+        sched = EnsembleScheduler(args, export_root)
+    elif args.sched.lower() == "distill":    
+        sched = DistillScheduler(args, export_root)
+    elif args.sched.lower() == "dvae":    
+        sched = DVAEDistillScheduler(args, export_root)
+    elif args.sched.lower() == "dvae_ensemble":    
+        sched = DVAEEnsembleDistillScheduler(args, export_root)
+    else:
+        raise ValueError
 
     sched.run()
