@@ -35,6 +35,8 @@ class SoftLoss:
         self.num_item = args.num_items
         self.device = args.device
 
+        self.softmaxed_mentor = True # the output from mentor has been softmaxed ?
+
         self.mentor.eval()
 
         self.nan = 0
@@ -86,7 +88,10 @@ class SoftLoss:
 
         cl_onehot = F.one_hot(cl, num_classes=self.num_item + 1)
 
-        soft_target = 0.5 * ((soft_target / self.T).softmax(dim=-1) + cl_onehot)
+        if self.softmaxed_mentor:
+            soft_target = 0.5 * (soft_target + cl_onehot)
+        else:
+            soft_target = 0.5 * ((soft_target / self.T).softmax(dim=-1) + cl_onehot)
 
         if self.accum_iter % 1000 < 2 and self.accum_iter != 0:
             if self.debug != 0:
@@ -212,10 +217,10 @@ class DVAELoss:
 
         if ~torch.isnan(KL_loss):
             self.not_nan += 1
-            return pred_loss + KL_loss + expectation_loss + reg_loss
+            return pred_loss + KL_loss  + reg_loss
         else:
             self.nan += 1
-            return pred_loss + expectation_loss + reg_loss
+            return pred_loss + reg_loss
 
 
 # class LE:

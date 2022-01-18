@@ -7,6 +7,7 @@ from scheduler.BasicSched import BasicScheduler
 from scheduler.DVAEDistillSched import DVAEDistillScheduler
 from scheduler.DVAEEnsembleDistillSched import DVAEEnsembleDistillScheduler
 from scheduler.DistillSched import DistillScheduler
+from scheduler.EnsembleDistillSched import EnsembleDistillScheduler
 from scheduler.EnsembleSched import EnsembleScheduler
 from utils import *
 
@@ -18,10 +19,11 @@ if __name__ == '__main__':
 
     export_root = setup_train(args)
 
-    # sched = BasicScheduler(args, export_root)
+    sched = BasicScheduler(args, export_root)
     # sched = EnsembleScheduler(args, export_root)
     sched = DistillScheduler(args, export_root)
     # sched = DVAEDistillScheduler(args, export_root)
     # sched = DVAEEnsembleDistillScheduler(args, export_root)
+    # sched = EnsembleDistillScheduler(args, export_root)
 
     sched.run()
