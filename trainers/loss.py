@@ -98,7 +98,7 @@ class SoftLoss:
                 with torch.no_grad():
                     self.debug -= 1
                     
-                    logging.debug(f"soft_target max in softmax: {soft_target.max()}, argmax {soft_target.argmax()}")
+                    logging.debug(f"soft_target max: {soft_target.max()}, argmax {soft_target.argmax()}")
                     logging.debug(f"pred max in softmax: {pred.softmax(dim=-1).max()}, argmax {pred.softmax(dim=-1).argmax()}")
 
         KL_loss = F.kl_div(F.log_softmax(pred[:, 1:], dim=-1), soft_target[:, 1:], reduction='batchmean')
@@ -189,6 +189,7 @@ class DVAELoss:
         # f: B x n_item
         # max_in_col: B x n_item
 
+        g = g / 3.
         KL_Loss_1 = F.kl_div(F.log_softmax(g, dim=-1), f.softmax(dim=-1), reduction='batchmean')
         KL_Loss_2 = F.kl_div(F.log_softmax(f, dim=-1), g.softmax(dim=-1), reduction='batchmean')
 

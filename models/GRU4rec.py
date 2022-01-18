@@ -66,6 +66,9 @@ class GRU4RecModel(BaseModel):
         seq_lens = batch[3]
         x = self.log2feats(seqs)
 
+        # logging.debug(f"x size: {x.size()}, seqs size: {seqs.size()}, seq_lens size: {seq_lens.size()}")
+        # logging.debug(f"seqs: {seqs}, x: {x}")
+
         # seq_output =  x[:, -1, :].squeeze(1) # B * D
         seq_output = self.gather_indexes(x, seq_lens - 1)
 
@@ -96,6 +99,7 @@ class GRU4RecModel(BaseModel):
         return scores
 
     def gather_indexes(self, output, gather_index):
+        # logging.debug(f"output size: {output.size()}, gather_index size: {gather_index.size()}, gather_index: {gather_index}")
         """Gathers the vectors at the specific positions over a minibatch"""
         gather_index = gather_index.view(-1, 1, 1).expand(-1, -1, output.shape[-1])
         output_tensor = output.gather(dim=1, index=gather_index)
