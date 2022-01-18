@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --time=30:00:00
 
-#SBATCH --mem=8G
+#SBATCH --mem=32G
 
 python main.py --config_file=$CONFIG_PATH
 

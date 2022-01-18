@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
     # sched = BasicScheduler(args, export_root)
     # sched = EnsembleScheduler(args, export_root)
-    # sched = DistillScheduler(args, export_root)
+    sched = DistillScheduler(args, export_root)
     # sched = DVAEDistillScheduler(args, export_root)
-    sched = DVAEEnsembleDistillScheduler(args, export_root)
+    # sched = DVAEEnsembleDistillScheduler(args, export_root)
 
     sched.run()
