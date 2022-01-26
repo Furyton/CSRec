@@ -1,13 +1,16 @@
 import logging
 
+import torch
 import torch.optim as optm
 import torch.utils.data as data_utils
 from configuration.config import *
 from loggers import LoggerService
+from models.base import BaseModel
 
 from trainers.loss import SoftLoss
 from trainers.BasicTrainer import Trainer
-from trainers.utils import assert_model_device
+from trainers.utils import assert_model_device, recalls_ndcgs_and_mrr_for_ks
+from utils import AverageMeterSet
 
 
 class DistillTrainer(Trainer):
@@ -52,10 +55,69 @@ class DistillTrainer(Trainer):
 
         logging.info('{} iter per epoch'.format(self.iter_per_epoch))
 
+        logging.info(f'Test mentor model: {self.tag_list[1]}')
+        logging.info(f"result:\n{self.test_mentor()}")
+
     def train(self):
         super().train()
 
         self.loss_fct.debug_summary()
+
+    def _calculate_metrics(self, model: BaseModel, batch):
+        batch = [x.to(self.device) for x in batch]
+
+        if self.enable_neg_sample:
+            logging.fatal("codes for evaluating with negative candidates has bug")
+            raise NotImplementedError(
+                "codes for evaluating with negative candidates has bug")
+            scores = model.predict(batch)
+        else:
+            # seqs, answer, ratings, ... = batch
+            seqs = batch[0]
+            answer = batch[1]
+            ratings = batch[2]
+
+            batch_size = len(seqs)
+            labels = torch.zeros(
+                batch_size, self.num_items + 1, device=self.device)
+            scores = model.full_sort_predict(batch)
+
+            row = []
+            col = []
+
+            for i in range(batch_size):
+                seq = list(set(seqs[i].tolist()) | set(answer[i].tolist()))
+                seq.remove(answer[i][0].item())
+                if self.num_items + 1 in seq:
+                    seq.remove(self.num_items + 1)
+                row += [i] * len(seq)
+                col += seq
+                labels[i][answer[i]] = 1
+            scores[row, col] = -1e9
+
+        metrics = recalls_ndcgs_and_mrr_for_ks(
+            scores, labels, self.metric_ks, ratings)
+        return metrics
+
+    def test_mentor(self):
+        self.auxiliary_model.eval()
+
+        average_meter_set = AverageMeterSet()
+
+        with torch.no_grad():
+            iterator = self.test_loader
+
+            for batch_idx, batch in enumerate(iterator):
+
+                metrics = self._calculate_metrics(self.auxiliary_model, batch)
+
+                for k, v in metrics.items():
+                    average_meter_set.update(k, v)
+
+        average_metrics = average_meter_set.averages()
+        logging.info(average_metrics)
+
+        return average_metrics   
 
     @classmethod
     def code(cls):

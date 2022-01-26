@@ -35,7 +35,7 @@ class SoftLoss:
         self.num_item = args.num_items
         self.device = args.device
 
-        self.softmaxed_mentor = False # the output from mentor has been softmaxed ?
+        self.softmaxed_mentor = True # the output from mentor has been softmaxed ?
 
         self.mentor.eval()
 
@@ -189,7 +189,7 @@ class DVAELoss:
         # f: B x n_item
         # max_in_col: B x n_item
 
-        g = g / 3.
+        # g = g / 3.
         KL_Loss_1 = F.kl_div(F.log_softmax(g, dim=-1), f.softmax(dim=-1), reduction='batchmean')
         KL_Loss_2 = F.kl_div(F.log_softmax(f, dim=-1), g.softmax(dim=-1), reduction='batchmean')
 
@@ -217,10 +217,10 @@ class DVAELoss:
 
         if ~torch.isnan(KL_loss):
             self.not_nan += 1
-            return pred_loss + KL_loss  + reg_loss
+            return pred_loss + KL_loss + expectation_loss + reg_loss
         else:
             self.nan += 1
-            return pred_loss + reg_loss
+            return pred_loss + expectation_loss + reg_loss
 
 
 # class LE:
