@@ -34,8 +34,8 @@ class CaserModel(BaseModel):
         In addition, to prevent excessive CNN layers (ValueError: Training loss is nan), please make sure the parameters MAX_ITEM_LIST_LENGTH small, such as 10.
     """
 
-    def __init__(self, args, dataset, device, max_len):
-        super(CaserModel, self).__init__(dataset, device, max_len)
+    def __init__(self, args, dataset, device, max_len, temp: float=1.0):
+        super(CaserModel, self).__init__(dataset, device, max_len, temp)
 
         # load parameters info
         self.embedding_size = args.embed_size
@@ -137,7 +137,7 @@ class CaserModel(BaseModel):
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
         # logits size:(batch_size * n_item + 1)
 
-        return logits
+        return logits / self._temperature
 
     def reg_loss_conv_h(self):
         r"""

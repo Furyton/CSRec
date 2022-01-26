@@ -9,10 +9,12 @@ from models.base import BaseModel
 class Ensembler(nn.Module):
     r"""Ensembler is a container that combines a list of models"""
 
-    def __init__(self, device: str, model_list: list[BaseModel], predefined_weight: list[float]=None):
+    def __init__(self, device: str, model_list: list[BaseModel], predefined_weight: list[float]=None, temp: float=1.0):
         super(Ensembler, self).__init__()
 
         self.model_list = model_list
+        for model in self.model_list:
+            model.set_temperature(temp)
         if predefined_weight is not None:
             self.weight = predefined_weight
         self._device = device
@@ -21,6 +23,12 @@ class Ensembler(nn.Module):
     @classmethod
     def code(cls):
         return 'ensembler'
+
+    def eval(self):
+        for model in self.model_list:
+            model: BaseModel
+            model.eval()
+        return super().eval()
 
     def forward(self, batch):
         # return self.weighted_mix(batch)
@@ -34,7 +42,7 @@ class Ensembler(nn.Module):
 
         w_predict = [_predict * weight_list[idx] for idx, _predict in enumerate(predict)]
 
-        final_predict = sum(w_predict) / len(predict)
+        final_predict = sum(w_predict) / sum(weight_list)
 
         with torch.no_grad():
             # B x N
@@ -126,15 +134,20 @@ class Ensembler(nn.Module):
 
         raise RuntimeError("Not implemented yet.")
 
-    def predict(self, batch):
-        logging.warn("Not implemented yet.")
 
-        raise RuntimeError("Not implemented yet.")
+    def predict(self, batch):
+        # seqs, candidates, labels, seq_lens, user = batch
+        candidates = batch[1]
+        scores = self.forward(batch)  # B x V
+        # scores = scores[:, -1, :]  # B x V
+        scores = scores.gather(1, candidates)  # B x C
+        return scores
     
     def full_sort_predict(self, batch):
-        logging.warn("Not implemented yet.")
+        scores= self.forward(batch)  # B x V
+        # scores = scores[:, -1, :]  # B x V
+        return scores
 
-        raise RuntimeError("Not implemented yet.")
 
 
 

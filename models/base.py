@@ -4,7 +4,7 @@ from abc import *
 
 
 class BaseModel(nn.Module, metaclass=ABCMeta):
-    def __init__(self, dataset: list, device: str, max_len: int):
+    def __init__(self, dataset: list, device: str, max_len: int, T: float=1.0):
         super(BaseModel, self).__init__()
         """
         dataset:
@@ -19,6 +19,10 @@ class BaseModel(nn.Module, metaclass=ABCMeta):
         self.n_item = dataset[4]
         self.n_user = dataset[3]
         self.max_len = max_len
+        self._temperature = T
+
+    def set_temperature(self, t: float):
+        self._temperature = t
 
     @classmethod
     @abstractmethod
