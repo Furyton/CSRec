@@ -38,6 +38,9 @@ class EnsembleDistillScheduler(BaseSched):
         self.teacher2_tag = "teacher2_" + self.teacher2_code
         self.student_tag = "student_" + self.student_code
 
+        self.weight_list = args.weight_list
+        self.temp = args.T
+
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
         self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
@@ -83,7 +86,7 @@ class EnsembleDistillScheduler(BaseSched):
 
         self.s_accum_iter = load_state_from_given_path(self.student, self.args.model_state_path, self.device, self.s_optimizer, must_exist=False)
 
-        self.mix_teacher = Ensembler(self.device, [self.teacher1, self.teacher2], [0.3, 0.7])
+        self.mix_teacher = Ensembler(self.device, [self.teacher1, self.teacher2], self.weight_list, self.temp)
 
         self.mix_teacher_tag = "mix_" + self.teacher1_code + "_" + self.teacher2_code
 

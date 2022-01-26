@@ -38,8 +38,8 @@ class NextItNet(BaseModel):
         In addition, when dilations is not equal to 1, the training may be slow. To  speed up the efficiency, please set the parameters "reproducibility" False.
     """
 
-    def __init__(self, args, dataset, device, max_len):
-        super(NextItNet, self).__init__(dataset, device, max_len)
+    def __init__(self, args, dataset, device, max_len, temp: float=1.0):
+        super(NextItNet, self).__init__(dataset, device, max_len, temp)
 
         # load parameters info
         self.embedding_size = args.embedding_size
@@ -103,7 +103,7 @@ class NextItNet(BaseModel):
         seq_output = self.final_layer(hidden)  # [batch_size, embedding_size]
         test_item_emb = self.item_embedding.weight
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
-        return logits
+        return logits / self.temperature
 
     def reg_loss_rb(self):
         r"""

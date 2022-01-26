@@ -99,7 +99,9 @@ class DVAEDistillScheduler(BaseSched):
 
         self.t_writer, self.t_logger = self._create_logger_service(self.teacher_tag)
 
-        self.t_accum_iter = 0
+        self.t_accum_iter = load_state_from_given_path(self.teacher, self.args.mentor2_state_path, self.device, self.t_optimizer, must_exist=False)
+
+        # self.t_accum_iter = 0
 
         # TODO
         # move `load state` to trainer

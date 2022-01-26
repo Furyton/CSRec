@@ -16,8 +16,8 @@ def _init_weights(module):
 
 
 class GRU4RecModel(BaseModel):
-    def __init__(self, args, dataset, device, max_len):
-        super(GRU4RecModel, self).__init__(dataset, device, max_len)
+    def __init__(self, args, dataset, device, max_len, temp: float=1.0):
+        super(GRU4RecModel, self).__init__(dataset, device, max_len, temp)
 
         self.embedding_size = args.embed_size
         self.hidden_size = args.hidden_units
@@ -75,7 +75,7 @@ class GRU4RecModel(BaseModel):
         test_item_emb = self.item_embedding.weight
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
 
-        return logits
+        return logits / self.temperature
 
     def calculate_loss(self, batch):
         labels = batch[1]

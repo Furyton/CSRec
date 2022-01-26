@@ -25,6 +25,8 @@ if __name__ == '__main__':
         sched = EnsembleScheduler(args, export_root)
     elif args.sched.lower() == "distill":    
         sched = DistillScheduler(args, export_root)
+    elif args.sched.lower() == 'ensemble_distill':
+        sched = EnsembleDistillScheduler(args, export_root)
     elif args.sched.lower() == "dvae":    
         sched = DVAEDistillScheduler(args, export_root)
     elif args.sched.lower() == "dvae_ensemble":    

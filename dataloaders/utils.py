@@ -24,7 +24,7 @@ def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = T
     logging.debug(
         f"before filtering, there are {len(df[SESSION_ID].unique())} users, {len(df[ITEM_ID].unique())} items ")
 
-    max_iter = 10
+    max_iter = 20
 
     while True:
         max_iter -= 1
@@ -86,8 +86,8 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
 
     if dataframe.columns.isin([TIMESTAMP]).any():
         logging.info("sorting according to timestamp")
-        if datafame[TIMESTAMP].dtype == object:
-            df[TIMESTAMP] = df[TIMESTAMP].apply(lambda x: pd.to_datetime(x).timestamp()).astype(int)
+        if dataframe[TIMESTAMP].dtype == object:
+            dataframe[TIMESTAMP] = dataframe[TIMESTAMP].apply(lambda x: pd.to_datetime(x).timestamp()).astype(int)
 
         dataframe = dataframe.sort_values(by=[SESSION_ID, TIMESTAMP], ignore_index=True).drop(columns=TIMESTAMP).copy()
 
