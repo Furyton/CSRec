@@ -137,7 +137,7 @@ class CaserModel(BaseModel):
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
         # logits size:(batch_size * n_item + 1)
 
-        return logits / self.temperature
+        return logits / self._temperature
 
     def reg_loss_conv_h(self):
         r"""

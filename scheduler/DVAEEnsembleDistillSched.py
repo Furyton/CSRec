@@ -30,6 +30,9 @@ class DVAEEnsembleDistillScheduler(BaseSched):
         self.model_code = args.model_code
         self.mode = args.mode # test or train
 
+        self.weight_list = args.weight_list
+        self.temperature = args.T
+
         self.auxiliary_tag = "auxiliary_" + self.auxiliary_code
         self.teacher_tag = "teacher_" + self.teacher_code
         self.model_tag = "student_" + self.model_code
@@ -100,7 +103,7 @@ class DVAEEnsembleDistillScheduler(BaseSched):
 
         self.t_writer, self.t_logger = self._create_logger_service(self.teacher_tag)
 
-        self.t_accum_iter = 0
+        self.t_accum_iter = load_state_from_given_path(self.teacher, self.args.mentor2_state_path, self.device, self.t_optimizer, must_exist=False)
 
         # TODO
         # move `load state` to trainer
@@ -134,7 +137,7 @@ class DVAEEnsembleDistillScheduler(BaseSched):
 
         self.s_accum_iter = load_state_from_given_path(self.student, self.args.model_state_path, self.device, self.s_optimizer, must_exist=False)
 
-        self.mix_teacher = Ensembler(self.device, [self.auxiliary, self.teacher], [0.5, 0.5])
+        self.mix_teacher = Ensembler(self.device, [self.auxiliary, self.teacher], self.weight_list, self.temperature)
         self.mix_teacher_tag = "mix_" + self.auxiliary_code + "_" + self.teacher_code
 
         logging.debug("student model: \n" + str(self.student))

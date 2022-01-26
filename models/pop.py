@@ -6,8 +6,8 @@ from collections import Counter
 from models.base import BaseModel
 
 class POPModel(BaseModel):
-    def __init__(self, args, dataset, device, max_len):
-        super(POPModel, self).__init__(dataset, device, max_len)
+    def __init__(self, args, dataset, device, max_len, temp: float=1.0):
+        super(POPModel, self).__init__(dataset, device, max_len, temp)
 
         # module with no parameter will cause a lot of problems
         # it is easy to solve, but takes a lot special handlings
@@ -59,7 +59,7 @@ class POPModel(BaseModel):
 
         logits = self.pop_distr.repeat(batch_size, 1)
 
-        return logits + 0 * self.fake_parameter.weight
+        return logits / self._temperature + 0 * self.fake_parameter.weight
 
     def items_by_popularity(self):
         popularity = Counter() 

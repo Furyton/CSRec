@@ -103,7 +103,7 @@ class NextItNet(BaseModel):
         seq_output = self.final_layer(hidden)  # [batch_size, embedding_size]
         test_item_emb = self.item_embedding.weight
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
-        return logits / self.temperature
+        return logits / self._temperature
 
     def reg_loss_rb(self):
         r"""

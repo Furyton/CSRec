@@ -75,7 +75,7 @@ class GRU4RecModel(BaseModel):
         test_item_emb = self.item_embedding.weight
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
 
-        return logits / self.temperature
+        return logits / self._temperature
 
     def calculate_loss(self, batch):
         labels = batch[1]

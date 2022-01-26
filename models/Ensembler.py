@@ -29,6 +29,12 @@ class Ensembler(nn.Module):
             model.eval()
         return super().eval()
 
+    def eval(self):
+        for model in self.model_list:
+            model: BaseModel
+            model.eval()
+        return super().eval()
+
     def forward(self, batch):
         # return self.weighted_mix(batch)
 
@@ -133,6 +139,7 @@ class Ensembler(nn.Module):
 
         raise RuntimeError("Not implemented yet.")
 
+
     def predict(self, batch):
         # seqs, candidates, labels, seq_lens, user = batch
         candidates = batch[1]
@@ -145,5 +152,3 @@ class Ensembler(nn.Module):
         scores= self.forward(batch)  # B x V
         # scores = scores[:, -1, :]  # B x V
         return scores
-
-
