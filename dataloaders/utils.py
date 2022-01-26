@@ -24,7 +24,7 @@ def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = T
     logging.debug(
         f"before filtering, there are {len(df[SESSION_ID].unique())} users, {len(df[ITEM_ID].unique())} items ")
 
-    max_iter = 10
+    max_iter = 20
 
     while True:
         max_iter -= 1

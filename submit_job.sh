@@ -2,13 +2,28 @@
 
 SAVED_PATH=___slurm_log
 
-JOB_NAME=yelp_gru_dvae_pop_gru_T_3_alpha_50_dvae_alpha_50
+# JOB_NAME=lastfm_small_gru_dvae_pop_T_9_alpha_75_dvae_alpha_75
+# JOB_NAME=yelp_nextitnet_soft_pop_T_3_alpha_75
+# JOB_NAME=gowalla_base_caser
+# JOB_NAME=gowalla_gru4rec_dvae_pop_gru4rec_T_3_alpha_75_dvae_alpha_75
 # JOB_NAME=debug_dvae_distill
 # JOB_NAME=pop_gru_T_2_alpha_40_cont_1
 # JOB_NAME=caser_soft_gru_T_4_alpha_25_cont_1
+# JOB_NAME=gowalla_nextitnet_soft_pop_T_3_alpha_75
+# JOB_NAME=yelp_ed_pop_g_g_9_1_al_75
+# JOB_NAME=yelp_d_pop_g_g_T_3_al_90_dal_75
 
-#CONFIG_PATH="config/config.json"
-CONFIG_PATH="config.yelp/config_dvae.json"
+# JOB_NAME=gowalla_ed_p_n_n_5_5_al_75_T_3
+
+JOB_NAME=yelp_ed_p_g_g_5_5_al_75_T_3
+# CONFIG_PATH="config.gowalla/nextitnet/config_distill_ensemble.json"
+CONFIG_PATH="config.yelp/gru4rec/config_distill_ensemble.json"
+# CONFIG_PATH="config.lastfm_small/gru4rec/config_dvae.json"
+# CONFIG_PATH="config.gowalla/nextitnet/config_distill.json"
+# CONFIG_PATH="config.gowalla/gru4rec/config_dvae.json"
+# CONFIG_PATH="config.yelp/config_dvae.json"
+# CONFIG_PATH="config.yelp/config_dvae_caser.json"
+# CONFIG_PATH="config.yelp/config_dvae.json"
 GPU=gpu08
 
 if [[ ! -d "$SAVED_PATH" ]]

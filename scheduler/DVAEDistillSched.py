@@ -101,6 +101,8 @@ class DVAEDistillScheduler(BaseSched):
 
         self.t_accum_iter = load_state_from_given_path(self.teacher, self.args.mentor2_state_path, self.device, self.t_optimizer, must_exist=False)
 
+        # self.t_accum_iter = 0
+
         # TODO
         # move `load state` to trainer
         # enable to load state for prior and teacher

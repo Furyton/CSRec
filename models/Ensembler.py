@@ -23,6 +23,11 @@ class Ensembler(nn.Module):
     @classmethod
     def code(cls):
         return 'ensembler'
+    def eval(self):
+        for model in self.model_list:
+            model: BaseModel
+            model.eval()
+        return super().eval()
 
     def eval(self):
         for model in self.model_list:
@@ -147,7 +152,3 @@ class Ensembler(nn.Module):
         scores= self.forward(batch)  # B x V
         # scores = scores[:, -1, :]  # B x V
         return scores
-
-
-
-
