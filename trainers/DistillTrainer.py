@@ -55,10 +55,10 @@ class DistillTrainer(Trainer):
 
         logging.info('{} iter per epoch'.format(self.iter_per_epoch))
 
+    def train(self):
         logging.info(f'Test mentor model: {self.tag_list[1]}')
         logging.info(f"result:\n{self.test_mentor()}")
-
-    def train(self):
+        
         super().train()
 
         self.loss_fct.debug_summary()
