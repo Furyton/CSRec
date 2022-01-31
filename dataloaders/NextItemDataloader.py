@@ -20,6 +20,8 @@ class NextItemDataloader(AbstractDataloader):
         self.rating_test = dataset[7]
         # args.num_items = self.item_count
 
+        self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec')
+
         logging.info("there are {} items in this dataset, {} interaction".format(args.num_items, self.user_count))
 
         # code = args.train_negative_sampler_code
@@ -56,7 +58,7 @@ class NextItemDataloader(AbstractDataloader):
         return dataloader
 
     def _get_train_dataset(self):
-        dataset = NextTrainDataset(self.train, self.rating_train, self.max_len, self.item_count)
+        dataset = NextTrainDataset(self.train, self.rating_train, self.max_len, self.item_count, self.padding_first)
         
         return dataset
 
@@ -88,19 +90,20 @@ class NextItemDataloader(AbstractDataloader):
         if self.enable_negative_sample:
             dataset = NextEvalDataset(train_dataset, rating, answers, self.max_len, self.test_negative_samples)
         else:
-            dataset = NextEvalDataset_Without_Neg(train_dataset, rating, answers, self.max_len)
+            dataset = NextEvalDataset_Without_Neg(train_dataset, rating, answers, self.max_len, self.padding_first)
 
         return dataset
 
 
 class NextTrainDataset(data_utils.Dataset):
-    def __init__(self, u2seq, u2rating, max_len, num_items):
+    def __init__(self, u2seq, u2rating, max_len, num_items, padding_first=True):
         self.u2seq = deepcopy(u2seq)
         self.u2rating = deepcopy(u2rating)
         self.users = list(range(len(u2seq)))
         self.max_len = max_len
         self.num_items = num_items
-        # self._augment()
+        self.padding_first = True
+        self._augment()
 
     def _augment(self):
         for u, seq, rating in zip(deepcopy(self.users), deepcopy(self.u2seq), deepcopy(self.u2rating)):
@@ -129,8 +132,11 @@ class NextTrainDataset(data_utils.Dataset):
         # padding
         padding_len = self.max_len - len(tokens) 
  
-        # tokens = [0] * padding_len + tokens
-        tokens = tokens + [0] * padding_len
+        if self.padding_first:
+            tokens = [0] * padding_len + tokens
+        else:
+            tokens = tokens + [0] * padding_len
+        # tokens = tokens + [0] * padding_len
 
         # padding_len = self.max_len - len(labels)
         
@@ -151,6 +157,7 @@ class NextEvalDataset(data_utils.Dataset):
         self.u2answer = deepcopy(u2answer)
         self.max_len = max_len
         self.negative_samples = negative_samples
+        raise NotImplementedError
 
     def __len__(self):
         return len(self.users)
@@ -175,12 +182,13 @@ class NextEvalDataset(data_utils.Dataset):
 
 
 class NextEvalDataset_Without_Neg(data_utils.Dataset):
-    def __init__(self, u2seq, u2rating, u2answer, max_len):
+    def __init__(self, u2seq, u2rating, u2answer, max_len, padding_first=True):
         self.u2seq = deepcopy(u2seq)
         self.users = range(len(u2seq))
         self.u2rating = deepcopy(u2rating)
         self.u2answer = deepcopy(u2answer)
         self.max_len = max_len
+        self.padding_first = padding_first
 
     def __len__(self):
         return len(self.users)
@@ -193,6 +201,10 @@ class NextEvalDataset_Without_Neg(data_utils.Dataset):
         seq_len = len(seq)
 
         padding_len = self.max_len - len(seq)
-        seq = seq + [0] * padding_len
+        # seq = seq + [0] * padding_len
+        if self.padding_first:
+            seq = [0] * padding_len + seq
+        else:
+            seq = seq + [0] * padding_len
 
         return torch.LongTensor(seq), torch.LongTensor(answer), torch.LongTensor([rating]), torch.LongTensor([seq_len]), torch.LongTensor([user])
