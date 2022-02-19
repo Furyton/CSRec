@@ -29,7 +29,7 @@ def model_factory(args, model_type: str, dataset: list) -> BaseModel:
     
     from configuration.utils import load_model_config
 
-    model_args = load_model_config(model_code=model_type)
+    model_args = load_model_config(model_code=model_type, global_args=args)
 
     model = MODELS[model_type]
 

@@ -15,6 +15,8 @@ if __name__ == '__main__':
     with open(path.normpath(args.config_file), 'r') as f:
         t_args = argparse.Namespace()
         t_args.__dict__.update(json.load(f))
+        if args.kwargs is not None:
+            t_args.__dict__.update(args.kwargs)
         args = parser.parse_args(namespace=t_args)
 
     export_root = setup_train(args)

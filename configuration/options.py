@@ -12,6 +12,8 @@ parser = argparse.ArgumentParser(description='furyton')
 parser.add_argument('--config_file', type=str, default='config.json', help="config file for trainer and dataloaders")
 parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
 parser.add_argument('--rand_seed', type=int, default=2021, help="random seed for all")
+parser.add_argument('--task_id', type=int, default=-1)
+parser.add_argument('--describe', type=str, default=None)
 ################
 # Test
 ################
@@ -101,6 +103,11 @@ parser.add_argument('--training_routine', type=str, default=None)
 # parser.add_argument('--enable_kd', type=bool, default=False, help='Use knowledge distillation')
 parser.add_argument('--T', type=float, default=1, help='temperature')
 parser.add_argument('--alpha', type=float, default=0.1, help='trade off between original loss and KL div')
+parser.add_argument('--dvae_alpha', type=float, default=0.5)
+parser.add_argument('--softmaxed_mentor', type=bool, default=False)
+################
+
+parser.add_argument('--weight_list', nargs='+', type=float, default=[0.5, 0.5])
 
 ################
 # Experiment
@@ -114,6 +121,16 @@ parser.add_argument('--validation_rate', type=float, default=0.2)
 
 parser.add_argument('--num_items', type=int, default=None, help='Number of total items')
 parser.add_argument('--start_index', type=int, default=1)
+
+class ParseKwargs(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, dict())
+        for value in values:
+            key, value = value.split('=')
+            getattr(namespace, self.dest)[key] = eval(value)
+            # TODO
+
+parser.add_argument('-k', '--kwargs', nargs='*', action=ParseKwargs, help='usage: -k a=some b=thing, store as a dict')
 
 # if using slurm
 

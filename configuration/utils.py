@@ -9,7 +9,7 @@ from models import MODELS
 from configuration.config import *
 
 
-def load_model_config(model_code) -> argparse.Namespace:
+def load_model_config(model_code, global_args:argparse.Namespace=None) -> argparse.Namespace:
 
     if model_code not in MODELS:
         logging.fatal(f"{model_code} is not implemented")
@@ -25,6 +25,9 @@ def load_model_config(model_code) -> argparse.Namespace:
         j = json.load(f)
         args = argparse.Namespace(**j)
     
-    logging.info(json.dumps(j, indent=4))
+    if global_args is not None and global_args.kwargs is not None:
+        args.__dict__.update(global_args.kwargs)
+    
+    logging.info(json.dumps(args.__dict__, indent=4))
 
     return args
