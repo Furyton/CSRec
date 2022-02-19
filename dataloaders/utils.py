@@ -29,7 +29,7 @@ def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = T
     while True:
         max_iter -= 1
         if max_iter <= 0:
-            logging.fatal("iterated too many times (10 times). please consider another denser dataset.")
+            logging.fatal("iterated too many times (20 times). please consider another denser dataset.")
             raise RecursionError("iterated too many times (10 times). please consider another denser dataset.")
 
         user_cnt = df.groupby(SESSION_ID).count()
@@ -40,7 +40,7 @@ def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = T
 
         if len(cold_user_id) == 0 and len(cold_item_id) == 0:
             logging.debug(
-                f"after {10 - max_iter - 2} filterings, there are {len(df[SESSION_ID].unique())} users, {len(df[ITEM_ID].unique())} items")
+                f"after {20 - max_iter - 1} filterings, there are {len(df[SESSION_ID].unique())} users, {len(df[ITEM_ID].unique())} items")
 
             # logging.info(f"user desc")
 

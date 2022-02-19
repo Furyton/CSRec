@@ -22,7 +22,7 @@ class NextItemDataloader(AbstractDataloader):
 
         self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec')
 
-        logging.info("there are {} items in this dataset, {} interaction".format(args.num_items, self.user_count))
+        logging.info("there are {} items in this dataset, {} users, padding_first? {}".format(args.num_items, self.user_count, self.padding_first))
 
         # code = args.train_negative_sampler_code
         # train_negative_sampler = negative_sampler_factory(code, self.train, self.val, self.test, self.user_count, self.item_count, args.train_negative_sample_size, args.train_negative_sampling_seed, self.save_folder, args.dataset_name)
@@ -102,7 +102,7 @@ class NextTrainDataset(data_utils.Dataset):
         self.users = list(range(len(u2seq)))
         self.max_len = max_len
         self.num_items = num_items
-        self.padding_first = True
+        self.padding_first = padding_first
         self._augment()
 
     def _augment(self):
