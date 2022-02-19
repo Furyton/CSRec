@@ -3,7 +3,7 @@ import logging
 import os
 import pprint as pp
 import random
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -31,19 +31,35 @@ def setup_train(args):
 
 
 def create_experiment_export_folder(args):
-    experiment_dir, experiment_description = args.experiment_dir, args.experiment_description + "_" + args.model_code
+    experiment_dir, experiment_description = args.experiment_dir, args.experiment_description
     if not os.path.exists(experiment_dir):
         os.mkdir(experiment_dir)
-    experiment_path = get_name_of_experiment_path(experiment_dir, experiment_description)
+    experiment_path = get_name_of_experiment_path(experiment_dir, experiment_description, detailed_desc=_get_detailed_description(args), task_id=args.task_id)
     os.mkdir(experiment_path)
     print('Folder created: ' + os.path.abspath(experiment_path))
     return experiment_path
 
+def _get_detailed_description(args):
+    if args.describe is None:
+        return args.model_code
+    else:
+        arg_dict = dict(args._get_kwargs())
+        container = args.describe
+        detailed_desc = args.model_code
+        try:
+            detailed_desc = container.format(config=arg_dict)
+        except:
+            detailed_desc = args.model_code
+            print(f'Illegal description format{args.describe}, use {args.model_code} instead.')
+        return detailed_desc
 
-def get_name_of_experiment_path(experiment_dir, experiment_description):
-    experiment_path = os.path.join(experiment_dir, (experiment_description + "_" + str(date.today())))
-    idx = _get_experiment_index(experiment_path)
-    experiment_path = experiment_path + "_" + str(idx)
+def get_name_of_experiment_path(experiment_dir, experiment_description, detailed_desc="", task_id=-1):
+    experiment_path = os.path.join(experiment_dir, (experiment_description + "_" + detailed_desc + "_" + str(datetime.now().strftime("%m-%d_%H:%M"))))
+    if task_id != -1:
+        experiment_path = experiment_path + "_t" + str(task_id)
+    else:
+        idx = _get_experiment_index(experiment_path)
+        experiment_path = experiment_path + "_" + str(idx)
     return experiment_path
 
 
@@ -91,7 +107,7 @@ def fix_random_seed_as(seed):
     torch.cuda.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
-    # cudnn.deterministic = True
+    cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
 

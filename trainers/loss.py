@@ -35,7 +35,7 @@ class SoftLoss:
         self.num_item = args.num_items
         self.device = args.device
 
-        self.softmaxed_mentor = True # the output from mentor has been softmaxed ?
+        self.softmaxed_mentor = args.softmaxed_mentor # the output from mentor has been softmaxed ?
 
         self.mentor.eval()
 

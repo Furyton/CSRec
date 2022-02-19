@@ -102,10 +102,10 @@ class CaserModel(BaseModel):
         # Embedding Look-up
         # use unsqueeze() to get a 4-D input for convolution layers. (batch_size * 1 * max_length * embedding_size)
         item_seq = batch[0]
-        user = batch[4]
+        # user = batch[4]
 
         item_seq_emb = self.item_embedding(item_seq).unsqueeze(1)
-        user_emb = self.user_embedding(user).squeeze(1)
+        # user_emb = self.user_embedding(user).squeeze(1)
 
         # Convolutional Layers
         out, out_h, out_v = None, None, None
@@ -128,10 +128,11 @@ class CaserModel(BaseModel):
         # apply dropout
         out = self.dropout(out)
         # fully-connected layer
-        z = self.ac_fc(self.fc1(out))
-        x = torch.cat([z, user_emb], 1)
-        seq_output = self.ac_fc(self.fc2(x))
+        # z = self.ac_fc(self.fc1(out))
+        # x = torch.cat([z, user_emb], 1)
+        # seq_output = self.ac_fc(self.fc2(x))
         # the hidden_state of the predicted item, size:(batch_size * hidden_size)
+        seq_output = self.ac_fc(self.fc1(out))
 
         test_item_emb = self.item_embedding.weight
         logits = torch.matmul(seq_output, test_item_emb.transpose(0, 1))
@@ -157,7 +158,10 @@ class CaserModel(BaseModel):
 
         predict_loss = self.loss_fct(logits, cl)
 
-        reg_loss = self.reg_loss([self.user_embedding.weight, self.item_embedding.weight, self.conv_v.weight, self.fc1.weight, self.fc2.weight])
+        # reg_loss = self.reg_loss([self.user_embedding.weight, self.item_embedding.weight, self.conv_v.weight, self.fc1.weight, self.fc2.weight])
+        reg_loss = self.reg_loss([self.item_embedding.weight, self.conv_v.weight, self.fc1.weight, self.fc2.weight])
+
+
 
         return logits, predict_loss, self.reg_weight * reg_loss + self.reg_loss_conv_h()
 

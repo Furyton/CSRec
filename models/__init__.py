@@ -8,7 +8,7 @@ from models.Caser import CaserModel
 from models.GRU4rec import GRU4RecModel
 from models.pop import POPModel
 from models.NextItNet import NextItNet
-
+from models.SASrec import SASRecModel
 from models.auxiliary_models.PriorPreferModel import PriorModel
 
 MODELS = {
@@ -18,7 +18,7 @@ MODELS = {
     CaserModel.code(): CaserModel,
     DeepFM.code(): DeepFM,
     NextItNet.code(): NextItNet,
-
+    SASRecModel.code(): SASRecModel,
     PriorModel.code(): PriorModel,
 }
 
@@ -29,7 +29,7 @@ def model_factory(args, model_type: str, dataset: list) -> BaseModel:
     
     from configuration.utils import load_model_config
 
-    model_args = load_model_config(model_code=model_type)
+    model_args = load_model_config(model_code=model_type, global_args=args)
 
     model = MODELS[model_type]
 
