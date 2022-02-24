@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 import pickle
 from os import path
@@ -219,8 +220,7 @@ def gen_cache_path(args) -> Path:
 
     folder = Path(parent_directory).joinpath(RAW_DATASET_ROOT_FOLDER, PROCESSED_DATASET_CACHE_FOLDER)
 
-    if not folder.exists():
-        folder.mkdir()
+    os.makedirs(folder, exist_ok=True)
 
     filename = folder.joinpath(cache_filename)
 

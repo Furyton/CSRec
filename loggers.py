@@ -43,8 +43,7 @@ class AbstractBaseLogger(metaclass=ABCMeta):
 class RecentModelLogger(AbstractBaseLogger):
     def __init__(self, checkpoint_path, filename='checkpoint-recent.pth'):
         self.checkpoint_path = checkpoint_path
-        if not os.path.exists(self.checkpoint_path):
-            os.mkdir(self.checkpoint_path)
+        os.makedirs(self.checkpoint_path, exist_ok=True)
         self.recent_epoch = None
         self.filename = filename
 
@@ -68,8 +67,7 @@ class RecentModelLogger(AbstractBaseLogger):
 class BestModelLogger(AbstractBaseLogger):
     def __init__(self, checkpoint_path, metric_key='mean_iou', filename='best_acc_model.pth'):
         self.checkpoint_path = checkpoint_path
-        if not os.path.exists(self.checkpoint_path):
-            os.mkdir(self.checkpoint_path)
+        os.makedirs(self.checkpoint_path, exist_ok=True)
 
         self.best_metric = -99999.
         self.metric_key = metric_key

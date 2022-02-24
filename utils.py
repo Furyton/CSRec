@@ -32,10 +32,9 @@ def setup_train(args):
 
 def create_experiment_export_folder(args):
     experiment_dir, experiment_description = args.experiment_dir, args.experiment_description
-    if not os.path.exists(experiment_dir):
-        os.mkdir(experiment_dir)
+    os.makedirs(experiment_dir, exist_ok=True)
     experiment_path = get_name_of_experiment_path(experiment_dir, experiment_description, detailed_desc=_get_detailed_description(args), task_id=args.task_id)
-    os.mkdir(experiment_path)
+    os.makedirs(experiment_path, exist_ok=True)
     print('Folder created: ' + os.path.abspath(experiment_path))
     return experiment_path
 
