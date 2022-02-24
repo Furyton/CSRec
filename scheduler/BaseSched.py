@@ -21,6 +21,7 @@ from abc import ABCMeta, abstractmethod
 
 class BaseSched(metaclass=ABCMeta):
     def __init__(self) -> None:
+        self.mode = 'train'
         pass
 
     @abstractmethod
@@ -36,5 +37,14 @@ class BaseSched(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def run(self):
+    def _finishing(self):
         pass
+
+    @abstractmethod
+    def run(self):
+        if 'train' in self.mode:
+            self._fit()
+        if 'test' in self.mode:
+            self._evaluate()
+
+        self._finishing()

@@ -28,6 +28,7 @@ class DVAEDistillScheduler(BaseSched):
         self.teacher_code = args.mentor2_code
         self.model_code = args.model_code
         self.mode = args.mode # test or train
+        self.test_state_path = args.test_state_path
 
         self.auxiliary_tag = "auxiliary_" + self.auxiliary_code
         self.teacher_tag = "teacher_" + self.teacher_code
@@ -46,10 +47,9 @@ class DVAEDistillScheduler(BaseSched):
         self.routine = Routine(['auxiliary', 'teacher', 'student'], [self.a_trainer, self.t_trainer, self.s_trainer], self.args, self.export_root)
 
     def run(self):
-        self._fit()
-        self._close_writer()
+        return super().run()
 
-    def _close_writer(self):
+    def _finishing(self):
         self.a_writer.close()
         self.t_writer.close()
         self.s_writer.close()
@@ -58,8 +58,14 @@ class DVAEDistillScheduler(BaseSched):
         self.routine.run_routine()
 
     def _evaluate(self):
-        logging.debug("haven't implemented.")
-        pass
+        logging.info("Start testing student model on test set")
+
+        if self.test_state_path is not None:
+            results = self.s_trainer.test_with_given_state_path(self.test_state_path)
+        else:
+            results = self.s_trainer.test(self.export_root)
+
+        logging.info(f"!!Final Result!!: {results}")
 
     def _generate_auxliary_trainer(self):
         
@@ -68,8 +74,6 @@ class DVAEDistillScheduler(BaseSched):
         self.a_optimizer = generate_optim(self.args, self.args.optimizer, self.auxiliary)
 
         self.a_writer, self.a_logger = self._create_logger_service(self.auxiliary_tag)
-
-        # here mentor state path is only used for auxiliary model, not teacher model in v1
 
         self.a_accum_iter = load_state_from_given_path(self.auxiliary, self.args.mentor_state_path, self.device, self.a_optimizer, must_exist=False)
 
@@ -102,10 +106,6 @@ class DVAEDistillScheduler(BaseSched):
         self.t_accum_iter = load_state_from_given_path(self.teacher, self.args.mentor2_state_path, self.device, self.t_optimizer, must_exist=False)
 
         # self.t_accum_iter = 0
-
-        # TODO
-        # move `load state` to trainer
-        # enable to load state for prior and teacher
 
         logging.debug("prior model: \n" + str(self.prior))
 

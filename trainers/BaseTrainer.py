@@ -26,6 +26,10 @@ class AbstractBaseTrainer(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def final_validate(self, export_root: str):
+        pass
+
+    @abstractmethod
     def close_training(self):
         pass
 

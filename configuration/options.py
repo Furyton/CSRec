@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='furyton')
 # Top Level
 ################
 parser.add_argument('--config_file', type=str, default='config.json', help="config file for trainer and dataloaders")
-parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
+parser.add_argument('--mode', nargs='+', type=str, default='train')
 parser.add_argument('--rand_seed', type=int, default=2021, help="random seed for all")
 parser.add_argument('--task_id', type=int, default=-1)
 parser.add_argument('--describe', type=str, default=None)
@@ -21,7 +21,7 @@ parser.add_argument('--test_state_path', type=str, default=None, help="model sta
 
 parser.add_argument('--model_state_path', type=str, default=None, help="model state dict path for training")
 
-parser.add_argument('--mentor_state_path', type=str, default=None, help="mentor model state dict path for training")
+# parser.add_argument('--mentor_state_path', type=str, default=None, help="mentor model state dict path for training")
 ################
 # Dataset
 ################

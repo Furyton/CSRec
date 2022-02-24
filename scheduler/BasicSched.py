@@ -59,29 +59,24 @@ class BasicScheduler(BaseSched):
         self.trainer: Trainer
 
     def run(self):
-        if self.mode == 'train':
-            self._fit()
+        return super().run()
 
-        self._evaluate()
-        self._close_writer()
-
-    def _close_writer(self):
+    def _finishing(self):
         self.writer.close()
 
     def _fit(self):
         logging.info("Start training.")
 
         self.trainer.train()
+        self.trainer.final_validate(self.export_root)
 
     def _evaluate(self):
-        if self.mode == 'test':
+        if self.test_state_path is not None:
             results = self.trainer.test_with_given_state_path(self.test_state_path)
         else:
             results = self.trainer.test(self.export_root)
 
         logging.info(f"!!Final Result!!: {results}")
-
-        # result_folder = self.export_root.joinpath()
 
     def _create_logger_service(self, prefix: str, metric_only: bool = False):
         """

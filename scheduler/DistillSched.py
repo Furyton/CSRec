@@ -24,6 +24,7 @@ class DistillScheduler(BaseSched):
         self.teacher_code = args.mentor_code
         self.model_code = args.model_code
         self.mode = args.mode # test or train
+        self.test_state_path = args.test_state_path
 
         self.teacher_tag = "teacher_" + self.teacher_code
         self.model_tag = "student_" + self.model_code
@@ -88,42 +89,24 @@ class DistillScheduler(BaseSched):
         self.routine = Routine(['teacher', 'student'], [self.t_trainer, self.s_trainer], self.args, self.export_root)
 
     def run(self):
-        # if self.mode == 'train':
-        #     self._fit()
+        return super().run()
 
-        # self._evaluate()
-        self._fit()
-        self._close_writer()
-
-    def _close_writer(self):
+    def _finishing(self):
         self.t_writer.close()
         self.s_writer.close()
-        
+
     def _fit(self):
         self.routine.run_routine()
-        # logging.info("Start training teacher.")
-
-        # self.t_trainer.train()
-
-        # results = self.t_trainer.test(self.export_root)
-
-        # logging.info(f"teacher results: {results}")
-
-        # logging.info("Start training student.")
-
-        # self.s_trainer.train()
 
     def _evaluate(self):
-        logging.debug("haven't implemented.")
-        pass
-        # if self.mode == 'test':
-        #     results = self.s_trainer.test_with_given_state_path(self.test_state_path)
-        # else:
-        #     results = self.s_trainer.test(self.export_root)
+        logging.info("Start testing student model on test set")
 
-        # logging.info(f"!!Final Result!!: {results}")
+        if self.test_state_path is not None:
+            results = self.s_trainer.test_with_given_state_path(self.test_state_path)
+        else:
+            results = self.s_trainer.test(self.export_root)
 
-        # result_folder = self.export_root.joinpath()
+        logging.info(f"!!Final Result!!: {results}")
 
     def _create_logger_service(self, prefix: str, metric_only: bool = False):
         """

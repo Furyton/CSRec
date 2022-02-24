@@ -29,6 +29,7 @@ class EnsembleDistillScheduler(BaseSched):
         self.device = args.device
         self.export_root = get_path(export_root)
         self.mode = args.mode
+        self.test_state_path = args.test_state_path
 
         self.teacher1_code = args.mentor_code
         self.teacher2_code = args.mentor2_code
@@ -108,10 +109,9 @@ class EnsembleDistillScheduler(BaseSched):
 
         
     def run(self):
-        self._fit()
-        self._close_writer()
+        return super().run()
 
-    def _close_writer(self):
+    def _finishing(self):
         self.t_writer1.close()
         self.t_writer2.close()
         self.s_writer.close()
@@ -120,9 +120,14 @@ class EnsembleDistillScheduler(BaseSched):
         self.routine.run_routine()
 
     def _evaluate(self):
-        pass
+        logging.info("Start testing student model on test set")
 
-        # result_folder = self.export_root.joinpath()
+        if self.test_state_path is not None:
+            results = self.s_trainer.test_with_given_state_path(self.test_state_path)
+        else:
+            results = self.s_trainer.test(self.export_root)
+
+        logging.info(f"!!Final Result!!: {results}")
 
     def _create_logger_service(self, prefix: str, metric_only: bool = False):
         """

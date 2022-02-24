@@ -183,7 +183,28 @@ class Trainer(AbstractBaseTrainer):
             self.logger.log_val(log_data)
 
             logging.info(average_metrics)
+        
+        return average_metrics
     
+    def final_validate(self, export_root: str):
+        logging.info('validate model on val set!')
+
+        state_path = get_best_state_path(export_root, self.tag, must_exist=True)
+
+        load_state_from_given_path(self.model, state_path, self.device, must_exist=True)
+
+        result = self.validate()
+
+        result_folder = get_exist_path(export_root.joinpath(self.tag + "_logs"))
+
+        result_file = result_folder.joinpath('val_metrics.json')
+
+        with result_file.open('w') as f:
+            json.dump(result, f)
+
+        return result
+        
+
     def _test(self):
         logging.info(f"Start testing {self.tag}.")
 

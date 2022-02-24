@@ -46,10 +46,10 @@ class Routine:
 
             self._trainer_dict[self._current_routine].train()
 
-            logging.info(f"Finished training, Start testing")
+            logging.info(f"Finished training, Start final validation")
 
-            result = self._trainer_dict[self._current_routine].test(self._export_root)
+            result = self._trainer_dict[self._current_routine].final_validate(self._export_root)
 
-            logging.info(f"Finished testing. Result: {result}")
+            logging.info(f"Finished final validating. Result: {result}")
 
             self._nxt_routine()
