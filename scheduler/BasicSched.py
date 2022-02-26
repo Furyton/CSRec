@@ -22,6 +22,7 @@ class BasicScheduler(BaseSched):
         self.device = args.device
         self.tag = args.model_code
         self.mode = args.mode  # test or train
+        self.test_state_path = args.test_state_path
 
         logging.debug(f"BasicScheduler attribs: tag={self.tag}")
 
@@ -36,11 +37,7 @@ class BasicScheduler(BaseSched):
 
         logging.info(str(self.model))
 
-        if args.mode == 'test':
-            self.accum_iter = 0
-            self.test_state_path = args.test_state_path
-        else:
-            self.accum_iter = load_state_from_given_path(self.model, args.model_state_path, self.device, self.optim,
+        self.accum_iter = load_state_from_given_path(self.model, args.model_state_path, self.device, self.optim,
                                                          must_exist=False)
 
         self.trainer = trainer_factory(args,
