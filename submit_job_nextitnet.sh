@@ -2,18 +2,21 @@
 
 SAVED_PATH=___slurm_log
 
-JOB_NAME=el_base_next
+JOB_NAME=test_yelp_next_ed_2022
+# JOB_NAME=lfms_base_next_2020
 # JOB_NAME=yelp_soft_next
 # JOB_NAME=yelp_dvae_next
 # JOB_NAME=yelp_ed_next
 # JOB_NAME=yelp_ad_next
+# JOB_NAME=lfms_next_soft_test
 
-CONFIG_PATH="config2.electronics/nextitnet/config.json"
+CONFIG_PATH="config2.yelp/nextitnet/config_test.json"
+# CONFIG_PATH="config2.lastfm_small/nextitnet/config.json"
 # CONFIG_PATH="config2.yelp/nextitnet/config_distill.json"
 # CONFIG_PATH="config2.yelp/nextitnet/config_dvae.json"
 # CONFIG_PATH="config2.yelp/nextitnet/config_distill_ensemble.json"
 # CONFIG_PATH="config2.yelp/nextitnet/config_dvae_ensemble.json"
-
+# CONFIG_PATH="config2.lastfm_small/nextitnet/config_test.json"
 
 GPU=gpu08
 

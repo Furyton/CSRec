@@ -2,19 +2,20 @@
 
 SAVED_PATH=___slurm_log
 
-HPARAMS_FILE=ensemble_hyperparameters.txt
-ARRAY_CONFIG=1-36%12
+HPARAMS_FILE=partial_ensemble_hyperparameters.txt
+ARRAY_CONFIG=1-12%1
 
-# JOB_NAME=yelp_base_sas
-# JOB_NAME=el_soft_sas
+JOB_NAME=yelp_ep_sas_2022
+# JOB_NAME=lfms_soft_sas
 # JOB_NAME=el_dvae_sas
-JOB_NAME=el_ed_sas
+# JOB_NAME=lfms_ed_sas
 # JOB_NAME=yelp_ad_sas
 
-# CONFIG_PATH="config2.yelp/sasrec/config.json"
-# CONFIG_PATH="config2.electronics/sasrec/config_distill.json"
+CONFIG_PATH="config2.yelp/sasrec/config_distill_ensemble_partial.json"
+# CONFIG_PATH="config2.lastfm_small/sasrec/config_partial.json"
+# CONFIG_PATH="config2.lastfm_small/sasrec/config_distill.json"
 # CONFIG_PATH="config2.electronics/sasrec/config_dvae.json"
-CONFIG_PATH="config2.electronics/sasrec/config_distill_ensemble.json"
+# CONFIG_PATH="config2.lastfm_small/sasrec/config_distill_ensemble.json"
 # CONFIG_PATH="config2.yelp/sasrec/config_dvae_ensemble.json"
 
 
