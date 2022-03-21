@@ -35,6 +35,12 @@ parser.add_argument('--min_item_inter', type=int, default=5, help='minimum inter
 parser.add_argument('--good_only', type=bool, default=True, help='only use items user likes')
 parser.add_argument('--do_remap', type=bool, default=True, help="remap the use_id and item_id")
 parser.add_argument('--use_rating', type=bool, default=True, help="use rating as a feature in dataloaders")
+
+parser.add_argument('--do_sampling', type=bool, default=False, help="Whether use the subset of the dataset for training. Note: #user and #item will be kept. Actually we just sample users.")
+parser.add_argument('--path_for_sample', type=str, default=None)
+parser.add_argument('--sample_rate', type=float, default=0.5, help='use sample_rate * #user. Available only if `do_sampling` is True.')
+parser.add_argument('--sample_seed', type=int, default=0, help='random sample seed. Available only if `do_sampling` is True. NOTE: This is a LOCAL seed only for sampling.')
+
 ################
 # Dataloader
 ################
@@ -86,8 +92,8 @@ parser.add_argument('--show_process_bar', type=bool, default=False, help='whethe
 # parser.add_argument('--enable_mentor', type=bool)
 # parser.add_argument('--mentor_model', type=str, default='pop', choices=MODELS.keys())
 
-parser.add_argument('--enable_sample', type=bool, default=False)
-parser.add_argument('--samples_ratio', type=float, default=0.5)
+# parser.add_argument('--enable_sample', type=bool, default=False)
+# parser.add_argument('--samples_ratio', type=float, default=0.5)
 
 parser.add_argument('--model_code', type=str, default='bert', choices=MODELS.keys())
 parser.add_argument('--mentor_code', type=str, default='bert', choices=MODELS.keys())

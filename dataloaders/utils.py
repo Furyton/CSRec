@@ -1,24 +1,28 @@
-import logging
 import os
-from pathlib import Path
 import pickle
+import logging
 from os import path
+from pathlib import Path
+from this import d
 
+import numpy as np
 import pandas as pd
+from configuration.config import *
 from sklearn.utils import shuffle
 
-from configuration.config import *
+from utils import get_path, set_temporary_np_seed_as
 
 
-def remap(df: pd.DataFrame, columns: list):
+def _remap(df: pd.DataFrame, columns: list):
     # print("[INFO: reindex]")
     # logging.debug("do_remap")
-    for column in columns:
-        df.loc[:, column] = df[column].map(
-            dict(zip(shuffle(df[column].unique()), range(1, len(df[column].unique()) + 1))))
+    with set_temporary_np_seed_as(2022):
+        for column in columns:
+            df.loc[:, column] = df[column].map(
+                dict(zip(shuffle(df[column].unique()), range(1, len(df[column].unique()) + 1))))
 
 
-def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = True):
+def _drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = True):
     logging.info(
         f"filtering out cold users (who interacts with less or eq than {min_user} items) and cold items (which is interacted by less or eq than {min_item} users)")
 
@@ -62,14 +66,12 @@ def drop_cold(df: pd.DataFrame, min_user: int, min_item: int, do_remap: bool = T
             df = df.drop(index=df[df[ITEM_ID].isin(cold_item_id)].index).reset_index(drop=True).copy()
 
         if do_remap:
-            remap(df, [SESSION_ID, ITEM_ID])
+            _remap(df, [SESSION_ID, ITEM_ID])
         else:
-            remap(df, [SESSION_ID])
+            _remap(df, [SESSION_ID])
 
 
-def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, pd_itemnum=None,
-                      only_good=False) -> list:
-    max_len, prop_sliding_window = args.max_len, args.prop_sliding_window
+def _df_data_partition(dataframe: pd.DataFrame, max_len: int, prop_sliding_window: float, use_rating=True, min_length=5, min_item_inter=5, do_remap=True, pd_itemnum=None, only_good=False) -> list:
 
     if not dataframe.columns.isin([SESSION_ID, ITEM_ID, RATING, TIMESTAMP]).all():
         logging.fatal(
@@ -81,9 +83,9 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
         dataframe = dataframe[dataframe[RATING] == 1].copy()
 
     if do_remap:
-        remap(dataframe, [SESSION_ID, ITEM_ID])
+        _remap(dataframe, [SESSION_ID, ITEM_ID])
     else:
-        remap(dataframe, [SESSION_ID])
+        _remap(dataframe, [SESSION_ID])
 
     if dataframe.columns.isin([TIMESTAMP]).any():
         logging.info("sorting according to timestamp")
@@ -92,7 +94,7 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
 
         dataframe = dataframe.sort_values(by=[SESSION_ID, TIMESTAMP], ignore_index=True).drop(columns=TIMESTAMP).copy()
 
-    dataframe = drop_cold(dataframe, args.min_length, args.min_item_inter, do_remap)
+    dataframe = _drop_cold(dataframe, min_length, min_item_inter, do_remap)
 
     # logging.info('dataset summary:')
     logging.info(f'dataset summary:\n{dataframe.describe()}')
@@ -129,8 +131,7 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
 
     sessoin_group.apply(lambda x: process(x, ITEM_ID, item_data))
 
-    itemnum = get_itemnum(dataframe) if pd_itemnum is None else pd_itemnum
-    args.num_items = itemnum
+    itemnum = _get_itemnum(dataframe) if pd_itemnum is None else pd_itemnum
 
     usernum = len(item_data)
 
@@ -156,7 +157,7 @@ def df_data_partition(args, dataframe: pd.DataFrame, use_rating, do_remap=True, 
         return [item_train, item_valid, item_test, usernum, itemnum]
 
 
-def get_itemnum(dataframe: pd.DataFrame) -> int:
+def _get_itemnum(dataframe: pd.DataFrame) -> int:
     if not dataframe.columns.isin([ITEM_ID]).any():
         logging.fatal(f"illegal dataset format, expect colomns to be {[ITEM_ID]}, but got {dataframe.columns}")
         raise ValueError
@@ -164,58 +165,106 @@ def get_itemnum(dataframe: pd.DataFrame) -> int:
 
     return itemnum
 
+def _sample_from_dataset(dataset: list, rate: float, use_rating: bool=False, seed: int=0):
+    if not use_rating:
+        item_train, item_valid, item_test, usernum, itemnum = dataset[:5]
+    else:
+        item_train, item_valid, item_test, usernum, itemnum, rating_train, rating_valid, rating_test = dataset
+    
+    n_sampled_user = int(usernum * rate)
+    with set_temporary_np_seed_as(seed):
+        selected_users = list(np.random.choice(range(usernum), n_sampled_user, replace=False))
+    
+    def _select_from(a: list, indices: list):
+        tmp_array = np.array(a, dtype=list)
+        selected_list = np.ndarray.tolist(tmp_array[indices])
+        del tmp_array
+        return selected_list
+    
+    new_item_train = _select_from(item_train, selected_users)
+    new_item_valid = _select_from(item_valid, selected_users)
+    new_item_test = _select_from(item_test, selected_users)
+
+    if not use_rating:
+        return [new_item_train, new_item_valid, new_item_test, n_sampled_user, itemnum]
+    else:
+        new_rating_train = _select_from(rating_train, selected_users)
+        new_rating_valid = _select_from(rating_valid, selected_users)
+        new_rating_test = _select_from(rating_test, selected_users)
+
+        return [new_item_train, new_item_valid, new_item_test, n_sampled_user, itemnum, new_rating_train, new_rating_valid, new_rating_test]
 
 # header contains dataset_name, min_user, min_item, good only?, do_remap?, use_rating?
-def check_dataset_cache(args, header) -> bool:
+def _check_dataset_cache(args, header, fully_check=True) -> bool:
     logging.info('check if the cache is generated under this configuration')
 
-    def warning_report(field_name, field1, field2):
+    def _warning_report(field_name, field1, field2):
         logging.warning(
             f'{field_name}: {field1} and {field2} maybe different configurations? I refuse to use this cache.')
 
-    if args.dataset_name != header['dataset_name']:
-        warning_report('dataset name', args.dataset_name, header['dataset_name'])
+    basic_keys = {'dataset_name', 'min_user', 'min_item', 'good_only', 'do_reindex', 'use_rating'}
+    sampling_keys = {'sample_rate', 'sample_seed'}
+    current_header = _gen_cache_header(args)
+
+    for entry in basic_keys:
+        try:
+            if current_header[entry] != header[entry]:
+                _warning_report(entry, current_header[entry], header[entry])
+                return False
+        except:
+            logging.warning(f'failed when checking field {entry} when checking headers')
+            return False
+
+    if not fully_check:
+        logging.info('correct.')
+        return True
+    
+    if args.do_sampling and ('do_sampling' not in header or not header['do_sampling']):
+        _warning_report('do_sampling', True, False)
         return False
-    if args.min_length != header['min_user']:
-        warning_report('min length', args.min_length, header['min_user'])
+
+    if not args.do_sampling and ('do_sampling' in header and header['do_sampling']):
+        _warning_report('do_sampling', False, True)
         return False
-    if args.min_item_inter != header['min_item']:
-        warning_report('min item interaction count', args.min_item_inter, header['min_item'])
-        return False
-    if args.good_only != header['good_only']:
-        warning_report('good only', args.good_only, header['good_only'])
-        return False
-    if args.do_remap != header['do_reindex']:
-        warning_report('do reindex', args.do_remap, header['do_reindex'])
-        return False
-    if args.use_rating != header['use_rating']:
-        warning_report('use rating', args.use_rating, header['use_rating'])
-        return False
+
+    if args.do_sampling:
+        for entry in sampling_keys:
+            try:
+                if current_header[entry] != header[entry]:
+                    _warning_report(entry, current_header[entry], header[entry])
+                    return False
+            except:
+                logging.warning(f'failed when checking field {entry} when checking headers')
+                return False
 
     logging.info('correct.')
     return True
 
 
-def gen_dataset(args) -> list:
+def _gen_dataset(args) -> list:
     logging.info(f'processing dataset {args.dataset_name}')
 
     current_directory = path.dirname(__file__)
     parent_directory = path.split(current_directory)[0]
     dataset_filepath = path.join(parent_directory, RAW_DATASET_ROOT_FOLDER, args.dataset_name)
     data = pd.read_csv(dataset_filepath)
-    dataset = df_data_partition(args, data, use_rating=args.use_rating, do_remap=args.do_remap,
-                                pd_itemnum=args.num_items, only_good=args.good_only)
+    # dataset = df_data_partition(args, data, use_rating=args.use_rating, do_remap=args.do_remap,
+                                # pd_itemnum=args.num_items, only_good=args.good_only)
+    dataset = _df_data_partition(data, max_len=args.max_len, prop_sliding_window=args.prop_sliding_window, use_rating=args.use_rating, min_length=args.min_length, min_item_inter=args.min_item_inter, do_remap=args.do_remap, pd_itemnum=args.num_items, only_good=args.good_only)
 
     args.num_items = dataset[4]
 
     return dataset
 
 
-def gen_cache_path(args) -> Path:
+def _gen_cache_path(args, record_sample_info=True) -> Path:
     current_directory = path.dirname(__file__)
     parent_directory = path.split(current_directory)[0]
 
-    cache_filename = args.dataset_cache_filename or '{}-{}-{}.pkl'.format(args.dataset_name.split('.')[0],
+    if args.do_sampling and record_sample_info:
+        cache_filename = args.dataset_cache_filename or 'sampled_{}-{}-{}-rate-{}-seed-{}.pkl'.format(args.dataset_name.split('.')[0], args.min_length, args.min_item_inter, args.sample_rate, args.sample_seed)
+    else:
+        cache_filename = args.dataset_cache_filename or '{}-{}-{}.pkl'.format(args.dataset_name.split('.')[0],
                                                                           args.min_length, args.min_item_inter)
 
     folder = Path(parent_directory).joinpath(RAW_DATASET_ROOT_FOLDER, PROCESSED_DATASET_CACHE_FOLDER)
@@ -226,18 +275,135 @@ def gen_cache_path(args) -> Path:
 
     return filename
 
-
 # cache processed dataset
 
-def cache_dataset(args, dataset):
+def _gen_cache_header(args, record_sample_info=True):
     header = {'dataset_name': args.dataset_name,
-              'min_user': args.min_length,
-              'min_item': args.min_item_inter,
-              'good_only': args.good_only,
-              'do_reindex': args.do_remap,
-              'use_rating': args.use_rating}
+            'min_user': args.min_length,
+            'min_item': args.min_item_inter,
+            'good_only': args.good_only,
+            'do_reindex': args.do_remap,
+            'use_rating': args.use_rating}
+    
+    if not record_sample_info:
+        return header
+    
+    header.update({'do_sampling': args.do_sampling})
 
-    cache_path = gen_cache_path(args)
+    if args.do_sampling:
+        header.update({'sample_seed': args.sample_seed,
+                       'sample_rate': args.sample_rate})
+    
+    return header
+
+def _cache_dataset(args, dataset, record_sample_info=True):
+    header = _gen_cache_header(args, record_sample_info)
+
+    cache_path = _gen_cache_path(args, record_sample_info)
 
     with cache_path.open('wb') as f:
         pickle.dump((header, dataset), f)
+
+def _load_full_dataset_from_path(args, cache_path: Path, allow_regenerate=False):
+    if not cache_path.exists():
+        if not allow_regenerate:
+            logging.critical(f"file from {cache_path} not found")
+            raise FileNotFoundError
+
+        logging.warning(f"file from {cache_path} not found. Regenerating.")
+
+        dataset = _gen_dataset(args)
+        _cache_dataset(args, dataset, record_sample_info=False)
+    else:
+        if cache_path.is_file():
+            logging.info(f"loading cache from {cache_path}")
+            dataset_cache = pickle.load(cache_path.open('rb'))
+
+            header, dataset = dataset_cache
+
+            if not _check_dataset_cache(args, header, fully_check=False):
+                if not allow_regenerate:
+                    logging.critical('bad cache detected')
+                    raise ValueError
+
+                logging.warning('bad cache detected. regenerating')
+
+                dataset = _gen_dataset(args)
+
+                _cache_dataset(args, dataset, record_sample_info=False)
+        else:
+            logging.fatal(f"{cache_path} is not a file.")
+            raise ValueError("cache path is not a file")
+        
+    return dataset
+
+def _resampling(args):
+    if args.path_for_sample is None:
+        logging.warning(f"sample data from scratch")
+        full_dataset = _gen_dataset(args)
+    else:
+        logging.debug(f'loading full dataset from {args.path_for_sample}')
+
+        path_ready_for_sampling = get_path(args.path_for_sample)
+
+        full_dataset = _load_full_dataset_from_path(args, path_ready_for_sampling)
+
+    sampled_dataset = _sample_from_dataset(full_dataset, args.sample_rate, args.use_rating, args.sample_seed)
+
+    _cache_dataset(args, sampled_dataset)
+
+    return sampled_dataset
+
+def _load_sampled_dataset_from_path(args, cache_path: Path, allow_regenerate=True):
+    if not cache_path.exists():
+        if not allow_regenerate:
+            logging.critical(f"file from {cache_path} not found")
+            raise FileNotFoundError
+        
+        logging.warning(f"file from {cache_path} not found. Regenerating.")
+
+        sampled_dataset = _resampling(args)
+    else:
+        if cache_path.is_file():
+            logging.info(f"loading sampled dataset from {cache_path}")
+
+            dataset_cache = pickle.load(cache_path.open('rb'))
+
+            header, sampled_dataset = dataset_cache
+
+            if not _check_dataset_cache(args, header):
+                if not allow_regenerate:
+                    logging.critical('bad cache detected')
+                    raise ValueError
+                logging.warning('bad cache detected. regenerating')
+                sampled_dataset = _resampling(args)
+        else:
+            logging.fatal(f"{cache_path} is not a file.")
+            raise ValueError("cache path is not a file")
+    
+    return sampled_dataset
+
+def get_dataset(args):
+    if not args.do_sampling:
+        if args.load_processed_dataset:
+            cache_file_path = _gen_cache_path(args)
+            dataset = _load_full_dataset_from_path(args, cache_file_path)
+        elif args.save_processed_dataset:
+            dataset = _gen_dataset(args)
+
+            _cache_dataset(args, dataset)
+        else:
+            dataset = _gen_dataset(args)
+    else:
+        if args.load_processed_dataset:
+            cache_file_path = _gen_cache_path(args)
+    
+            dataset = _load_sampled_dataset_from_path(args, cache_file_path)
+        elif args.save_processed_dataset:
+            dataset = _resampling(args)
+
+            _cache_dataset(args, dataset)
+        else:
+            dataset = _resampling(args)
+    
+    return dataset

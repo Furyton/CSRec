@@ -243,7 +243,7 @@ class Trainer(AbstractBaseTrainer):
 
         return result
 
-    def test_with_given_state_path(self, state_path):
+    def test_with_given_state_path(self, state_path, export_root=None):
         # load_state_from_local(self.model, export_root, self.tag, self.device)
         logging.info(f"Loading model params from {state_path}.")
 
@@ -267,6 +267,14 @@ class Trainer(AbstractBaseTrainer):
 
         average_metrics = average_meter_set.averages()
         logging.info(average_metrics)
+
+        if export_root is not None:
+            result_folder = get_exist_path(export_root.joinpath(self.tag + "_logs"))
+
+            result_file = result_folder.joinpath('test_metrics.json')
+
+            with result_file.open('w') as f:
+                json.dump(average_metrics, f)
 
         return average_metrics        
 

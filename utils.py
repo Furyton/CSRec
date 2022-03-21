@@ -1,3 +1,4 @@
+import contextlib
 import json
 import logging
 import os
@@ -109,6 +110,37 @@ def fix_random_seed_as(seed):
     cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
+@contextlib.contextmanager
+def set_temporary_np_seed_as(seed):
+    """
+    Temporarily set the numpy rand seed within a context
+
+    Example:
+    >>> np.random.seed(0)
+    >>> np.random.randn(3)
+    array([1.76405235, 0.40015721, 0.97873798])
+    >>> np.random.randn(3)
+    array([ 2.2408932 ,  1.86755799, -0.97727788])
+
+    >>> np.random.seed(0)
+    >>> np.random.randn(3)
+    array([1.76405235, 0.40015721, 0.97873798])
+    >>> with temp_seed(5):
+    ...     np.random.randn(3)
+    array([ 0.44122749, -0.33087015,  2.43077119])
+    >>> np.random.randn(3)
+    array([ 2.2408932 ,  1.86755799, -0.97727788])
+
+    reference:
+    https://stackoverflow.com/a/49557127
+    """
+
+    state = np.random.get_state()
+    np.random.seed(seed)
+    try:
+        yield
+    finally:
+        np.random.set_state(state)
 
 def set_up_gpu(args):
     # os.environ['CUDA_VISIBLE_DEVICES'] = args.device_idx

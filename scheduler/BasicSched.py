@@ -69,7 +69,7 @@ class BasicScheduler(BaseSched):
 
     def _evaluate(self):
         if self.test_state_path is not None:
-            results = self.trainer.test_with_given_state_path(self.test_state_path)
+            results = self.trainer.test_with_given_state_path(self.test_state_path, self.export_root)
         else:
             results = self.trainer.test(self.export_root)
 

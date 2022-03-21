@@ -14,7 +14,7 @@ from trainers.BasicTrainer import Trainer
 
 from scheduler.BaseSched import BaseSched
 from scheduler.utils import (generate_lr_scheduler, generate_model,
-                             generate_optim, load_state_from_given_path)
+                             generate_optim, load_state_from_given_path, model_path_finder)
 from trainers.DistillTrainer import DistillTrainer
 from utils import get_exist_path, get_path
 from configuration.config import *
@@ -43,6 +43,24 @@ class EnsembleDistillScheduler(BaseSched):
         self.student_tag = "student_" + self.student_code
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
+
+        if args.enable_auto_path_finder:
+            mentor_seed1 = args.mentor_seed1
+            mentor_seed2 = args.mentor_seed2
+
+            mentor_base_path = args.mentor_state_path
+
+            mentor_path_pattern = args.mentor_describe
+
+            arg_dict = dict(args._get_kwargs())
+            arg_dict["sample_seed"] = mentor_seed1
+            arg_dict["model_code"] = self.teacher1_code
+            self.args.mentor_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher1_code)
+
+            arg_dict["sample_seed"] = mentor_seed2
+            arg_dict["model_code"] = self.teacher2_code
+            self.args.mentor2_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher2_code)
+
 
         self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
 

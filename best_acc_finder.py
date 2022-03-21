@@ -11,14 +11,16 @@ def gen_metrics_file_path(base_dir: str, secondary_prefix: str, tertiary_prefix:
 
     for secondary in file_finder(base_path, secondary_prefix):
         if secondary.is_dir():
+            # print(f"secondary: {secondary}")
             for teriary in file_finder(secondary, tertiary_prefix):
+                # print(f"teriary: {teriary}")
                 yield next(file_finder(teriary, "val_metrics.json"))
 
 if __name__=="__main__":
     # BASE_DIR, SECOND, TERTIARY, metric = sys.argv[1:]
 
-    BASE_DIR = "___video_soft_2022"
-    SECOND = "pop_gru4rec"
+    BASE_DIR = "___el_soft_2022"
+    SECOND = "pop_sas"
     TERTIARY = "student"
     metric = "NDCG@10"
 
@@ -36,5 +38,4 @@ if __name__=="__main__":
     if not isinstance(best_path, str):
         print(best_path.parent.joinpath("checkpoint/best_acc_model.pth"))
     else:
-        raise FileNotFoundError
-        
+        raise FileNotFoundError(f"best path {best_path} not found.")

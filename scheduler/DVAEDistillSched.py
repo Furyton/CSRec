@@ -12,7 +12,7 @@ from trainers.DistillTrainer import DistillTrainer
 from scheduler.BaseSched import BaseSched
 from scheduler.Routine import Routine
 from scheduler.utils import (generate_lr_scheduler, generate_model,
-                             generate_optim, load_state_from_given_path)
+                             generate_optim, load_state_from_given_path, model_path_finder)
 from utils import get_exist_path, get_path
 
 
@@ -39,6 +39,18 @@ class DVAEDistillScheduler(BaseSched):
         self.export_root = get_path(export_root)
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloader_factory(args)
+
+        if args.enable_auto_path_finder:
+            # find model state path for auxiliary model
+            mentor_seed = args.sample_seed
+            mentor_base_path = args.mentor_state_path
+
+            mentor_path_pattern = args.mentor_describe
+
+            arg_dict = dict(args._get_kwargs())
+            arg_dict["sample_seed"] = mentor_seed
+            arg_dict["model_code"] = self.auxiliary_code
+            self.args.mentor_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.auxiliary_code)
 
         self._generate_auxliary_trainer()
         self._generate_teacher_trainer()

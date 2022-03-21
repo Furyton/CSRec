@@ -10,6 +10,7 @@ state dict loader
 import argparse
 import collections
 import logging
+from pathlib import Path
 from typing import Iterator
 
 import torch
@@ -215,3 +216,10 @@ def load_state_from_given_path(model: BaseModel, state_path: str, device: str, o
 
         return 0
 
+def model_path_finder(base_path: str, target_pattern: str, filler_dict: dict, tag: str):
+    base_root = get_path(base_path)
+    target_substring = target_pattern.format(config=filler_dict)
+    
+    for child in base_root.iterdir():
+        if target_substring in child.name:
+            return get_best_state_path(child, tag, must_exist=True)
