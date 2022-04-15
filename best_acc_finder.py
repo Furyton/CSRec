@@ -14,13 +14,16 @@ def gen_metrics_file_path(base_dir: str, secondary_prefix: str, tertiary_prefix:
             # print(f"secondary: {secondary}")
             for teriary in file_finder(secondary, tertiary_prefix):
                 # print(f"teriary: {teriary}")
-                yield next(file_finder(teriary, "val_metrics.json"))
+                try:
+                    yield next(file_finder(teriary, "val_metrics.json"))
+                except:
+                    print(f"can't find val_metrics in {teriary}")
 
 if __name__=="__main__":
     # BASE_DIR, SECOND, TERTIARY, metric = sys.argv[1:]
 
-    BASE_DIR = "___el_soft_2022"
-    SECOND = "pop_sas"
+    BASE_DIR = "___movies_dvae_2022"
+    SECOND = "teacher_sasrec"
     TERTIARY = "student"
     metric = "NDCG@10"
 
