@@ -1,18 +1,18 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log
+SAVED_PATH=___slurm_log2
 
 HPARAMS_FILE=dvae_hyperparameters.txt
 ARRAY_CONFIG=1-27%1
 
-JOB_NAME=el_dvae_next_2022
+JOB_NAME=movies_next_dvae_2022
 # JOB_NAME=lfms_base_next
 # JOB_NAME=lfms_soft_next
 # JOB_NAME=el_dvae_next
 # JOB_NAME=lfms_ed_next
 # JOB_NAME=yelp_ad_next
 
-CONFIG_PATH="config2.electronics/nextitnet/config_dvae.json"
+CONFIG_PATH="config2.movies/nextitnet/config_dvae.json"
 # CONFIG_PATH="config2.lastfm_small/nextitnet/config_partial.json"
 # CONFIG_PATH="config2.lastfm_small/nextitnet/config_distill.json"
 # CONFIG_PATH="config2.electronics/nextitnet/config_dvae.json"

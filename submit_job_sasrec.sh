@@ -1,18 +1,21 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log
+SAVED_PATH=___slurm_log3
 
-JOB_NAME=test_el_sas_soft_2022
-# JOB_NAME=lfms_base_sas_2020
-# JOB_NAME=yelp_soft_sas
+#JOB_NAME=movies_sas_test_soft_2022
+JOB_NAME=movies_sas_dvae_2020
+#JOB_NAME=yelp_sas_dvae_2021
+#JOB_NAME=test_el_sas_dvae_2022
+#JOB_NAME=el_sas_dvae_2020
+#JOB_NAME=yelp_soft_sas
 # JOB_NAME=yelp_dvae_sas
 # JOB_NAME=yelp_ed_sas
 # JOB_NAME=yelp_ad_sas
 # JOB_NAME=lfms_sas_soft_test
 
-CONFIG_PATH="config2.electronics/sasrec/config_test.json"
+CONFIG_PATH="config2.movies/sasrec/config_dvae.json"
+#CONFIG_PATH="config2.movies/sasrec/config.json"
 # CONFIG_PATH="config2.lastfm_small/sasrec/config.json"
-# CONFIG_PATH="config2.yelp/sasrec/config_distill.json"
 # CONFIG_PATH="config2.yelp/sasrec/config_dvae.json"
 # CONFIG_PATH="config2.yelp/sasrec/config_distill_ensemble.json"
 # CONFIG_PATH="config2.yelp/sasrec/config_dvae_ensemble.json"

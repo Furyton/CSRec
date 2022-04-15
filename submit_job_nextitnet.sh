@@ -1,22 +1,26 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log
+SAVED_PATH=___slurm_log3
 
-JOB_NAME=test_yelp_next_ed_2022
-# JOB_NAME=lfms_base_next_2020
-# JOB_NAME=yelp_soft_next
+#JOB_NAME=movies_next_test_soft_2022
+JOB_NAME=yelp_next_dvae_2021
+#JOB_NAME=movies_next_dvae_2020
+#JOB_NAME=test_el_next_dvae_2022
+#JOB_NAME=el_next_dvae_2020
+#JOB_NAME=yelp_soft_next_2021
 # JOB_NAME=yelp_dvae_next
 # JOB_NAME=yelp_ed_next
 # JOB_NAME=yelp_ad_next
 # JOB_NAME=lfms_next_soft_test
 
 CONFIG_PATH="config2.yelp/nextitnet/config_test.json"
-# CONFIG_PATH="config2.lastfm_small/nextitnet/config.json"
-# CONFIG_PATH="config2.yelp/nextitnet/config_distill.json"
-# CONFIG_PATH="config2.yelp/nextitnet/config_dvae.json"
-# CONFIG_PATH="config2.yelp/nextitnet/config_distill_ensemble.json"
-# CONFIG_PATH="config2.yelp/nextitnet/config_dvae_ensemble.json"
-# CONFIG_PATH="config2.lastfm_small/nextitnet/config_test.json"
+
+#CONFIG_PATH="config2.movies/nextitnet/config.json"
+# config_path="config2.lastfm_small/nextitnet/config.json"config_distill
+# config_path="config2.yelp/nextitnet/config_dvae.json"
+# config_path="config2.yelp/nextitnet/config_distill_ensemble.json"
+# config_path="config2.yelp/nextitnet/config_dvae_ensemble.json"
+# config_path="config2.lastfm_small/nextitnet/config_test.json"
 
 GPU=gpu08
 
