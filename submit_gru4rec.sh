@@ -1,21 +1,21 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log2
+SAVED_PATH=___slurm_log3
 
-HPARAMS_FILE=dvae_hyperparameters.txt
-ARRAY_CONFIG=1-27%1
+HPARAMS_FILE=partial_base_hyperparameters.txt
+ARRAY_CONFIG=1-4%1
 
-JOB_NAME=movies_gru_dvae_2022
+JOB_NAME=el_gru_base_partial_2022
 # JOB_NAME=lfms_base_gru
 # JOB_NAME=lfms_soft_gru
 # JOB_NAME=el_dvae_gru
 # JOB_NAME=lfms_ed_gru
 # JOB_NAME=video_ad_gru
 
-CONFIG_PATH="config2.movies/gru4rec/config_dvae.json"
+#CONFIG_PATH="config2.movies/gru4rec/config_dvae.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_partial.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
-# CONFIG_PATH="config2.electronics/gru4rec/config_dvae.json"
+CONFIG_PATH="config2.electronics/gru4rec/config_partial.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble.json"
 # CONFIG_PATH="config2.yelp/gru4rec/config_dvae_ensemble.json"
 
