@@ -31,15 +31,23 @@ class EnsembleDistillScheduler(BaseSched):
         self.mode = args.mode
         self.test_state_path = args.test_state_path
 
-        self.teacher1_code = args.mentor_code
-        self.teacher2_code = args.mentor2_code
+        # self.teacher1_code = args.mentor_code
+        # self.teacher2_code = args.mentor2_code
+        self.teacher_code_list = args.mentor_list
+
+        assert(self.teacher_code_list is not None)
+
         self.student_code = args.model_code
 
         self.weight_list = args.weight_list
+        
+        assert(len(self.weight_list) == len(self.teacher_code_list))
+
         self.temperature = args.T
 
         self.teacher1_tag = "teacher1_" + self.teacher1_code
         self.teacher2_tag = "teacher2_" + self.teacher2_code
+        self.teacher_tag_list = [f"teacher{i}_{code}" for i, code in enumerate(self.teacher_code_list)]
         self.student_tag = "student_" + self.student_code
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)

@@ -98,7 +98,6 @@ parser.add_argument('--show_process_bar', type=bool, default=False, help='whethe
 parser.add_argument('--model_code', type=str, default='bert', choices=MODELS.keys())
 parser.add_argument('--mentor_code', type=str, default='bert', choices=MODELS.keys())
 # parser.add_argument('--model_init_seed', type=int, default=None)
-
 parser.add_argument('--max_len', type=int, default=50, help='Length of sequence, better preserve the same for all models for the sake of faireness')
 
 # parser.add_argument('--training_stage', type=str, default=NORMAL_STAGE, choices=[PRETRAIN_STAGE, FINE_TUNE_STAGE, NORMAL_STAGE])
@@ -113,8 +112,10 @@ parser.add_argument('--dvae_alpha', type=float, default=0.5)
 parser.add_argument('--softmaxed_mentor', type=bool, default=False)
 ################
 
-parser.add_argument('--weight_list', nargs='+', type=float, default=[0.5, 0.5])
-
+parser.add_argument('--enable_auto_path_finder', type=bool, default=False)
+parser.add_argument('--weight_list', nargs='+', type=float, default=None)
+parser.add_argument('--mentor_code_list', nargs='+', type=str, default=None)
+parser.add_argument('--mentor_path_list', nargs='+', type=str, default=None)
 ################
 # Experiment
 ################
