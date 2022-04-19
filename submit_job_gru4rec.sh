@@ -2,7 +2,7 @@
 
 SAVED_PATH=___slurm_log3
 
-JOB_NAME=debug_el_gru_partial_2022
+JOB_NAME=el_gru_4_teacher
 
 CONFIG_PATH="config2.electronics/gru4rec/config_distill_ensemble.json"
 
