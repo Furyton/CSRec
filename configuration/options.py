@@ -113,9 +113,11 @@ parser.add_argument('--softmaxed_mentor', type=bool, default=False)
 ################
 
 parser.add_argument('--enable_auto_path_finder', type=bool, default=False)
+parser.add_argument('--use_sampled_mentor', type=bool, default=False)
 parser.add_argument('--weight_list', nargs='+', type=float, default=None)
 parser.add_argument('--mentor_code_list', nargs='+', type=str, default=None)
 parser.add_argument('--mentor_path_list', nargs='+', type=str, default=None)
+parser.add_argument('--mentor_describe', type=str, default=None)
 ################
 # Experiment
 ################

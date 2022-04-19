@@ -30,53 +30,64 @@ class EnsembleDistillScheduler(BaseSched):
         self.export_root = get_path(export_root)
         self.mode = args.mode
         self.test_state_path = args.test_state_path
+        self.temperature = args.T
+        self.weight_list = args.weight_list
 
-        # self.teacher1_code = args.mentor_code
-        # self.teacher2_code = args.mentor2_code
+        self.student_code = args.model_code
+
         self.teacher_code_list = args.mentor_list
 
         assert(self.teacher_code_list is not None)
 
-        self.student_code = args.model_code
-
-        self.weight_list = args.weight_list
+        self.teacher_weight_list = args.weight_list
         
         assert(len(self.weight_list) == len(self.teacher_code_list))
 
-        self.temperature = args.T
+        self.teacher_path_list = args.mentor_path_list
 
-        self.teacher1_tag = "teacher1_" + self.teacher1_code
-        self.teacher2_tag = "teacher2_" + self.teacher2_code
-        self.teacher_tag_list = [f"teacher{i}_{code}" for i, code in enumerate(self.teacher_code_list)]
+        assert(len(self.weight_list) == len(self.teacher_path_list))
+
+        self.teacher_tag_list = [f"teacher{i+1}_{code}" for i, code in enumerate(self.teacher_code_list)]
         self.student_tag = "student_" + self.student_code
 
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
         if args.enable_auto_path_finder:
-            mentor_seed1 = args.mentor_seed1
-            mentor_seed2 = args.mentor_seed2
+            if args.use_sampled_mentor:
+                raise NotImplementedError
+            else:
+                arg_dict = dict(args._get_kwargs())
+                mentor_path_pattern = args.mentor_describe
 
-            mentor_base_path = args.mentor_state_path
+                new_mentor_state_path = []
+                for code, base in zip(self.teacher_code_list, self.teacher_path_list):
+                    arg_dict["model_code"] = code
+                    #TODO
+                    new_mentor_state_path.append(model_path_finder(base, mentor_path_pattern, arg_dict, code))
 
-            mentor_path_pattern = args.mentor_describe
+                self.teacher_path_list = new_mentor_state_path
 
-            arg_dict = dict(args._get_kwargs())
-            arg_dict["sample_seed"] = mentor_seed1
-            arg_dict["model_code"] = self.teacher1_code
-            self.args.mentor_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher1_code)
+        # self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
 
-            arg_dict["sample_seed"] = mentor_seed2
-            arg_dict["model_code"] = self.teacher2_code
-            self.args.mentor2_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher2_code)
+        # self.teacher2, self.t_trainer2, self.t_writer2 = self._generate_teacher_trainer(self.teacher2_code, self.teacher2_tag, self.args.mentor2_state_path)
+        self.teacher_list = []
+        self.t_trainer_list = []
+        self.t_writer_list = []
 
-
-        self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
-
-        self.teacher2, self.t_trainer2, self.t_writer2 = self._generate_teacher_trainer(self.teacher2_code, self.teacher2_tag, self.args.mentor2_state_path)
+        for code, tag, state_path in zip(self.teacher_code_list, self.teacher_tag_list, self.teacher_path_list):
+            t, tr, tw = self._generate_teacher_trainer(code, tag, state_path)
+            self.teacher_list.append(t)
+            self.t_trainer_list.append(tr)
+            self.t_writer_list.append(tw)
 
         self._generate_student_trainer()
 
-        self.routine = Routine(["teacher1", "teacher2", "student"], [self.t_trainer1, self.t_trainer2, self.s_trainer], self.args, self.export_root)
+        # self.routine = Routine(["teacher1", "teacher2", "student"], [self.t_trainer1, self.t_trainer2, self.s_trainer], self.args, self.export_root)
+
+        routine_code = [f"teacher{i}" for i in range(1, len(self.teacher_code_list)+1)] + ["student"]
+        routine_trainer = self.t_trainer_list + [self.s_trainer]
+
+        self.routine = Routine(routine_code, routine_trainer, self.args, self.export_root)
 
     def _generate_teacher_trainer(self, code: str, tag: str, state_path: str=None):
         teacher = generate_model(self.args, code, self.dataset, self.device)
@@ -113,12 +124,12 @@ class EnsembleDistillScheduler(BaseSched):
 
         self.s_accum_iter = load_state_from_given_path(self.student, self.args.model_state_path, self.device, self.s_optimizer, must_exist=False)
 
-        self.mix_teacher = Ensembler(self.device, [self.teacher1, self.teacher2], self.weight_list, self.temperature)
+        # self.mix_teacher = Ensembler(self.device, [self.teacher1, self.teacher2], self.weight_list, self.temperature)
+        self.mix_teacher = Ensembler(self.device, self.teacher_list, self.weight_list, self.temperature)
 
-        self.mix_teacher_tag = "mix_" + self.teacher1_code + "_" + self.teacher2_code
+        self.mix_teacher_tag = "mix"
 
         logging.debug(f"{self.student_tag}: \n{self.student}")
-
         
         self.s_trainer = trainer_factory(self.args,
                                 DistillTrainer.code(),
@@ -132,14 +143,15 @@ class EnsembleDistillScheduler(BaseSched):
                                 generate_lr_scheduler(self.s_optimizer, self.args),
                                 self.s_optimizer,
                                 self.s_accum_iter)
-
         
     def run(self):
         return super().run()
 
     def _finishing(self):
-        self.t_writer1.close()
-        self.t_writer2.close()
+        # self.t_writer1.close()
+        # self.t_writer2.close()
+        for tw in self.t_trainer_list:
+            tw.close()
         self.s_writer.close()
 
     def _fit(self):
