@@ -164,7 +164,7 @@ class DVAELoss:
         else:
             g = self.auxiliary_model(batch)
 
-        h, max_in_col = self.prior_model(batch)
+        # h, max_in_col = self.prior_model(batch)
 
         output = model.calculate_loss(batch)
 
@@ -175,14 +175,15 @@ class DVAELoss:
         if len(output) > 2:
             reg_loss = sum(output[2:])
 
-        assert(len(f.size()) == 2 and f.size() == h.size() and f.size() == g.size())
+        # assert(len(f.size()) == 2 and f.size() == h.size() and f.size() == g.size())
+        assert(len(f.size()) == 2 and f.size() == g.size())
 
         f = f[:, 1:]
         g = g[:, 1:]
-        h = h[:, 1:]
-        max_in_col = max_in_col[:, 1:]
+        # h = h[:, 1:]
+        # max_in_col = max_in_col[:, 1:]
 
-        n_item = max_in_col.size(-1)
+        # n_item = max_in_col.size(-1)
 
         # g: B x n_item
         # h: B x n_item
@@ -194,33 +195,33 @@ class DVAELoss:
         KL_Loss_2 = F.kl_div(F.log_softmax(f, dim=-1), g.softmax(dim=-1), reduction='batchmean')
 
         KL_loss = self.alpha * KL_Loss_1 + (1. - self.alpha) * KL_Loss_2
-        h: torch.Tensor
-        expectation_loss = - (f.softmax(dim=-1) * torch.log(torch.sigmoid(h))).sum() / batch_size + ((max_in_col + math.log(n_item)) * f.softmax(dim=-1)).sum() / batch_size
+        # h: torch.Tensor
+        # expectation_loss = - (f.softmax(dim=-1) * torch.log(torch.sigmoid(h))).sum() / batch_size + ((max_in_col + math.log(n_item)) * f.softmax(dim=-1)).sum() / batch_size
 
-        if self.accum_iter % 50 == 0 and self.accum_iter != 0:
-            if self.debug != 0:
-                with torch.no_grad():
-                    self.debug -= 1
+        # if self.accum_iter % 50 == 0 and self.accum_iter != 0:
+        #     if self.debug != 0:
+        #         with torch.no_grad():
+        #             self.debug -= 1
 
-                    # logging.debug(f"f: \n" + str(f))
-                    # logging.debug(f"g: \n" + str(g))
-                    # logging.debug(f"h: \n" + str(h))
+        #             # logging.debug(f"f: \n" + str(f))
+        #             # logging.debug(f"g: \n" + str(g))
+        #             # logging.debug(f"h: \n" + str(h))
 
-                    logging.debug(f"KL_loss1: \n" + str(KL_Loss_1))
-                    logging.debug(f"KL_loss2: \n" + str(KL_Loss_2))
-                    logging.debug(f"expectation_loss: \n" + str(expectation_loss))
+        #             logging.debug(f"KL_loss1: \n" + str(KL_Loss_1))
+        #             logging.debug(f"KL_loss2: \n" + str(KL_Loss_2))
+        #             logging.debug(f"expectation_loss: \n" + str(expectation_loss))
 
-                    logging.debug(f"max in g softmax: {g.softmax(dim=-1).max()} argmax: {g.softmax(dim=-1).argmax()}")
-                    logging.debug(f"max in f softmax: {f.softmax(dim=-1).max()} argmax: {f.softmax(dim=-1).argmax()}")
-                    logging.debug(f"max in h softmax: {h.softmax(dim=-1).max()} argmax: {h.softmax(dim=-1).argmax()}")
-                    logging.debug(f"max_in_col: {max_in_col}")
+        #             logging.debug(f"max in g softmax: {g.softmax(dim=-1).max()} argmax: {g.softmax(dim=-1).argmax()}")
+        #             logging.debug(f"max in f softmax: {f.softmax(dim=-1).max()} argmax: {f.softmax(dim=-1).argmax()}")
+        #             logging.debug(f"max in h softmax: {h.softmax(dim=-1).max()} argmax: {h.softmax(dim=-1).argmax()}")
+        #             logging.debug(f"max_in_col: {max_in_col}")
 
         if ~torch.isnan(KL_loss):
             self.not_nan += 1
-            return pred_loss + KL_loss + expectation_loss + reg_loss
+            return pred_loss + KL_loss + reg_loss # + expectation_loss
         else:
             self.nan += 1
-            return pred_loss + expectation_loss + reg_loss
+            return pred_loss + reg_loss # + expectation_loss
 
 
 # class LE:
