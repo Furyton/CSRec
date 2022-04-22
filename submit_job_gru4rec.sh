@@ -1,10 +1,10 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log3
+SAVED_PATH=___slurm_log4
 
 #JOB_NAME=movies_gru_test_soft_2022
 #JOB_NAME=el_gru_base_2019
-JOB_NAME=el_gru_dvae_m_2022
+JOB_NAME=movies_gru_dvae_m_2022
 #JOB_NAME=el_gru_dvae_2020
 #JOB_NAME=test_el_gru_dvae_2022
 # JOB_NAME=lfms_test_dvae_gru
@@ -17,7 +17,7 @@ JOB_NAME=el_gru_dvae_m_2022
 # JOB_NAME=lfms_gru_soft_test
 
 #CONFIG_PATH="config2.movies/gru4rec/config_test.json"
-CONFIG_PATH="config2.electronics/gru4rec/config_dvae.json"
+CONFIG_PATH="config2.movies/gru4rec/config_dvae.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_partial.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config.json"
 # CONFIG_PATH="config2.yelp/gru4rec/config_dvae.json"
