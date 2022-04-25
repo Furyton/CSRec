@@ -1,11 +1,10 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log3
+SAVED_PATH=___slurm_log4
 
-JOB_NAME=el_gru_4_teacher
+JOB_NAME=movies_gru_4_teacher
 
-CONFIG_PATH="config2.electronics/gru4rec/config_distill_ensemble.json"
-
+CONFIG_PATH="config2.movies/gru4rec/config_distill_ensemble.json"
 
 GPU=gpu08
 
