@@ -1,0 +1,1529 @@
+INFO    [02-25 20:58:04] setup_train in utils:
+{
+    "experiment_dir": "___lfms_ensemble_distill_diff_model_2020",
+    "experiment_description": "sas",
+    "describe": "{config[model_code]}-en-{config[weight_list][0]}-T-{config[T]}-al-{config[alpha]}",
+    "dataset_name": "lastfm_small.csv",
+    "sched": "ensemble_distill",
+    "model_code": "sasrec",
+    "mentor_code": "sasrec",
+    "mentor2_code": "sasrec",
+    "weight_list": [
+        0.2,
+        0.8
+    ],
+    "alpha": 0.75,
+    "T": 6.0,
+    "training_routine": "student",
+    "softmaxed_mentor": true,
+    "num_epochs": 60,
+    "mode": "train",
+    "max_len": 20,
+    "test_state_path": null,
+    "model_state_path": null,
+    "mentor_state_path": "___lfms_base_2021/base_sasrec_02-25_12:52_0/sasrec_logs/checkpoint/best_acc_model.pth",
+    "mentor2_state_path": "___lfms_base_2022/base_sasrec_02-25_12:52_0/sasrec_logs/checkpoint/best_acc_model.pth",
+    "rand_seed": 2020,
+    "load_processed_dataset": true,
+    "save_processed_dataset": false,
+    "dataset_cache_filename": null,
+    "weight_decay": 0,
+    "decay_step": 15,
+    "gamma": 0.99,
+    "lr": 0.001,
+    "min_length": 5,
+    "min_item_inter": 5,
+    "good_only": false,
+    "use_rating": true,
+    "test_negative_sampler_code": "random",
+    "test_negative_sample_size": 0,
+    "dataloader_type": "next",
+    "train_batch_size": 64,
+    "val_batch_size": 64,
+    "test_batch_size": 64,
+    "prop_sliding_window": -1.0,
+    "worker_number": 2,
+    "metric_ks": [
+        5,
+        10
+    ],
+    "device": "cuda",
+    "num_gpu": 1,
+    "optimizer": "Adam",
+    "best_metric": "NDCG@10",
+    "show_process_bar": false,
+    "enable_sample": false,
+    "samples_ratio": 0.1,
+    "config_file": "config2.lastfm_small/sasrec/config_distill_ensemble.json",
+    "task_id": 34,
+    "split": "leave_one_out",
+    "do_remap": true,
+    "train_negative_sampler_code": "random",
+    "train_negative_sample_size": 100,
+    "device_idx": "0",
+    "momentum": null,
+    "log_period_as_iter": 12800,
+    "dvae_alpha": 0.5,
+    "validation_rate": 0.2,
+    "num_items": null,
+    "start_index": 1,
+    "kwargs": null
+}
+INFO    [02-25 20:58:04] dataloader_factory in __init__:
+loading processed dataset cache in /data/wushiguang-slurm/code/gitee-repos/soft-rec/Data/Cache/lastfm_small-5-5.pkl
+INFO    [02-25 20:58:04] check_dataset_cache in utils:
+check if the cache is generated under this configuration
+INFO    [02-25 20:58:04] check_dataset_cache in utils:
+correct.
+INFO    [02-25 20:58:04] __init__ in NextItemDataloader:
+there are 3646 items in this dataset, 3173 users, padding_first? False
+DEBUG   [02-25 20:58:07] generate_model in utils:
+model_code_list=['sasrec']
+INFO    [02-25 20:58:07] load_model_config in utils:
+loading model sasrec's config file at asset/config/model/sasrec.json
+INFO    [02-25 20:58:07] load_model_config in utils:
+{
+    "n_layers": 2,
+    "n_heads": 2,
+    "hidden_size": 64,
+    "inner_size": 128,
+    "hidden_dropout_prob": 0.35,
+    "attn_dropout_prob": 0.35,
+    "hidden_act": "relu",
+    "layer_norm_eps": 1e-12,
+    "initializer_range": 0.02,
+    "loss_type": "CE"
+}
+WARNING [02-25 20:58:18] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher1_sasrec_logs does not exist! Create one.
+WARNING [02-25 20:58:18] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher1_sasrec_logs/tb_vis does not exist! Create one.
+WARNING [02-25 20:58:18] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher1_sasrec_logs/checkpoint does not exist! Create one.
+INFO    [02-25 20:58:18] load_state_from_given_path in utils:
+checkpoint epoch: 44
+INFO    [02-25 20:58:18] load_state_from_given_path in utils:
+Loading model's parameters
+INFO    [02-25 20:58:18] load_state_from_given_path in utils:
+Loading optimizer's parameters
+DEBUG   [02-25 20:58:18] _generate_teacher_trainer in EnsembleDistillSched:
+teacher1_sasrec: 
+SASRecModel(
+  (item_embedding): Embedding(3647, 64, padding_idx=0)
+  (position_embedding): Embedding(20, 64)
+  (trm_encoder): TransformerEncoder(
+    (layer): ModuleList(
+      (0): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+      (1): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+    )
+  )
+  (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+  (dropout): Dropout(p=0.35, inplace=False)
+  (loss_fct): CrossEntropyLoss()
+)
+INFO    [02-25 20:58:18] assert_model_device in utils:
+model teacher1_sasrec has 1.151123046875 MB params.
+INFO    [02-25 20:58:18] __init__ in BasicTrainer:
+48256 iter per epoch
+DEBUG   [02-25 20:58:18] generate_model in utils:
+model_code_list=['sasrec']
+INFO    [02-25 20:58:18] load_model_config in utils:
+loading model sasrec's config file at asset/config/model/sasrec.json
+INFO    [02-25 20:58:18] load_model_config in utils:
+{
+    "n_layers": 2,
+    "n_heads": 2,
+    "hidden_size": 64,
+    "inner_size": 128,
+    "hidden_dropout_prob": 0.35,
+    "attn_dropout_prob": 0.35,
+    "hidden_act": "relu",
+    "layer_norm_eps": 1e-12,
+    "initializer_range": 0.02,
+    "loss_type": "CE"
+}
+WARNING [02-25 20:58:19] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher2_sasrec_logs does not exist! Create one.
+WARNING [02-25 20:58:19] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher2_sasrec_logs/tb_vis does not exist! Create one.
+WARNING [02-25 20:58:19] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/teacher2_sasrec_logs/checkpoint does not exist! Create one.
+INFO    [02-25 20:58:19] load_state_from_given_path in utils:
+checkpoint epoch: 37
+INFO    [02-25 20:58:19] load_state_from_given_path in utils:
+Loading model's parameters
+INFO    [02-25 20:58:19] load_state_from_given_path in utils:
+Loading optimizer's parameters
+DEBUG   [02-25 20:58:19] _generate_teacher_trainer in EnsembleDistillSched:
+teacher2_sasrec: 
+SASRecModel(
+  (item_embedding): Embedding(3647, 64, padding_idx=0)
+  (position_embedding): Embedding(20, 64)
+  (trm_encoder): TransformerEncoder(
+    (layer): ModuleList(
+      (0): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+      (1): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+    )
+  )
+  (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+  (dropout): Dropout(p=0.35, inplace=False)
+  (loss_fct): CrossEntropyLoss()
+)
+INFO    [02-25 20:58:19] assert_model_device in utils:
+model teacher2_sasrec has 1.151123046875 MB params.
+INFO    [02-25 20:58:19] __init__ in BasicTrainer:
+48256 iter per epoch
+DEBUG   [02-25 20:58:19] generate_model in utils:
+model_code_list=['sasrec']
+INFO    [02-25 20:58:19] load_model_config in utils:
+loading model sasrec's config file at asset/config/model/sasrec.json
+INFO    [02-25 20:58:19] load_model_config in utils:
+{
+    "n_layers": 2,
+    "n_heads": 2,
+    "hidden_size": 64,
+    "inner_size": 128,
+    "hidden_dropout_prob": 0.35,
+    "attn_dropout_prob": 0.35,
+    "hidden_act": "relu",
+    "layer_norm_eps": 1e-12,
+    "initializer_range": 0.02,
+    "loss_type": "CE"
+}
+WARNING [02-25 20:58:20] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/student_sasrec_logs does not exist! Create one.
+WARNING [02-25 20:58:20] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/student_sasrec_logs/tb_vis does not exist! Create one.
+WARNING [02-25 20:58:20] get_exist_path in utils:
+dir ___lfms_ensemble_distill_diff_model_2020/sas_sasrec-en-0.2-T-6.0-al-0.75_02-25_20:58_t34/student_sasrec_logs/checkpoint does not exist! Create one.
+WARNING [02-25 20:58:20] get_path in utils:
+Path is None
+WARNING [02-25 20:58:20] load_state_from_given_path in utils:
+Not given any path.
+DEBUG   [02-25 20:58:20] _generate_student_trainer in EnsembleDistillSched:
+student_sasrec: 
+SASRecModel(
+  (item_embedding): Embedding(3647, 64, padding_idx=0)
+  (position_embedding): Embedding(20, 64)
+  (trm_encoder): TransformerEncoder(
+    (layer): ModuleList(
+      (0): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+      (1): TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=64, out_features=64, bias=True)
+          (key): Linear(in_features=64, out_features=64, bias=True)
+          (value): Linear(in_features=64, out_features=64, bias=True)
+          (attn_dropout): Dropout(p=0.35, inplace=False)
+          (dense): Linear(in_features=64, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.35, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=64, out_features=128, bias=True)
+          (dense_2): Linear(in_features=128, out_features=64, bias=True)
+          (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.35, inplace=False)
+        )
+      )
+    )
+  )
+  (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True)
+  (dropout): Dropout(p=0.35, inplace=False)
+  (loss_fct): CrossEntropyLoss()
+)
+INFO    [02-25 20:58:20] assert_model_device in utils:
+model student_sasrec has 1.151123046875 MB params.
+INFO    [02-25 20:58:20] assert_model_device in utils:
+model mix_sasrec_sasrec has 0.0 MB params.
+INFO    [02-25 20:58:20] assert_model_device in utils:
+model mix_sasrec_sasrec has no param
+INFO    [02-25 20:58:20] __init__ in DistillTrainer:
+48256 iter per epoch
+INFO    [02-25 20:58:20] _set_current_routine in Routine:
+first routine: student
+INFO    [02-25 20:58:20] run_routine in Routine:
+Start routine student
+INFO    [02-25 20:58:20] run_routine in Routine:
+Start training
+INFO    [02-25 20:58:20] train in DistillTrainer:
+Test mentor model: mix_sasrec_sasrec
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[3.0546e-05, 3.4513e-04, 5.0617e-04,  ..., 2.3976e-04, 2.4867e-04,
+         1.2016e-04],
+        [2.0513e-05, 1.7966e-04, 3.9413e-04,  ..., 2.9424e-04, 1.5320e-04,
+         1.8128e-04],
+        [3.1109e-05, 5.8616e-04, 3.5080e-04,  ..., 3.0273e-04, 2.3811e-04,
+         2.2537e-04],
+        ...,
+        [1.9919e-05, 2.3911e-04, 1.6953e-04,  ..., 2.6284e-04, 1.5067e-04,
+         1.9228e-04],
+        [2.8058e-05, 2.8770e-04, 2.9913e-04,  ..., 3.7263e-04, 1.2675e-04,
+         3.3255e-04],
+        [2.0178e-05, 3.2688e-04, 1.2224e-04,  ..., 2.3062e-04, 1.9788e-04,
+         3.5308e-04]], device='cuda:0'), tensor([[4.9101e-05, 3.4152e-04, 1.6397e-04,  ..., 2.4460e-04, 2.5566e-04,
+         1.7187e-04],
+        [5.5419e-05, 2.0266e-04, 3.9058e-04,  ..., 2.3748e-04, 2.3935e-04,
+         1.6993e-04],
+        [3.8941e-05, 6.1257e-04, 1.5357e-04,  ..., 2.5397e-04, 2.9113e-04,
+         1.9118e-04],
+        ...,
+        [1.6775e-05, 2.8627e-04, 1.8359e-04,  ..., 1.2160e-04, 1.9482e-04,
+         1.7907e-04],
+        [3.5225e-05, 2.7431e-04, 2.0598e-04,  ..., 2.5997e-04, 2.4041e-04,
+         3.3590e-04],
+        [1.9848e-05, 3.2153e-04, 1.7071e-04,  ..., 2.9898e-04, 1.8878e-04,
+         2.6832e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([0.0018, 0.0016, 0.0014, 0.0011, 0.0023, 0.0021, 0.0019, 0.0017, 0.0018,
+        0.0020, 0.0021, 0.0021, 0.0016, 0.0015, 0.0023, 0.0020, 0.0019, 0.0023,
+        0.0017, 0.0022, 0.0015, 0.0013, 0.0017, 0.0017, 0.0018, 0.0021, 0.0022,
+        0.0015, 0.0016, 0.0013, 0.0016, 0.0014, 0.0019, 0.0021, 0.0020, 0.0011,
+        0.0016, 0.0013, 0.0020, 0.0016, 0.0014, 0.0016, 0.0010, 0.0016, 0.0015,
+        0.0015, 0.0011, 0.0011, 0.0016, 0.0015, 0.0015, 0.0015, 0.0018, 0.0015,
+        0.0011, 0.0019, 0.0014, 0.0020, 0.0018, 0.0020, 0.0016, 0.0018, 0.0019,
+        0.0016], device='cuda:0'), tensor([0.0022, 0.0015, 0.0011, 0.0011, 0.0021, 0.0021, 0.0018, 0.0018, 0.0018,
+        0.0017, 0.0021, 0.0021, 0.0017, 0.0018, 0.0019, 0.0020, 0.0017, 0.0016,
+        0.0015, 0.0020, 0.0015, 0.0013, 0.0016, 0.0017, 0.0020, 0.0019, 0.0017,
+        0.0012, 0.0024, 0.0014, 0.0014, 0.0016, 0.0020, 0.0021, 0.0019, 0.0013,
+        0.0016, 0.0013, 0.0019, 0.0018, 0.0013, 0.0017, 0.0012, 0.0020, 0.0016,
+        0.0014, 0.0012, 0.0012, 0.0018, 0.0014, 0.0016, 0.0015, 0.0020, 0.0014,
+        0.0017, 0.0016, 0.0013, 0.0022, 0.0018, 0.0017, 0.0017, 0.0018, 0.0018,
+        0.0015], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+weighted predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[6.1092e-06, 6.9026e-05, 1.0123e-04,  ..., 4.7951e-05, 4.9733e-05,
+         2.4031e-05],
+        [4.1026e-06, 3.5932e-05, 7.8826e-05,  ..., 5.8849e-05, 3.0639e-05,
+         3.6256e-05],
+        [6.2218e-06, 1.1723e-04, 7.0160e-05,  ..., 6.0546e-05, 4.7622e-05,
+         4.5073e-05],
+        ...,
+        [3.9838e-06, 4.7823e-05, 3.3907e-05,  ..., 5.2567e-05, 3.0133e-05,
+         3.8456e-05],
+        [5.6115e-06, 5.7541e-05, 5.9827e-05,  ..., 7.4526e-05, 2.5350e-05,
+         6.6510e-05],
+        [4.0356e-06, 6.5376e-05, 2.4447e-05,  ..., 4.6123e-05, 3.9576e-05,
+         7.0616e-05]], device='cuda:0'), tensor([[3.9281e-05, 2.7322e-04, 1.3118e-04,  ..., 1.9568e-04, 2.0452e-04,
+         1.3750e-04],
+        [4.4335e-05, 1.6212e-04, 3.1247e-04,  ..., 1.8999e-04, 1.9148e-04,
+         1.3594e-04],
+        [3.1152e-05, 4.9006e-04, 1.2285e-04,  ..., 2.0317e-04, 2.3291e-04,
+         1.5295e-04],
+        ...,
+        [1.3420e-05, 2.2902e-04, 1.4687e-04,  ..., 9.7281e-05, 1.5586e-04,
+         1.4326e-04],
+        [2.8180e-05, 2.1945e-04, 1.6478e-04,  ..., 2.0798e-04, 1.9233e-04,
+         2.6872e-04],
+        [1.5878e-05, 2.5722e-04, 1.3657e-04,  ..., 2.3918e-04, 1.5103e-04,
+         2.1466e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([[4.5390e-05, 3.4224e-04, 2.3241e-04,  ..., 2.4363e-04, 2.5426e-04,
+         1.6153e-04],
+        [4.8438e-05, 1.9806e-04, 3.9129e-04,  ..., 2.4884e-04, 2.2212e-04,
+         1.7220e-04],
+        [3.7374e-05, 6.0729e-04, 1.9301e-04,  ..., 2.6372e-04, 2.8053e-04,
+         1.9802e-04],
+        ...,
+        [1.7404e-05, 2.7684e-04, 1.8078e-04,  ..., 1.4985e-04, 1.8599e-04,
+         1.8172e-04],
+        [3.3791e-05, 2.7699e-04, 2.2461e-04,  ..., 2.8250e-04, 2.1768e-04,
+         3.3523e-04],
+        [1.9914e-05, 3.2260e-04, 1.6101e-04,  ..., 2.8531e-04, 1.9060e-04,
+         2.8527e-04]], device='cuda:0')
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([0.0021, 0.0014, 0.0011, 0.0011, 0.0021, 0.0021, 0.0018, 0.0018, 0.0018,
+        0.0017, 0.0020, 0.0021, 0.0017, 0.0017, 0.0020, 0.0020, 0.0017, 0.0017,
+        0.0015, 0.0020, 0.0015, 0.0013, 0.0016, 0.0017, 0.0019, 0.0019, 0.0018,
+        0.0013, 0.0022, 0.0014, 0.0015, 0.0016, 0.0019, 0.0021, 0.0019, 0.0013,
+        0.0016, 0.0012, 0.0019, 0.0017, 0.0013, 0.0017, 0.0011, 0.0019, 0.0015,
+        0.0013, 0.0012, 0.0011, 0.0017, 0.0014, 0.0016, 0.0015, 0.0020, 0.0014,
+        0.0015, 0.0017, 0.0013, 0.0022, 0.0018, 0.0018, 0.0017, 0.0018, 0.0018,
+        0.0015], device='cuda:0')
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[3.7641e-05, 2.2699e-04, 2.2560e-04,  ..., 3.2010e-04, 3.2935e-04,
+         1.3788e-04],
+        [3.9059e-05, 3.8456e-04, 1.2858e-04,  ..., 3.0297e-04, 1.0497e-04,
+         1.1268e-04],
+        [1.6070e-05, 2.3783e-04, 1.2459e-04,  ..., 4.5953e-04, 1.8094e-04,
+         2.6207e-04],
+        ...,
+        [2.3446e-05, 7.7700e-04, 1.9551e-04,  ..., 2.3907e-04, 2.8639e-04,
+         2.3656e-04],
+        [2.3235e-05, 2.3889e-04, 4.5917e-04,  ..., 3.5324e-04, 9.5184e-05,
+         2.9686e-04],
+        [1.6415e-05, 3.5696e-04, 1.5735e-04,  ..., 2.4723e-04, 2.4819e-04,
+         4.1329e-04]], device='cuda:0'), tensor([[2.0146e-05, 2.4361e-04, 1.2810e-04,  ..., 2.5673e-04, 3.4566e-04,
+         2.2417e-04],
+        [3.1942e-05, 3.3247e-04, 1.3313e-04,  ..., 1.8671e-04, 8.3846e-05,
+         2.8299e-04],
+        [1.2635e-05, 3.8067e-04, 1.0373e-04,  ..., 5.3787e-04, 1.6761e-04,
+         2.2274e-04],
+        ...,
+        [2.8834e-05, 7.2821e-04, 1.1259e-04,  ..., 2.4608e-04, 4.4140e-04,
+         2.8594e-04],
+        [2.5056e-05, 1.9599e-04, 3.3743e-04,  ..., 3.8716e-04, 1.1218e-04,
+         3.7290e-04],
+        [1.7844e-05, 2.9809e-04, 1.6693e-04,  ..., 3.2793e-04, 2.3636e-04,
+         2.8775e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([0.0024, 0.0013, 0.0012, 0.0017, 0.0019, 0.0016, 0.0013, 0.0014, 0.0013,
+        0.0016, 0.0017, 0.0012, 0.0018, 0.0011, 0.0017, 0.0016, 0.0018, 0.0019,
+        0.0017, 0.0016, 0.0015, 0.0026, 0.0025, 0.0018, 0.0017, 0.0018, 0.0020,
+        0.0026, 0.0021, 0.0014, 0.0014, 0.0011, 0.0011, 0.0016, 0.0018, 0.0019,
+        0.0014, 0.0016, 0.0013, 0.0016, 0.0016, 0.0012, 0.0011, 0.0011, 0.0014,
+        0.0014, 0.0014, 0.0016, 0.0017, 0.0013, 0.0012, 0.0014, 0.0015, 0.0013,
+        0.0014, 0.0018, 0.0011, 0.0022, 0.0019, 0.0014, 0.0020, 0.0018, 0.0019,
+        0.0014], device='cuda:0'), tensor([0.0017, 0.0012, 0.0015, 0.0022, 0.0020, 0.0014, 0.0013, 0.0013, 0.0016,
+        0.0016, 0.0021, 0.0011, 0.0018, 0.0012, 0.0016, 0.0016, 0.0018, 0.0016,
+        0.0017, 0.0018, 0.0017, 0.0018, 0.0017, 0.0015, 0.0016, 0.0020, 0.0018,
+        0.0019, 0.0017, 0.0013, 0.0014, 0.0016, 0.0011, 0.0014, 0.0019, 0.0018,
+        0.0014, 0.0015, 0.0013, 0.0013, 0.0012, 0.0011, 0.0012, 0.0013, 0.0012,
+        0.0013, 0.0015, 0.0021, 0.0016, 0.0013, 0.0013, 0.0011, 0.0015, 0.0012,
+        0.0011, 0.0013, 0.0014, 0.0018, 0.0019, 0.0012, 0.0017, 0.0017, 0.0018,
+        0.0017], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+weighted predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[7.5283e-06, 4.5398e-05, 4.5120e-05,  ..., 6.4019e-05, 6.5870e-05,
+         2.7577e-05],
+        [7.8117e-06, 7.6912e-05, 2.5715e-05,  ..., 6.0594e-05, 2.0994e-05,
+         2.2536e-05],
+        [3.2140e-06, 4.7566e-05, 2.4917e-05,  ..., 9.1907e-05, 3.6188e-05,
+         5.2415e-05],
+        ...,
+        [4.6892e-06, 1.5540e-04, 3.9102e-05,  ..., 4.7814e-05, 5.7277e-05,
+         4.7312e-05],
+        [4.6470e-06, 4.7777e-05, 9.1835e-05,  ..., 7.0649e-05, 1.9037e-05,
+         5.9372e-05],
+        [3.2830e-06, 7.1391e-05, 3.1470e-05,  ..., 4.9446e-05, 4.9637e-05,
+         8.2657e-05]], device='cuda:0'), tensor([[1.6117e-05, 1.9489e-04, 1.0248e-04,  ..., 2.0539e-04, 2.7653e-04,
+         1.7934e-04],
+        [2.5554e-05, 2.6597e-04, 1.0651e-04,  ..., 1.4936e-04, 6.7077e-05,
+         2.2640e-04],
+        [1.0108e-05, 3.0453e-04, 8.2987e-05,  ..., 4.3029e-04, 1.3409e-04,
+         1.7819e-04],
+        ...,
+        [2.3067e-05, 5.8257e-04, 9.0075e-05,  ..., 1.9686e-04, 3.5312e-04,
+         2.2875e-04],
+        [2.0044e-05, 1.5679e-04, 2.6994e-04,  ..., 3.0973e-04, 8.9742e-05,
+         2.9832e-04],
+        [1.4275e-05, 2.3847e-04, 1.3355e-04,  ..., 2.6234e-04, 1.8908e-04,
+         2.3020e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([[2.3645e-05, 2.4029e-04, 1.4760e-04,  ..., 2.6941e-04, 3.4240e-04,
+         2.0691e-04],
+        [3.3365e-05, 3.4288e-04, 1.3222e-04,  ..., 2.0996e-04, 8.8071e-05,
+         2.4893e-04],
+        [1.3322e-05, 3.5210e-04, 1.0790e-04,  ..., 5.2220e-04, 1.7028e-04,
+         2.3061e-04],
+        ...,
+        [2.7756e-05, 7.3797e-04, 1.2918e-04,  ..., 2.4468e-04, 4.1040e-04,
+         2.7606e-04],
+        [2.4691e-05, 2.0457e-04, 3.6178e-04,  ..., 3.8038e-04, 1.0878e-04,
+         3.5769e-04],
+        [1.7558e-05, 3.0986e-04, 1.6502e-04,  ..., 3.1179e-04, 2.3872e-04,
+         3.1286e-04]], device='cuda:0')
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([0.0018, 0.0012, 0.0014, 0.0021, 0.0019, 0.0014, 0.0013, 0.0013, 0.0015,
+        0.0016, 0.0020, 0.0011, 0.0018, 0.0012, 0.0017, 0.0016, 0.0017, 0.0016,
+        0.0017, 0.0017, 0.0016, 0.0020, 0.0019, 0.0016, 0.0016, 0.0020, 0.0019,
+        0.0021, 0.0018, 0.0013, 0.0014, 0.0015, 0.0010, 0.0015, 0.0018, 0.0018,
+        0.0014, 0.0015, 0.0013, 0.0014, 0.0013, 0.0011, 0.0012, 0.0012, 0.0012,
+        0.0013, 0.0015, 0.0020, 0.0017, 0.0013, 0.0012, 0.0011, 0.0015, 0.0012,
+        0.0012, 0.0014, 0.0014, 0.0019, 0.0019, 0.0013, 0.0017, 0.0017, 0.0018,
+        0.0016], device='cuda:0')
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[7.9573e-06, 4.4222e-04, 1.3504e-04,  ..., 2.0127e-04, 1.1761e-04,
+         2.0507e-04],
+        [2.2680e-05, 6.1920e-04, 1.4987e-04,  ..., 2.5529e-04, 1.1304e-04,
+         2.3322e-04],
+        [1.2571e-05, 3.2617e-04, 2.3196e-04,  ..., 2.2400e-04, 1.2661e-04,
+         2.2048e-04],
+        ...,
+        [1.4153e-05, 3.7226e-04, 1.6695e-04,  ..., 2.8663e-04, 2.5708e-04,
+         1.9529e-04],
+        [8.7704e-06, 3.3540e-04, 7.2417e-05,  ..., 3.3216e-04, 1.6591e-04,
+         3.2059e-04],
+        [1.9865e-05, 5.1507e-04, 1.4165e-04,  ..., 5.5460e-04, 1.6381e-04,
+         3.0126e-04]], device='cuda:0'), tensor([[1.1229e-05, 3.6780e-04, 9.5920e-05,  ..., 2.6006e-04, 1.1420e-04,
+         3.0911e-04],
+        [4.0248e-05, 5.6417e-04, 1.6344e-04,  ..., 1.8772e-04, 1.2573e-04,
+         5.4620e-04],
+        [3.2655e-05, 3.0157e-04, 2.6146e-04,  ..., 2.0562e-04, 2.2643e-04,
+         2.6166e-04],
+        ...,
+        [1.3129e-05, 2.8359e-04, 1.7746e-04,  ..., 2.1776e-04, 3.1673e-04,
+         2.0456e-04],
+        [1.9421e-05, 3.4880e-04, 9.7178e-05,  ..., 2.4487e-04, 2.4583e-04,
+         3.1307e-04],
+        [2.6297e-05, 4.0539e-04, 8.1368e-05,  ..., 5.1512e-04, 1.4116e-04,
+         1.9854e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+raw confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([0.0016, 0.0018, 0.0015, 0.0021, 0.0018, 0.0018, 0.0013, 0.0016, 0.0022,
+        0.0016, 0.0020, 0.0016, 0.0018, 0.0020, 0.0017, 0.0014, 0.0017, 0.0011,
+        0.0013, 0.0016, 0.0016, 0.0021, 0.0019, 0.0022, 0.0015, 0.0017, 0.0014,
+        0.0018, 0.0018, 0.0017, 0.0019, 0.0018, 0.0019, 0.0018, 0.0018, 0.0018,
+        0.0022, 0.0014, 0.0022, 0.0015, 0.0019, 0.0017, 0.0018, 0.0020, 0.0020,
+        0.0019, 0.0016, 0.0020, 0.0020, 0.0013, 0.0017, 0.0013, 0.0025, 0.0012,
+        0.0017, 0.0014, 0.0013, 0.0013, 0.0012, 0.0016, 0.0015, 0.0010, 0.0013,
+        0.0016], device='cuda:0'), tensor([0.0016, 0.0021, 0.0013, 0.0018, 0.0018, 0.0019, 0.0017, 0.0016, 0.0023,
+        0.0012, 0.0023, 0.0015, 0.0015, 0.0027, 0.0017, 0.0018, 0.0013, 0.0010,
+        0.0014, 0.0015, 0.0018, 0.0018, 0.0017, 0.0021, 0.0014, 0.0016, 0.0015,
+        0.0021, 0.0016, 0.0017, 0.0014, 0.0014, 0.0016, 0.0014, 0.0017, 0.0012,
+        0.0013, 0.0017, 0.0021, 0.0012, 0.0015, 0.0014, 0.0013, 0.0016, 0.0018,
+        0.0017, 0.0018, 0.0022, 0.0024, 0.0014, 0.0017, 0.0012, 0.0017, 0.0011,
+        0.0019, 0.0016, 0.0017, 0.0012, 0.0014, 0.0015, 0.0017, 0.0013, 0.0013,
+        0.0017], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+weighted predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+[tensor([[1.5915e-06, 8.8444e-05, 2.7008e-05,  ..., 4.0254e-05, 2.3523e-05,
+         4.1014e-05],
+        [4.5360e-06, 1.2384e-04, 2.9975e-05,  ..., 5.1057e-05, 2.2608e-05,
+         4.6644e-05],
+        [2.5142e-06, 6.5235e-05, 4.6393e-05,  ..., 4.4800e-05, 2.5323e-05,
+         4.4096e-05],
+        ...,
+        [2.8306e-06, 7.4452e-05, 3.3390e-05,  ..., 5.7327e-05, 5.1417e-05,
+         3.9058e-05],
+        [1.7541e-06, 6.7080e-05, 1.4483e-05,  ..., 6.6433e-05, 3.3181e-05,
+         6.4118e-05],
+        [3.9731e-06, 1.0301e-04, 2.8330e-05,  ..., 1.1092e-04, 3.2763e-05,
+         6.0253e-05]], device='cuda:0'), tensor([[8.9830e-06, 2.9424e-04, 7.6736e-05,  ..., 2.0805e-04, 9.1360e-05,
+         2.4729e-04],
+        [3.2198e-05, 4.5134e-04, 1.3075e-04,  ..., 1.5017e-04, 1.0058e-04,
+         4.3696e-04],
+        [2.6124e-05, 2.4126e-04, 2.0917e-04,  ..., 1.6449e-04, 1.8114e-04,
+         2.0932e-04],
+        ...,
+        [1.0503e-05, 2.2687e-04, 1.4197e-04,  ..., 1.7421e-04, 2.5338e-04,
+         1.6365e-04],
+        [1.5537e-05, 2.7904e-04, 7.7742e-05,  ..., 1.9589e-04, 1.9666e-04,
+         2.5045e-04],
+        [2.1037e-05, 3.2431e-04, 6.5094e-05,  ..., 4.1209e-04, 1.1293e-04,
+         1.5883e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final predict
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([[1.0574e-05, 3.8268e-04, 1.0374e-04,  ..., 2.4830e-04, 1.1488e-04,
+         2.8830e-04],
+        [3.6734e-05, 5.7518e-04, 1.6073e-04,  ..., 2.0123e-04, 1.2319e-04,
+         4.8361e-04],
+        [2.8638e-05, 3.0649e-04, 2.5556e-04,  ..., 2.0929e-04, 2.0647e-04,
+         2.5342e-04],
+        ...,
+        [1.3334e-05, 3.0132e-04, 1.7536e-04,  ..., 2.3154e-04, 3.0480e-04,
+         2.0271e-04],
+        [1.7291e-05, 3.4612e-04, 9.2226e-05,  ..., 2.6233e-04, 2.2984e-04,
+         3.1457e-04],
+        [2.5010e-05, 4.2733e-04, 9.3425e-05,  ..., 5.2301e-04, 1.4569e-04,
+         2.1909e-04]], device='cuda:0')
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+final confidence
+DEBUG   [02-25 20:58:22] forward in Ensembler:
+tensor([0.0016, 0.0020, 0.0014, 0.0019, 0.0018, 0.0019, 0.0016, 0.0016, 0.0023,
+        0.0012, 0.0022, 0.0014, 0.0016, 0.0025, 0.0017, 0.0017, 0.0014, 0.0010,
+        0.0013, 0.0016, 0.0017, 0.0019, 0.0018, 0.0021, 0.0014, 0.0017, 0.0014,
+        0.0021, 0.0016, 0.0017, 0.0015, 0.0015, 0.0017, 0.0015, 0.0018, 0.0013,
+        0.0015, 0.0016, 0.0022, 0.0012, 0.0015, 0.0014, 0.0014, 0.0017, 0.0019,
+        0.0018, 0.0017, 0.0021, 0.0023, 0.0014, 0.0017, 0.0012, 0.0017, 0.0011,
+        0.0019, 0.0016, 0.0016, 0.0012, 0.0014, 0.0015, 0.0017, 0.0012, 0.0013,
+        0.0017], device='cuda:0')
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+raw predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([[2.2717e-05, 1.2164e-04, 2.9088e-04,  ..., 1.7616e-04, 1.7560e-04,
+         2.8595e-04],
+        [3.6997e-05, 1.9524e-04, 3.6045e-04,  ..., 2.6164e-04, 2.4922e-04,
+         1.3018e-04],
+        [1.5871e-05, 2.2592e-04, 1.3014e-04,  ..., 2.7392e-04, 1.1984e-04,
+         1.6568e-04],
+        ...,
+        [2.1147e-05, 4.1206e-04, 8.0925e-05,  ..., 3.6126e-04, 3.0323e-04,
+         1.9451e-04],
+        [1.0852e-05, 4.3555e-04, 1.3317e-04,  ..., 3.0932e-04, 1.1868e-04,
+         3.3497e-04],
+        [2.6956e-05, 2.7404e-04, 2.7828e-04,  ..., 3.5320e-04, 3.3337e-04,
+         3.0386e-04]], device='cuda:0'), tensor([[4.1147e-05, 2.6316e-04, 2.1615e-04,  ..., 2.5150e-04, 2.1928e-04,
+         1.6485e-04],
+        [2.7332e-05, 2.7350e-04, 2.0234e-04,  ..., 1.8623e-04, 3.0489e-04,
+         1.7492e-04],
+        [1.3905e-05, 2.7973e-04, 9.1054e-05,  ..., 1.7369e-04, 1.9522e-04,
+         2.0161e-04],
+        ...,
+        [5.6636e-05, 3.5713e-04, 2.0245e-04,  ..., 3.0063e-04, 2.9820e-04,
+         1.8729e-04],
+        [2.4715e-05, 3.5581e-04, 1.5454e-04,  ..., 3.0572e-04, 1.7307e-04,
+         3.2841e-04],
+        [1.8731e-05, 3.0965e-04, 2.2757e-04,  ..., 3.0821e-04, 2.4237e-04,
+         4.5581e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+raw confidence
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([0.0020, 0.0022, 0.0013, 0.0014, 0.0017, 0.0014, 0.0019, 0.0022, 0.0017,
+        0.0014, 0.0019, 0.0017, 0.0016, 0.0016, 0.0013, 0.0015, 0.0019, 0.0015,
+        0.0011, 0.0016, 0.0018, 0.0014, 0.0014, 0.0016, 0.0014, 0.0020, 0.0016,
+        0.0013, 0.0013, 0.0017, 0.0016, 0.0021, 0.0020, 0.0016, 0.0018, 0.0021,
+        0.0020, 0.0011, 0.0016, 0.0015, 0.0023, 0.0019, 0.0018, 0.0016, 0.0013,
+        0.0017, 0.0025, 0.0015, 0.0016, 0.0016, 0.0022, 0.0020, 0.0018, 0.0019,
+        0.0016, 0.0013, 0.0014, 0.0022, 0.0013, 0.0017, 0.0015, 0.0018, 0.0015,
+        0.0011], device='cuda:0'), tensor([0.0020, 0.0017, 0.0012, 0.0013, 0.0017, 0.0015, 0.0015, 0.0017, 0.0017,
+        0.0015, 0.0013, 0.0013, 0.0015, 0.0014, 0.0014, 0.0015, 0.0025, 0.0015,
+        0.0011, 0.0011, 0.0014, 0.0017, 0.0014, 0.0014, 0.0012, 0.0017, 0.0014,
+        0.0016, 0.0014, 0.0018, 0.0014, 0.0015, 0.0018, 0.0013, 0.0018, 0.0021,
+        0.0018, 0.0011, 0.0020, 0.0012, 0.0017, 0.0022, 0.0017, 0.0016, 0.0012,
+        0.0014, 0.0021, 0.0019, 0.0016, 0.0017, 0.0021, 0.0020, 0.0017, 0.0015,
+        0.0011, 0.0012, 0.0012, 0.0016, 0.0017, 0.0017, 0.0015, 0.0018, 0.0015,
+        0.0013], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+weighted predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([[4.5434e-06, 2.4328e-05, 5.8177e-05,  ..., 3.5231e-05, 3.5120e-05,
+         5.7190e-05],
+        [7.3994e-06, 3.9047e-05, 7.2091e-05,  ..., 5.2328e-05, 4.9845e-05,
+         2.6037e-05],
+        [3.1743e-06, 4.5184e-05, 2.6028e-05,  ..., 5.4784e-05, 2.3968e-05,
+         3.3135e-05],
+        ...,
+        [4.2294e-06, 8.2412e-05, 1.6185e-05,  ..., 7.2252e-05, 6.0646e-05,
+         3.8902e-05],
+        [2.1703e-06, 8.7110e-05, 2.6633e-05,  ..., 6.1863e-05, 2.3735e-05,
+         6.6995e-05],
+        [5.3911e-06, 5.4807e-05, 5.5655e-05,  ..., 7.0640e-05, 6.6674e-05,
+         6.0772e-05]], device='cuda:0'), tensor([[3.2918e-05, 2.1052e-04, 1.7292e-04,  ..., 2.0120e-04, 1.7543e-04,
+         1.3188e-04],
+        [2.1866e-05, 2.1880e-04, 1.6187e-04,  ..., 1.4899e-04, 2.4391e-04,
+         1.3993e-04],
+        [1.1124e-05, 2.2379e-04, 7.2843e-05,  ..., 1.3895e-04, 1.5617e-04,
+         1.6129e-04],
+        ...,
+        [4.5309e-05, 2.8570e-04, 1.6196e-04,  ..., 2.4051e-04, 2.3856e-04,
+         1.4983e-04],
+        [1.9772e-05, 2.8465e-04, 1.2363e-04,  ..., 2.4457e-04, 1.3846e-04,
+         2.6273e-04],
+        [1.4985e-05, 2.4772e-04, 1.8206e-04,  ..., 2.4656e-04, 1.9390e-04,
+         3.6465e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+final predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+tensor([[3.7461e-05, 2.3485e-04, 2.3110e-04,  ..., 2.3643e-04, 2.1055e-04,
+         1.8907e-04],
+        [2.9265e-05, 2.5785e-04, 2.3396e-04,  ..., 2.0131e-04, 2.9375e-04,
+         1.6597e-04],
+        [1.4298e-05, 2.6897e-04, 9.8871e-05,  ..., 1.9373e-04, 1.8014e-04,
+         1.9442e-04],
+        ...,
+        [4.9538e-05, 3.6812e-04, 1.7814e-04,  ..., 3.1276e-04, 2.9920e-04,
+         1.8873e-04],
+        [2.1942e-05, 3.7176e-04, 1.5027e-04,  ..., 3.0644e-04, 1.6219e-04,
+         3.2972e-04],
+        [2.0376e-05, 3.0253e-04, 2.3771e-04,  ..., 3.1720e-04, 2.6057e-04,
+         4.2542e-04]], device='cuda:0')
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+final confidence
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+tensor([0.0020, 0.0018, 0.0011, 0.0013, 0.0017, 0.0015, 0.0016, 0.0018, 0.0017,
+        0.0015, 0.0014, 0.0013, 0.0015, 0.0014, 0.0014, 0.0015, 0.0024, 0.0015,
+        0.0011, 0.0011, 0.0015, 0.0017, 0.0014, 0.0015, 0.0012, 0.0017, 0.0014,
+        0.0015, 0.0014, 0.0018, 0.0014, 0.0016, 0.0018, 0.0014, 0.0018, 0.0021,
+        0.0018, 0.0010, 0.0019, 0.0012, 0.0018, 0.0021, 0.0017, 0.0016, 0.0013,
+        0.0013, 0.0021, 0.0017, 0.0016, 0.0017, 0.0021, 0.0020, 0.0017, 0.0016,
+        0.0012, 0.0012, 0.0012, 0.0017, 0.0016, 0.0017, 0.0015, 0.0018, 0.0015,
+        0.0013], device='cuda:0')
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+raw predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([[1.0004e-05, 4.2743e-04, 2.9818e-04,  ..., 4.1098e-04, 1.4041e-04,
+         2.4695e-04],
+        [2.5589e-05, 3.5219e-04, 2.1776e-04,  ..., 2.7925e-04, 2.6111e-04,
+         2.4286e-04],
+        [1.5346e-05, 1.7192e-04, 3.3399e-04,  ..., 1.8305e-04, 2.0907e-04,
+         2.6060e-04],
+        ...,
+        [4.8388e-05, 2.7827e-04, 1.3231e-04,  ..., 3.0539e-04, 2.4748e-04,
+         2.1069e-04],
+        [1.2885e-05, 2.7191e-04, 1.7461e-04,  ..., 2.2901e-04, 1.8049e-04,
+         1.7297e-04],
+        [6.1405e-05, 1.8529e-04, 2.2622e-04,  ..., 3.6710e-04, 6.6087e-04,
+         1.5715e-04]], device='cuda:0'), tensor([[1.9469e-05, 2.7109e-04, 1.8346e-04,  ..., 2.6061e-04, 1.1697e-04,
+         3.3499e-04],
+        [4.2078e-05, 3.0891e-04, 3.0774e-04,  ..., 2.6645e-04, 2.3811e-04,
+         2.8050e-04],
+        [1.1196e-05, 3.1461e-04, 2.4500e-04,  ..., 1.0791e-04, 2.5737e-04,
+         2.8559e-04],
+        ...,
+        [1.0397e-04, 2.3981e-04, 2.9716e-04,  ..., 2.3187e-04, 9.8393e-05,
+         2.5747e-04],
+        [1.4143e-05, 2.1009e-04, 1.6446e-04,  ..., 2.4604e-04, 1.4713e-04,
+         2.4891e-04],
+        [3.9541e-05, 2.1016e-04, 2.4157e-04,  ..., 4.5009e-04, 3.0092e-04,
+         1.6811e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+raw confidence
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([0.0015, 0.0013, 0.0016, 0.0014, 0.0019, 0.0013, 0.0011, 0.0016, 0.0010,
+        0.0013, 0.0016, 0.0017, 0.0016, 0.0014, 0.0013, 0.0014, 0.0017, 0.0015,
+        0.0014, 0.0014, 0.0013, 0.0017, 0.0012, 0.0015, 0.0019, 0.0015, 0.0013,
+        0.0018, 0.0015, 0.0015, 0.0016, 0.0017, 0.0013, 0.0015, 0.0018, 0.0020,
+        0.0019, 0.0020, 0.0017, 0.0014, 0.0017, 0.0013, 0.0014, 0.0016, 0.0012,
+        0.0020, 0.0013, 0.0015, 0.0014, 0.0019, 0.0019, 0.0017, 0.0013, 0.0016,
+        0.0013, 0.0014, 0.0017, 0.0013, 0.0018, 0.0014, 0.0020, 0.0016, 0.0014,
+        0.0015], device='cuda:0'), tensor([0.0017, 0.0013, 0.0018, 0.0015, 0.0020, 0.0016, 0.0013, 0.0017, 0.0010,
+        0.0012, 0.0018, 0.0018, 0.0015, 0.0018, 0.0015, 0.0012, 0.0018, 0.0013,
+        0.0015, 0.0019, 0.0013, 0.0016, 0.0014, 0.0017, 0.0017, 0.0015, 0.0015,
+        0.0017, 0.0015, 0.0016, 0.0015, 0.0018, 0.0015, 0.0017, 0.0014, 0.0017,
+        0.0020, 0.0019, 0.0022, 0.0014, 0.0013, 0.0016, 0.0014, 0.0020, 0.0013,
+        0.0019, 0.0016, 0.0015, 0.0011, 0.0020, 0.0020, 0.0015, 0.0015, 0.0012,
+        0.0014, 0.0013, 0.0020, 0.0013, 0.0020, 0.0016, 0.0019, 0.0015, 0.0017,
+        0.0017], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+weighted predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+[tensor([[2.0008e-06, 8.5487e-05, 5.9637e-05,  ..., 8.2196e-05, 2.8083e-05,
+         4.9390e-05],
+        [5.1177e-06, 7.0437e-05, 4.3552e-05,  ..., 5.5849e-05, 5.2221e-05,
+         4.8571e-05],
+        [3.0691e-06, 3.4385e-05, 6.6797e-05,  ..., 3.6611e-05, 4.1813e-05,
+         5.2120e-05],
+        ...,
+        [9.6777e-06, 5.5655e-05, 2.6462e-05,  ..., 6.1077e-05, 4.9497e-05,
+         4.2138e-05],
+        [2.5770e-06, 5.4381e-05, 3.4922e-05,  ..., 4.5802e-05, 3.6099e-05,
+         3.4593e-05],
+        [1.2281e-05, 3.7057e-05, 4.5244e-05,  ..., 7.3421e-05, 1.3217e-04,
+         3.1431e-05]], device='cuda:0'), tensor([[1.5575e-05, 2.1687e-04, 1.4677e-04,  ..., 2.0849e-04, 9.3578e-05,
+         2.6799e-04],
+        [3.3662e-05, 2.4713e-04, 2.4619e-04,  ..., 2.1316e-04, 1.9049e-04,
+         2.2440e-04],
+        [8.9565e-06, 2.5169e-04, 1.9600e-04,  ..., 8.6325e-05, 2.0590e-04,
+         2.2847e-04],
+        ...,
+        [8.3172e-05, 1.9185e-04, 2.3773e-04,  ..., 1.8549e-04, 7.8715e-05,
+         2.0597e-04],
+        [1.1314e-05, 1.6807e-04, 1.3157e-04,  ..., 1.9683e-04, 1.1771e-04,
+         1.9913e-04],
+        [3.1633e-05, 1.6813e-04, 1.9326e-04,  ..., 3.6007e-04, 2.4074e-04,
+         1.3449e-04]], device='cuda:0')]
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+final predict
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+tensor([[1.7576e-05, 3.0236e-04, 2.0641e-04,  ..., 2.9069e-04, 1.2166e-04,
+         3.1738e-04],
+        [3.8780e-05, 3.1756e-04, 2.8974e-04,  ..., 2.6901e-04, 2.4271e-04,
+         2.7297e-04],
+        [1.2026e-05, 2.8607e-04, 2.6279e-04,  ..., 1.2294e-04, 2.4771e-04,
+         2.8059e-04],
+        ...,
+        [9.2850e-05, 2.4750e-04, 2.6419e-04,  ..., 2.4657e-04, 1.2821e-04,
+         2.4811e-04],
+        [1.3891e-05, 2.2245e-04, 1.6649e-04,  ..., 2.4263e-04, 1.5381e-04,
+         2.3373e-04],
+        [4.3914e-05, 2.0518e-04, 2.3850e-04,  ..., 4.3349e-04, 3.7291e-04,
+         1.6592e-04]], device='cuda:0')
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+final confidence
+DEBUG   [02-25 20:58:23] forward in Ensembler:
+tensor([0.0017, 0.0012, 0.0018, 0.0015, 0.0020, 0.0015, 0.0012, 0.0017, 0.0010,
+        0.0012, 0.0017, 0.0018, 0.0015, 0.0017, 0.0014, 0.0012, 0.0018, 0.0013,
+        0.0015, 0.0018, 0.0013, 0.0016, 0.0014, 0.0016, 0.0017, 0.0015, 0.0015,
+        0.0017, 0.0014, 0.0016, 0.0015, 0.0017, 0.0015, 0.0016, 0.0015, 0.0018,
+        0.0019, 0.0019, 0.0021, 0.0014, 0.0014, 0.0015, 0.0014, 0.0019, 0.0013,
+        0.0020, 0.0016, 0.0015, 0.0011, 0.0020, 0.0019, 0.0015, 0.0015, 0.0012,
+        0.0013, 0.0012, 0.0019, 0.0013, 0.0019, 0.0016, 0.0019, 0.0015, 0.0016,
+        0.0017], device='cuda:0')
+INFO    [02-25 20:58:27] test_mentor in DistillTrainer:
+{'Recall@10': 0.2076182433962822, 'NDCG@10': 0.11716019362211227, 'MRR@10': 0.08961100101470948, 'Recall@5': 0.1436402028799057, 'NDCG@5': 0.09661331366747618, 'MRR@5': 0.08121396519243718, 'Recall*@10': 0.2076182433962822, 'NDCG*@10': 0.11716019362211227, 'MRR*@10': 0.08961100101470948, 'Recall*@5': 0.1436402028799057, 'NDCG*@5': 0.09661331366747618, 'MRR*@5': 0.08121396519243718}
+INFO    [02-25 20:58:27] train in DistillTrainer:
+result:
+{'Recall@10': 0.2076182433962822, 'NDCG@10': 0.11716019362211227, 'MRR@10': 0.08961100101470948, 'Recall@5': 0.1436402028799057, 'NDCG@5': 0.09661331366747618, 'MRR@5': 0.08121396519243718, 'Recall*@10': 0.2076182433962822, 'NDCG*@10': 0.11716019362211227, 'MRR*@10': 0.08961100101470948, 'Recall*@5': 0.1436402028799057, 'NDCG*@5': 0.09661331366747618, 'MRR*@5': 0.08121396519243718}
+INFO    [02-25 20:58:32] log in loggers:
+Update Best NDCG@10 Model at 0
+INFO    [02-25 20:58:32] validate in BasicTrainer:
+{'Recall@10': 0.0028125, 'NDCG@10': 0.0009529570862650871, 'MRR@10': 0.0004226190550252795, 'Recall@5': 0.000625, 'NDCG@5': 0.0002554779313504696, 'MRR@5': 0.00014062500093132258, 'Recall*@10': 0.0028125, 'NDCG*@10': 0.0009529570862650871, 'MRR*@10': 0.0004226190550252795, 'Recall*@5': 0.000625, 'NDCG*@5': 0.0002554779313504696, 'MRR*@5': 0.00014062500093132258}
+INFO    [02-25 20:58:32] train in BasicTrainer:
+epoch: 0
+DEBUG   [02-25 20:58:33] calculate_loss in loss:
+soft_target max: 0.5009355545043945, argmax 79915
+DEBUG   [02-25 20:58:33] calculate_loss in loss:
+pred max in softmax: 0.0007920902571640909, argmax 14670
+INFO    [02-25 20:59:12] _train_one_epoch in BasicTrainer:
+loss = 4.274203668854914
+INFO    [02-25 20:59:17] log in loggers:
+Update Best NDCG@10 Model at 0
+INFO    [02-25 20:59:17] validate in BasicTrainer:
+{'Recall@10': 0.0844932433962822, 'NDCG@10': 0.041710951887071135, 'MRR@10': 0.02892712406348437, 'Recall@5': 0.0488935811072588, 'NDCG@5': 0.030362408552318813, 'MRR@5': 0.024340512841008605, 'Recall*@10': 0.0844932433962822, 'NDCG*@10': 0.041710951887071135, 'MRR*@10': 0.02892712406348437, 'Recall*@5': 0.0488935811072588, 'NDCG*@5': 0.030362408552318813, 'MRR*@5': 0.024340512841008605}
+INFO    [02-25 20:59:17] train in BasicTrainer:
+duration: 44.549168825149536s
+INFO    [02-25 20:59:17] train in BasicTrainer:
+epoch: 1
+DEBUG   [02-25 20:59:30] calculate_loss in loss:
+soft_target max: 0.5009092688560486, argmax 101563
+DEBUG   [02-25 20:59:30] calculate_loss in loss:
+pred max in softmax: 0.0461026169359684, argmax 218638
+DEBUG   [02-25 20:59:30] calculate_loss in loss:
+soft_target max: 0.5008791089057922, argmax 90035
+DEBUG   [02-25 20:59:30] calculate_loss in loss:
+pred max in softmax: 0.04134732112288475, argmax 167611
+INFO    [02-25 20:59:56] _train_one_epoch in BasicTrainer:
+loss = 3.821997100225494
+INFO    [02-25 21:00:01] log in loggers:
+Update Best NDCG@10 Model at 1
+INFO    [02-25 21:00:01] validate in BasicTrainer:
+{'Recall@10': 0.1473057433962822, 'NDCG@10': 0.07591952566057443, 'MRR@10': 0.054328058920800684, 'Recall@5': 0.0955152028799057, 'NDCG@5': 0.059304475616663695, 'MRR@5': 0.04754701712168753, 'Recall*@10': 0.1473057433962822, 'NDCG*@10': 0.07591952566057443, 'MRR*@10': 0.054328058920800684, 'Recall*@5': 0.0955152028799057, 'NDCG*@5': 0.059304475616663695, 'MRR*@5': 0.04754701712168753}
+INFO    [02-25 21:00:01] train in BasicTrainer:
+duration: 44.41024327278137s
+INFO    [02-25 21:00:01] train in BasicTrainer:
+epoch: 2
+DEBUG   [02-25 21:00:27] calculate_loss in loss:
+soft_target max: 0.5011739134788513, argmax 231055
+DEBUG   [02-25 21:00:27] calculate_loss in loss:
+pred max in softmax: 0.06581031531095505, argmax 129410
+DEBUG   [02-25 21:00:27] calculate_loss in loss:
+soft_target max: 0.5008779764175415, argmax 105581
+DEBUG   [02-25 21:00:27] calculate_loss in loss:
+pred max in softmax: 0.11613896489143372, argmax 107789
+INFO    [02-25 21:00:41] _train_one_epoch in BasicTrainer:
+loss = 3.591106049578133
+INFO    [02-25 21:00:46] log in loggers:
+Update Best NDCG@10 Model at 2
+INFO    [02-25 21:00:46] validate in BasicTrainer:
+{'Recall@10': 0.1733277028799057, 'NDCG@10': 0.09712376356124879, 'MRR@10': 0.0740474122017622, 'Recall@5': 0.11412162169814109, 'NDCG@5': 0.07802912790328265, 'MRR@5': 0.06619538426399231, 'Recall*@10': 0.1733277028799057, 'NDCG*@10': 0.09712376356124879, 'MRR*@10': 0.0740474122017622, 'Recall*@5': 0.11412162169814109, 'NDCG*@5': 0.07802912790328265, 'MRR*@5': 0.06619538426399231}
+INFO    [02-25 21:00:46] train in BasicTrainer:
+duration: 44.609941482543945s
+INFO    [02-25 21:00:46] train in BasicTrainer:
+epoch: 3
+DEBUG   [02-25 21:01:24] calculate_loss in loss:
+soft_target max: 0.5010786652565002, argmax 61883
+DEBUG   [02-25 21:01:24] calculate_loss in loss:
+pred max in softmax: 0.11604112386703491, argmax 86275
+DEBUG   [02-25 21:01:24] calculate_loss in loss:
+soft_target max: 0.5011168122291565, argmax 69024
+DEBUG   [02-25 21:01:24] calculate_loss in loss:
+pred max in softmax: 0.1222371831536293, argmax 39899
+INFO    [02-25 21:01:25] _train_one_epoch in BasicTrainer:
+loss = 3.464644042819501
+INFO    [02-25 21:01:30] log in loggers:
+Update Best NDCG@10 Model at 3
+INFO    [02-25 21:01:30] validate in BasicTrainer:
+{'Recall@10': 0.18136824339628219, 'NDCG@10': 0.10274583205580712, 'MRR@10': 0.07883449960500002, 'Recall@5': 0.1231841216981411, 'NDCG@5': 0.08391275145113468, 'MRR@5': 0.07104828372597695, 'Recall*@10': 0.18136824339628219, 'NDCG*@10': 0.10274583205580712, 'MRR*@10': 0.07883449960500002, 'Recall*@5': 0.1231841216981411, 'NDCG*@5': 0.08391275145113468, 'MRR*@5': 0.07104828372597695}
+INFO    [02-25 21:01:30] train in BasicTrainer:
+duration: 44.36687397956848s
+INFO    [02-25 21:01:30] train in BasicTrainer:
+epoch: 4
+INFO    [02-25 21:02:10] _train_one_epoch in BasicTrainer:
+loss = 3.386919980340042
+INFO    [02-25 21:02:15] log in loggers:
+Update Best NDCG@10 Model at 4
+INFO    [02-25 21:02:15] validate in BasicTrainer:
+{'Recall@10': 0.1905152028799057, 'NDCG@10': 0.10799196429550648, 'MRR@10': 0.0827192134410143, 'Recall@5': 0.1334121622145176, 'NDCG@5': 0.08952803380787372, 'MRR@5': 0.07509586296975612, 'Recall*@10': 0.1905152028799057, 'NDCG*@10': 0.10799196429550648, 'MRR*@10': 0.0827192134410143, 'Recall*@5': 0.1334121622145176, 'NDCG*@5': 0.08952803380787372, 'MRR*@5': 0.07509586296975612}
+INFO    [02-25 21:02:15] train in BasicTrainer:
+duration: 44.4597692489624s
+INFO    [02-25 21:02:15] train in BasicTrainer:
+epoch: 5
+DEBUG   [02-25 21:02:27] calculate_loss in loss:
+soft_target max: 0.5012431740760803, argmax 53946
+DEBUG   [02-25 21:02:27] calculate_loss in loss:
+pred max in softmax: 0.163587749004364, argmax 173359
+DEBUG   [02-25 21:02:27] calculate_loss in loss:
+soft_target max: 0.5009805560112, argmax 136209
+DEBUG   [02-25 21:02:27] calculate_loss in loss:
+pred max in softmax: 0.11863767355680466, argmax 36696
+INFO    [02-25 21:02:54] _train_one_epoch in BasicTrainer:
+loss = 3.3343837634321867
+INFO    [02-25 21:02:59] log in loggers:
+Update Best NDCG@10 Model at 5
+INFO    [02-25 21:03:00] validate in BasicTrainer:
+{'Recall@10': 0.2017652028799057, 'NDCG@10': 0.11670699700713158, 'MRR@10': 0.09077182993292808, 'Recall@5': 0.1387246622145176, 'NDCG@5': 0.09616674318909645, 'MRR@5': 0.08220368966460229, 'Recall*@10': 0.2017652028799057, 'NDCG*@10': 0.11670699700713158, 'MRR*@10': 0.09077182993292808, 'Recall*@5': 0.1387246622145176, 'NDCG*@5': 0.09616674318909645, 'MRR*@5': 0.08220368966460229}
+INFO    [02-25 21:03:00] train in BasicTrainer:
+duration: 44.73411846160889s
+INFO    [02-25 21:03:00] train in BasicTrainer:
+epoch: 6
+DEBUG   [02-25 21:03:24] calculate_loss in loss:
+soft_target max: 0.5010201930999756, argmax 232238
+DEBUG   [02-25 21:03:24] calculate_loss in loss:
+pred max in softmax: 0.22335390746593475, argmax 196016
+DEBUG   [02-25 21:03:24] calculate_loss in loss:
+soft_target max: 0.5010159015655518, argmax 52268
+DEBUG   [02-25 21:03:24] calculate_loss in loss:
+pred max in softmax: 0.15225021541118622, argmax 20251
+INFO    [02-25 21:03:39] _train_one_epoch in BasicTrainer:
+loss = 3.29099558044808
+INFO    [02-25 21:03:44] validate in BasicTrainer:
+{'Recall@10': 0.2004307433962822, 'NDCG@10': 0.11453659698367119, 'MRR@10': 0.0883842109888792, 'Recall@5': 0.1375591216981411, 'NDCG@5': 0.09431106932461261, 'MRR@5': 0.08009980387985706, 'Recall*@10': 0.2004307433962822, 'NDCG*@10': 0.11453659698367119, 'MRR*@10': 0.0883842109888792, 'Recall*@5': 0.1375591216981411, 'NDCG*@5': 0.09431106932461261, 'MRR*@5': 0.08009980387985706}
+INFO    [02-25 21:03:44] train in BasicTrainer:
+duration: 44.331461906433105s
+INFO    [02-25 21:03:44] train in BasicTrainer:
+epoch: 7
+DEBUG   [02-25 21:04:21] calculate_loss in loss:
+soft_target max: 0.5010326504707336, argmax 124533
+DEBUG   [02-25 21:04:21] calculate_loss in loss:
+pred max in softmax: 0.15458795428276062, argmax 129973
+DEBUG   [02-25 21:04:21] calculate_loss in loss:
+soft_target max: 0.5010790824890137, argmax 69300
+DEBUG   [02-25 21:04:21] calculate_loss in loss:
+pred max in softmax: 0.1803581565618515, argmax 118720
+INFO    [02-25 21:04:23] _train_one_epoch in BasicTrainer:
+loss = 3.255997579357036
+INFO    [02-25 21:04:28] log in loggers:
+Update Best NDCG@10 Model at 7
+INFO    [02-25 21:04:28] validate in BasicTrainer:
+{'Recall@10': 0.2063682433962822, 'NDCG@10': 0.11880988478660584, 'MRR@10': 0.09194419123232364, 'Recall@5': 0.1477027028799057, 'NDCG@5': 0.09991317696869373, 'MRR@5': 0.08418862752616406, 'Recall*@10': 0.2063682433962822, 'NDCG*@10': 0.11880988478660584, 'MRR*@10': 0.09194419123232364, 'Recall*@5': 0.1477027028799057, 'NDCG*@5': 0.09991317696869373, 'MRR*@5': 0.08418862752616406}
+INFO    [02-25 21:04:28] train in BasicTrainer:
+duration: 44.23812985420227s
+INFO    [02-25 21:04:28] train in BasicTrainer:
+epoch: 8
+INFO    [02-25 21:05:07] _train_one_epoch in BasicTrainer:
+loss = 3.230290984285289
+INFO    [02-25 21:05:12] log in loggers:
+Update Best NDCG@10 Model at 8
+INFO    [02-25 21:05:13] validate in BasicTrainer:
+{'Recall@10': 0.2060557433962822, 'NDCG@10': 0.11881477952003479, 'MRR@10': 0.09210824690759183, 'Recall@5': 0.1448902028799057, 'NDCG@5': 0.09895201466977596, 'MRR@5': 0.08386458523571491, 'Recall*@10': 0.2060557433962822, 'NDCG*@10': 0.11881477952003479, 'MRR*@10': 0.09210824690759183, 'Recall*@5': 0.1448902028799057, 'NDCG*@5': 0.09895201466977596, 'MRR*@5': 0.08386458523571491}
+INFO    [02-25 21:05:13] train in BasicTrainer:
+duration: 44.52156114578247s
+INFO    [02-25 21:05:13] train in BasicTrainer:
+epoch: 9
+DEBUG   [02-25 21:05:24] calculate_loss in loss:
+soft_target max: 0.5009503364562988, argmax 125132
+DEBUG   [02-25 21:05:24] calculate_loss in loss:
+pred max in softmax: 0.21238712966442108, argmax 93769
+DEBUG   [02-25 21:05:24] calculate_loss in loss:
+soft_target max: 0.5008813738822937, argmax 131175
+DEBUG   [02-25 21:05:24] calculate_loss in loss:
+pred max in softmax: 0.1894017606973648, argmax 111093
+INFO    [02-25 21:05:52] _train_one_epoch in BasicTrainer:
+loss = 3.2128968441201775
+INFO    [02-25 21:05:57] validate in BasicTrainer:
+{'Recall@10': 0.2066807433962822, 'NDCG@10': 0.11840570069849492, 'MRR@10': 0.09148178197443485, 'Recall@5': 0.1415371622145176, 'NDCG@5': 0.09740328177809715, 'MRR@5': 0.08284924156963826, 'Recall*@10': 0.2066807433962822, 'NDCG*@10': 0.11840570069849492, 'MRR*@10': 0.09148178197443485, 'Recall*@5': 0.1415371622145176, 'NDCG*@5': 0.09740328177809715, 'MRR*@5': 0.08284924156963826}
+INFO    [02-25 21:05:57] train in BasicTrainer:
+duration: 44.23233962059021s
+INFO    [02-25 21:05:57] train in BasicTrainer:
+epoch: 10
+DEBUG   [02-25 21:06:21] calculate_loss in loss:
+soft_target max: 0.5010335445404053, argmax 206398
+DEBUG   [02-25 21:06:21] calculate_loss in loss:
+pred max in softmax: 0.4028523862361908, argmax 196577
+DEBUG   [02-25 21:06:21] calculate_loss in loss:
+soft_target max: 0.5012013912200928, argmax 21684
+DEBUG   [02-25 21:06:21] calculate_loss in loss:
+pred max in softmax: 0.15209577977657318, argmax 7072
+INFO    [02-25 21:06:36] _train_one_epoch in BasicTrainer:
+loss = 3.193873009884073
+INFO    [02-25 21:06:41] log in loggers:
+Update Best NDCG@10 Model at 10
+INFO    [02-25 21:06:42] validate in BasicTrainer:
+{'Recall@10': 0.20815878391265868, 'NDCG@10': 0.11939338609576225, 'MRR@10': 0.09241259261965752, 'Recall@5': 0.1431841216981411, 'NDCG@5': 0.0985880083590746, 'MRR@5': 0.083945102840662, 'Recall*@10': 0.20815878391265868, 'NDCG*@10': 0.11939338609576225, 'MRR*@10': 0.09241259261965752, 'Recall*@5': 0.1431841216981411, 'NDCG*@5': 0.0985880083590746, 'MRR*@5': 0.083945102840662}
+INFO    [02-25 21:06:42] train in BasicTrainer:
+duration: 44.63961958885193s
+INFO    [02-25 21:06:42] train in BasicTrainer:
+epoch: 11
+DEBUG   [02-25 21:07:18] calculate_loss in loss:
+soft_target max: 0.5010185837745667, argmax 83518
+DEBUG   [02-25 21:07:18] calculate_loss in loss:
+pred max in softmax: 0.18619775772094727, argmax 125340
+DEBUG   [02-25 21:07:18] calculate_loss in loss:
+soft_target max: 0.5009067058563232, argmax 43632
+DEBUG   [02-25 21:07:18] calculate_loss in loss:
+pred max in softmax: 0.17053987085819244, argmax 117855
+INFO    [02-25 21:07:21] _train_one_epoch in BasicTrainer:
+loss = 3.183533315000863
+INFO    [02-25 21:07:26] validate in BasicTrainer:
+{'Recall@10': 0.2063682433962822, 'NDCG@10': 0.11896453738212585, 'MRR@10': 0.09224272824823856, 'Recall@5': 0.14466216221451758, 'NDCG@5': 0.09906421028077603, 'MRR@5': 0.0840591236948967, 'Recall*@10': 0.2063682433962822, 'NDCG*@10': 0.11896453738212585, 'MRR*@10': 0.09224272824823856, 'Recall*@5': 0.14466216221451758, 'NDCG*@5': 0.09906421028077603, 'MRR*@5': 0.0840591236948967}
+INFO    [02-25 21:07:26] train in BasicTrainer:
+duration: 44.28689360618591s
+INFO    [02-25 21:07:26] train in BasicTrainer:
+epoch: 12
+INFO    [02-25 21:08:05] _train_one_epoch in BasicTrainer:
+loss = 3.1676679808517982
+INFO    [02-25 21:08:10] log in loggers:
+Update Best NDCG@10 Model at 12
+INFO    [02-25 21:08:10] validate in BasicTrainer:
+{'Recall@10': 0.2128462839126587, 'NDCG@10': 0.12162476912140846, 'MRR@10': 0.09374823853373528, 'Recall@5': 0.1452027028799057, 'NDCG@5': 0.0997662203758955, 'MRR@5': 0.08473859965801239, 'Recall*@10': 0.2128462839126587, 'NDCG*@10': 0.12162476912140846, 'MRR*@10': 0.09374823853373528, 'Recall*@5': 0.1452027028799057, 'NDCG*@5': 0.0997662203758955, 'MRR*@5': 0.08473859965801239}
+INFO    [02-25 21:08:10] train in BasicTrainer:
+duration: 44.19385027885437s
+INFO    [02-25 21:08:10] train in BasicTrainer:
+epoch: 13
+DEBUG   [02-25 21:08:21] calculate_loss in loss:
+soft_target max: 0.5009044408798218, argmax 182105
+DEBUG   [02-25 21:08:21] calculate_loss in loss:
+pred max in softmax: 0.14836132526397705, argmax 27703
+DEBUG   [02-25 21:08:21] calculate_loss in loss:
+soft_target max: 0.5009883642196655, argmax 184305
+DEBUG   [02-25 21:08:21] calculate_loss in loss:
+pred max in softmax: 0.2790794372558594, argmax 17242
+INFO    [02-25 21:08:49] _train_one_epoch in BasicTrainer:
+loss = 3.1572230301738102
+INFO    [02-25 21:08:54] validate in BasicTrainer:
+{'Recall@10': 0.2082432433962822, 'NDCG@10': 0.1192686165869236, 'MRR@10': 0.09213301867246627, 'Recall@5': 0.1458277028799057, 'NDCG@5': 0.0991804402321577, 'MRR@5': 0.0838951312750578, 'Recall*@10': 0.2082432433962822, 'NDCG*@10': 0.1192686165869236, 'MRR*@10': 0.09213301867246627, 'Recall*@5': 0.1458277028799057, 'NDCG*@5': 0.0991804402321577, 'MRR*@5': 0.0838951312750578}
+INFO    [02-25 21:08:54] train in BasicTrainer:
+duration: 44.316118001937866s
+INFO    [02-25 21:08:54] train in BasicTrainer:
+epoch: 14
+DEBUG   [02-25 21:09:18] calculate_loss in loss:
+soft_target max: 0.5010983943939209, argmax 22295
+DEBUG   [02-25 21:09:18] calculate_loss in loss:
+pred max in softmax: 0.23751142621040344, argmax 43138
+DEBUG   [02-25 21:09:18] calculate_loss in loss:
+soft_target max: 0.5010282397270203, argmax 82043
+DEBUG   [02-25 21:09:18] calculate_loss in loss:
+pred max in softmax: 0.3486998379230499, argmax 164409
+INFO    [02-25 21:09:34] _train_one_epoch in BasicTrainer:
+loss = 3.1446995864812513
+INFO    [02-25 21:09:39] validate in BasicTrainer:
+{'Recall@10': 0.2110557433962822, 'NDCG@10': 0.12044138953089714, 'MRR@10': 0.09289032459259033, 'Recall@5': 0.1439527028799057, 'NDCG@5': 0.09872597321867943, 'MRR@5': 0.0839177943766117, 'Recall*@10': 0.2110557433962822, 'NDCG*@10': 0.12044138953089714, 'MRR*@10': 0.09289032459259033, 'Recall*@5': 0.1439527028799057, 'NDCG*@5': 0.09872597321867943, 'MRR*@5': 0.0839177943766117}
+INFO    [02-25 21:09:39] train in BasicTrainer:
+duration: 44.31307339668274s
+INFO    [02-25 21:09:39] train in BasicTrainer:
+epoch: 15
+DEBUG   [02-25 21:10:14] calculate_loss in loss:
+soft_target max: 0.5009373426437378, argmax 77348
+DEBUG   [02-25 21:10:14] calculate_loss in loss:
+pred max in softmax: 0.22603607177734375, argmax 38346
+DEBUG   [02-25 21:10:14] calculate_loss in loss:
+soft_target max: 0.500975489616394, argmax 226033
+DEBUG   [02-25 21:10:14] calculate_loss in loss:
+pred max in softmax: 0.1998424082994461, argmax 12660
+INFO    [02-25 21:10:18] _train_one_epoch in BasicTrainer:
+loss = 3.134266159578723
+INFO    [02-25 21:10:23] log in loggers:
+Update Best NDCG@10 Model at 15
+INFO    [02-25 21:10:23] validate in BasicTrainer:
+{'Recall@10': 0.2153462839126587, 'NDCG@10': 0.1255233057588339, 'MRR@10': 0.09822429850697517, 'Recall@5': 0.14761824339628218, 'NDCG@5': 0.10386507079005242, 'MRR@5': 0.0894252547621727, 'Recall*@10': 0.2153462839126587, 'NDCG*@10': 0.1255233057588339, 'MRR*@10': 0.09822429850697517, 'Recall*@5': 0.14761824339628218, 'NDCG*@5': 0.10386507079005242, 'MRR*@5': 0.0894252547621727}
+INFO    [02-25 21:10:23] train in BasicTrainer:
+duration: 44.4256911277771s
+INFO    [02-25 21:10:23] train in BasicTrainer:
+epoch: 16
+INFO    [02-25 21:11:02] _train_one_epoch in BasicTrainer:
+loss = 3.1229228606590858
+INFO    [02-25 21:11:07] validate in BasicTrainer:
+{'Recall@10': 0.2104307433962822, 'NDCG@10': 0.1217696662992239, 'MRR@10': 0.09458298668265343, 'Recall@5': 0.1489527028799057, 'NDCG@5': 0.10171344585716724, 'MRR@5': 0.0862007338181138, 'Recall*@10': 0.2104307433962822, 'NDCG*@10': 0.1217696662992239, 'MRR*@10': 0.09458298668265343, 'Recall*@5': 0.1489527028799057, 'NDCG*@5': 0.10171344585716724, 'MRR*@5': 0.0862007338181138}
+INFO    [02-25 21:11:07] train in BasicTrainer:
+duration: 44.268518686294556s
+INFO    [02-25 21:11:07] train in BasicTrainer:
+epoch: 17
+DEBUG   [02-25 21:11:17] calculate_loss in loss:
+soft_target max: 0.5008752346038818, argmax 182794
+DEBUG   [02-25 21:11:17] calculate_loss in loss:
+pred max in softmax: 0.24047723412513733, argmax 203020
+DEBUG   [02-25 21:11:17] calculate_loss in loss:
+soft_target max: 0.5009117722511292, argmax 85085
+DEBUG   [02-25 21:11:17] calculate_loss in loss:
+pred max in softmax: 0.2727697193622589, argmax 108567
+INFO    [02-25 21:11:47] _train_one_epoch in BasicTrainer:
+loss = 3.1182589578375577
+INFO    [02-25 21:11:52] validate in BasicTrainer:
+{'Recall@10': 0.2131587839126587, 'NDCG@10': 0.12286154761910438, 'MRR@10': 0.09518921799957752, 'Recall@5': 0.1514527028799057, 'NDCG@5': 0.10296276599168777, 'MRR@5': 0.08700675852596759, 'Recall*@10': 0.2131587839126587, 'NDCG*@10': 0.12286154761910438, 'MRR*@10': 0.09518921799957752, 'Recall*@5': 0.1514527028799057, 'NDCG*@5': 0.10296276599168777, 'MRR*@5': 0.08700675852596759}
+INFO    [02-25 21:11:52] train in BasicTrainer:
+duration: 44.32502841949463s
+INFO    [02-25 21:11:52] train in BasicTrainer:
+epoch: 18
+DEBUG   [02-25 21:12:14] calculate_loss in loss:
+soft_target max: 0.5010783076286316, argmax 117998
+DEBUG   [02-25 21:12:14] calculate_loss in loss:
+pred max in softmax: 0.27270764112472534, argmax 180989
+DEBUG   [02-25 21:12:14] calculate_loss in loss:
+soft_target max: 0.5009264349937439, argmax 228126
+DEBUG   [02-25 21:12:14] calculate_loss in loss:
+pred max in softmax: 0.21066756546497345, argmax 80454
+INFO    [02-25 21:12:31] _train_one_epoch in BasicTrainer:
+loss = 3.1130028166252357
+INFO    [02-25 21:12:36] validate in BasicTrainer:
+{'Recall@10': 0.2149493244290352, 'NDCG@10': 0.12388584643602371, 'MRR@10': 0.09600685238838196, 'Recall@5': 0.1517652028799057, 'NDCG@5': 0.10348991841077805, 'MRR@5': 0.08760416842997074, 'Recall*@10': 0.2149493244290352, 'NDCG*@10': 0.12388584643602371, 'MRR*@10': 0.09600685238838196, 'Recall*@5': 0.1517652028799057, 'NDCG*@5': 0.10348991841077805, 'MRR*@5': 0.08760416842997074}
+INFO    [02-25 21:12:36] train in BasicTrainer:
+duration: 44.43447923660278s
+INFO    [02-25 21:12:36] train in BasicTrainer:
+epoch: 19
+DEBUG   [02-25 21:13:11] calculate_loss in loss:
+soft_target max: 0.5010250210762024, argmax 86483
+DEBUG   [02-25 21:13:11] calculate_loss in loss:
+pred max in softmax: 0.1755901426076889, argmax 224200
+DEBUG   [02-25 21:13:11] calculate_loss in loss:
+soft_target max: 0.5011146068572998, argmax 49624
+DEBUG   [02-25 21:13:11] calculate_loss in loss:
+pred max in softmax: 0.12665627896785736, argmax 149660
+INFO    [02-25 21:13:15] _train_one_epoch in BasicTrainer:
+loss = 3.1049514515646575
+INFO    [02-25 21:13:20] validate in BasicTrainer:
+{'Recall@10': 0.2135557433962822, 'NDCG@10': 0.12367828384041786, 'MRR@10': 0.09627364344894886, 'Recall@5': 0.1494932433962822, 'NDCG@5': 0.10306108392775058, 'MRR@5': 0.08782151035964489, 'Recall*@10': 0.2135557433962822, 'NDCG*@10': 0.12367828384041786, 'MRR*@10': 0.09627364344894886, 'Recall*@5': 0.1494932433962822, 'NDCG*@5': 0.10306108392775058, 'MRR*@5': 0.08782151035964489}
+INFO    [02-25 21:13:20] train in BasicTrainer:
+duration: 44.26171159744263s
+INFO    [02-25 21:13:20] train in BasicTrainer:
+epoch: 20
+INFO    [02-25 21:14:00] _train_one_epoch in BasicTrainer:
+loss = 3.0940651789268068
+INFO    [02-25 21:14:05] validate in BasicTrainer:
+{'Recall@10': 0.2181587839126587, 'NDCG@10': 0.12548980198800563, 'MRR@10': 0.09720913536846637, 'Recall@5': 0.1527027028799057, 'NDCG@5': 0.10443192556500434, 'MRR@5': 0.08858234960585833, 'Recall*@10': 0.2181587839126587, 'NDCG*@10': 0.12548980198800563, 'MRR*@10': 0.09720913536846637, 'Recall*@5': 0.1527027028799057, 'NDCG*@5': 0.10443192556500434, 'MRR*@5': 0.08858234960585833}
+INFO    [02-25 21:14:05] train in BasicTrainer:
+duration: 44.426886320114136s
+INFO    [02-25 21:14:05] train in BasicTrainer:
+epoch: 21
+DEBUG   [02-25 21:14:14] calculate_loss in loss:
+soft_target max: 0.500826358795166, argmax 147777
+DEBUG   [02-25 21:14:14] calculate_loss in loss:
+pred max in softmax: 0.2683003842830658, argmax 59727
+DEBUG   [02-25 21:14:14] calculate_loss in loss:
+soft_target max: 0.5009819865226746, argmax 171241
+DEBUG   [02-25 21:14:14] calculate_loss in loss:
+pred max in softmax: 0.17668649554252625, argmax 194048
+INFO    [02-25 21:14:44] _train_one_epoch in BasicTrainer:
+loss = 3.0874900555420934
+INFO    [02-25 21:14:49] validate in BasicTrainer:
+{'Recall@10': 0.2148057433962822, 'NDCG@10': 0.12361760035157204, 'MRR@10': 0.09578079149127007, 'Recall@5': 0.14841216221451758, 'NDCG@5': 0.10212772071361542, 'MRR@5': 0.08690033987164497, 'Recall*@10': 0.2148057433962822, 'NDCG*@10': 0.12361760035157204, 'MRR*@10': 0.09578079149127007, 'Recall*@5': 0.14841216221451758, 'NDCG*@5': 0.10212772071361542, 'MRR*@5': 0.08690033987164497}
+INFO    [02-25 21:14:49] train in BasicTrainer:
+duration: 44.166651010513306s
+INFO    [02-25 21:14:49] train in BasicTrainer:
+epoch: 22
+DEBUG   [02-25 21:15:11] calculate_loss in loss:
+soft_target max: 0.5011370182037354, argmax 126649
+DEBUG   [02-25 21:15:11] calculate_loss in loss:
+pred max in softmax: 0.2960006296634674, argmax 75567
+DEBUG   [02-25 21:15:11] calculate_loss in loss:
+soft_target max: 0.5009785294532776, argmax 43044
+DEBUG   [02-25 21:15:11] calculate_loss in loss:
+pred max in softmax: 0.23276369273662567, argmax 132387
+INFO    [02-25 21:15:28] _train_one_epoch in BasicTrainer:
+loss = 3.085215474313387
+INFO    [02-25 21:15:33] log in loggers:
+Update Best NDCG@10 Model at 22
+INFO    [02-25 21:15:34] validate in BasicTrainer:
+{'Recall@10': 0.2241807433962822, 'NDCG@10': 0.12865771129727363, 'MRR@10': 0.09962070412933827, 'Recall@5': 0.1529307433962822, 'NDCG@5': 0.10587689094245434, 'MRR@5': 0.09037120118737221, 'Recall*@10': 0.2241807433962822, 'NDCG*@10': 0.12865771129727363, 'MRR*@10': 0.09962070412933827, 'Recall*@5': 0.1529307433962822, 'NDCG*@5': 0.10587689094245434, 'MRR*@5': 0.09037120118737221}
+INFO    [02-25 21:15:34] train in BasicTrainer:
+duration: 44.540005683898926s
+INFO    [02-25 21:15:34] train in BasicTrainer:
+epoch: 23
+DEBUG   [02-25 21:16:08] calculate_loss in loss:
+soft_target max: 0.5009202361106873, argmax 222894
+DEBUG   [02-25 21:16:08] calculate_loss in loss:
+pred max in softmax: 0.20058868825435638, argmax 62198
+DEBUG   [02-25 21:16:08] calculate_loss in loss:
+soft_target max: 0.5009706020355225, argmax 125395
+DEBUG   [02-25 21:16:08] calculate_loss in loss:
+pred max in softmax: 0.28544196486473083, argmax 189528
+INFO    [02-25 21:16:13] _train_one_epoch in BasicTrainer:
+loss = 3.077952741311779
+INFO    [02-25 21:16:18] validate in BasicTrainer:
+{'Recall@10': 0.2201182433962822, 'NDCG@10': 0.1247563172876835, 'MRR@10': 0.0956367389857769, 'Recall@5': 0.1536402028799057, 'NDCG@5': 0.10336284019052983, 'MRR@5': 0.08686908964067698, 'Recall*@10': 0.2201182433962822, 'NDCG*@10': 0.1247563172876835, 'MRR*@10': 0.0956367389857769, 'Recall*@5': 0.1536402028799057, 'NDCG*@5': 0.10336284019052983, 'MRR*@5': 0.08686908964067698}
+INFO    [02-25 21:16:18] train in BasicTrainer:
+duration: 44.270445346832275s
+INFO    [02-25 21:16:18] train in BasicTrainer:
+epoch: 24
+INFO    [02-25 21:16:57] _train_one_epoch in BasicTrainer:
+loss = 3.0747622162973216
+INFO    [02-25 21:17:02] validate in BasicTrainer:
+{'Recall@10': 0.2234712839126587, 'NDCG@10': 0.1271969732642174, 'MRR@10': 0.09801681622862816, 'Recall@5': 0.1495777028799057, 'NDCG@5': 0.1033701640367508, 'MRR@5': 0.08822001844644546, 'Recall*@10': 0.2234712839126587, 'NDCG*@10': 0.1271969732642174, 'MRR*@10': 0.09801681622862816, 'Recall*@5': 0.1495777028799057, 'NDCG*@5': 0.1033701640367508, 'MRR*@5': 0.08822001844644546}
+INFO    [02-25 21:17:02] train in BasicTrainer:
+duration: 44.18143177032471s
+INFO    [02-25 21:17:02] train in BasicTrainer:
+epoch: 25
+DEBUG   [02-25 21:17:10] calculate_loss in loss:
+soft_target max: 0.5009289979934692, argmax 149845
+DEBUG   [02-25 21:17:10] calculate_loss in loss:
+pred max in softmax: 0.2447560429573059, argmax 177421
+DEBUG   [02-25 21:17:10] calculate_loss in loss:
+soft_target max: 0.5010791420936584, argmax 42065
+DEBUG   [02-25 21:17:10] calculate_loss in loss:
+pred max in softmax: 0.25807985663414, argmax 14440
+INFO    [02-25 21:17:41] _train_one_epoch in BasicTrainer:
+loss = 3.0679036938543347
+INFO    [02-25 21:17:47] validate in BasicTrainer:
+{'Recall@10': 0.2209712839126587, 'NDCG@10': 0.12632157877087594, 'MRR@10': 0.09726191230118275, 'Recall@5': 0.1607432433962822, 'NDCG@5': 0.10689371190965176, 'MRR@5': 0.08927055351436138, 'Recall*@10': 0.2209712839126587, 'NDCG*@10': 0.12632157877087594, 'MRR*@10': 0.09726191230118275, 'Recall*@5': 0.1607432433962822, 'NDCG*@5': 0.10689371190965176, 'MRR*@5': 0.08927055351436138}
+INFO    [02-25 21:17:47] train in BasicTrainer:
+duration: 44.63308596611023s
+INFO    [02-25 21:17:47] train in BasicTrainer:
+epoch: 26
+DEBUG   [02-25 21:18:07] calculate_loss in loss:
+soft_target max: 0.5009807348251343, argmax 176261
+DEBUG   [02-25 21:18:07] calculate_loss in loss:
+pred max in softmax: 0.14912797510623932, argmax 23108
+INFO    [02-25 21:18:26] _train_one_epoch in BasicTrainer:
+loss = 3.0642066476199608
+INFO    [02-25 21:18:31] log in loggers:
+Update Best NDCG@10 Model at 26
+INFO    [02-25 21:18:31] validate in BasicTrainer:
+{'Recall@10': 0.2228462839126587, 'NDCG@10': 0.12951151058077812, 'MRR@10': 0.10107738509774208, 'Recall@5': 0.1555152028799057, 'NDCG@5': 0.10791905947029591, 'MRR@5': 0.09226801969110966, 'Recall*@10': 0.2228462839126587, 'NDCG*@10': 0.12951151058077812, 'MRR*@10': 0.10107738509774208, 'Recall*@5': 0.1555152028799057, 'NDCG*@5': 0.10791905947029591, 'MRR*@5': 0.09226801969110966}
+INFO    [02-25 21:18:31] train in BasicTrainer:
+duration: 44.42127966880798s
+INFO    [02-25 21:18:31] train in BasicTrainer:
+epoch: 27
+INFO    [02-25 21:19:10] _train_one_epoch in BasicTrainer:
+loss = 3.058768367261406
+INFO    [02-25 21:19:15] validate in BasicTrainer:
+{'Recall@10': 0.2148057433962822, 'NDCG@10': 0.12433428376913071, 'MRR@10': 0.09664571471512318, 'Recall@5': 0.1527027028799057, 'NDCG@5': 0.10416731849312783, 'MRR@5': 0.0882753398269415, 'Recall*@10': 0.2148057433962822, 'NDCG*@10': 0.12433428376913071, 'MRR*@10': 0.09664571471512318, 'Recall*@5': 0.1527027028799057, 'NDCG*@5': 0.10416731849312783, 'MRR*@5': 0.0882753398269415}
+INFO    [02-25 21:19:15] train in BasicTrainer:
+duration: 44.36006808280945s
+INFO    [02-25 21:19:15] train in BasicTrainer:
+epoch: 28
+INFO    [02-25 21:19:55] _train_one_epoch in BasicTrainer:
+loss = 3.0563735800649505
+INFO    [02-25 21:20:00] validate in BasicTrainer:
+{'Recall@10': 0.21793074339628218, 'NDCG@10': 0.1225270962715149, 'MRR@10': 0.09336014769971371, 'Recall@5': 0.1502027028799057, 'NDCG@5': 0.10077904246747493, 'MRR@5': 0.0844724117219448, 'Recall*@10': 0.21793074339628218, 'NDCG*@10': 0.1225270962715149, 'MRR*@10': 0.09336014769971371, 'Recall*@5': 0.1502027028799057, 'NDCG*@5': 0.10077904246747493, 'MRR*@5': 0.0844724117219448}
+INFO    [02-25 21:20:00] train in BasicTrainer:
+duration: 44.420348167419434s
+INFO    [02-25 21:20:00] train in BasicTrainer:
+epoch: 29
+INFO    [02-25 21:20:39] _train_one_epoch in BasicTrainer:
+loss = 3.0522154304013642
+INFO    [02-25 21:20:44] validate in BasicTrainer:
+{'Recall@10': 0.2148057433962822, 'NDCG@10': 0.12316586628556252, 'MRR@10': 0.09500190824270248, 'Recall@5': 0.1571621622145176, 'NDCG@5': 0.10468109712004661, 'MRR@5': 0.08746438838541508, 'Recall*@10': 0.2148057433962822, 'NDCG*@10': 0.12316586628556252, 'MRR*@10': 0.09500190824270248, 'Recall*@5': 0.1571621622145176, 'NDCG*@5': 0.10468109712004661, 'MRR*@5': 0.08746438838541508}
+INFO    [02-25 21:20:44] train in BasicTrainer:
+duration: 44.34854078292847s
+INFO    [02-25 21:20:44] train in BasicTrainer:
+epoch: 30
+INFO    [02-25 21:21:23] _train_one_epoch in BasicTrainer:
+loss = 3.045801299004087
+INFO    [02-25 21:21:28] validate in BasicTrainer:
+{'Recall@10': 0.2182432433962822, 'NDCG@10': 0.12571722030639648, 'MRR@10': 0.09741083286702633, 'Recall@5': 0.1555152028799057, 'NDCG@5': 0.10549032531678676, 'MRR@5': 0.08909839689731598, 'Recall*@10': 0.2182432433962822, 'NDCG*@10': 0.12571722030639648, 'MRR*@10': 0.09741083286702633, 'Recall*@5': 0.1555152028799057, 'NDCG*@5': 0.10549032531678676, 'MRR*@5': 0.08909839689731598}
+INFO    [02-25 21:21:28] train in BasicTrainer:
+duration: 44.29622530937195s
+INFO    [02-25 21:21:28] train in BasicTrainer:
+epoch: 31
+INFO    [02-25 21:22:08] _train_one_epoch in BasicTrainer:
+loss = 3.0438156614885408
+INFO    [02-25 21:22:13] validate in BasicTrainer:
+{'Recall@10': 0.2198057433962822, 'NDCG@10': 0.12535091131925583, 'MRR@10': 0.09642002731561661, 'Recall@5': 0.1564527028799057, 'NDCG@5': 0.10495222084224225, 'MRR@5': 0.08805166237056256, 'Recall*@10': 0.2198057433962822, 'NDCG*@10': 0.12535091131925583, 'MRR*@10': 0.09642002731561661, 'Recall*@5': 0.1564527028799057, 'NDCG*@5': 0.10495222084224225, 'MRR*@5': 0.08805166237056256}
+INFO    [02-25 21:22:13] train in BasicTrainer:
+duration: 44.328715562820435s
+INFO    [02-25 21:22:13] train in BasicTrainer:
+epoch: 32
+INFO    [02-25 21:22:52] _train_one_epoch in BasicTrainer:
+loss = 3.043047288052283
+INFO    [02-25 21:22:57] validate in BasicTrainer:
+{'Recall@10': 0.2182432433962822, 'NDCG@10': 0.12317007184028625, 'MRR@10': 0.09404254257678986, 'Recall@5': 0.1542652028799057, 'NDCG@5': 0.10250922746956348, 'MRR@5': 0.08553392633795738, 'Recall*@10': 0.2182432433962822, 'NDCG*@10': 0.12317007184028625, 'MRR*@10': 0.09404254257678986, 'Recall*@5': 0.1542652028799057, 'NDCG*@5': 0.10250922746956348, 'MRR*@5': 0.08553392633795738}
+INFO    [02-25 21:22:57] train in BasicTrainer:
+duration: 44.48750901222229s
+INFO    [02-25 21:22:57] train in BasicTrainer:
+epoch: 33
+INFO    [02-25 21:23:36] _train_one_epoch in BasicTrainer:
+loss = 3.0371631383895874
+INFO    [02-25 21:23:42] validate in BasicTrainer:
+{'Recall@10': 0.2209712839126587, 'NDCG@10': 0.12571294188499452, 'MRR@10': 0.09654142282903194, 'Recall@5': 0.1548057433962822, 'NDCG@5': 0.10428067766129971, 'MRR@5': 0.08767412915825844, 'Recall*@10': 0.2209712839126587, 'NDCG*@10': 0.12571294188499452, 'MRR*@10': 0.09654142282903194, 'Recall*@5': 0.1548057433962822, 'NDCG*@5': 0.10428067766129971, 'MRR*@5': 0.08767412915825844}
+INFO    [02-25 21:23:42] train in BasicTrainer:
+duration: 44.390958070755005s
+INFO    [02-25 21:23:42] train in BasicTrainer:
+epoch: 34
+INFO    [02-25 21:24:21] _train_one_epoch in BasicTrainer:
+loss = 3.032185413476959
+INFO    [02-25 21:24:26] validate in BasicTrainer:
+{'Recall@10': 0.22003378391265868, 'NDCG@10': 0.12648337572813034, 'MRR@10': 0.09785435631871224, 'Recall@5': 0.1564527028799057, 'NDCG@5': 0.1060212367027998, 'MRR@5': 0.08946973778307438, 'Recall*@10': 0.22003378391265868, 'NDCG*@10': 0.12648337572813034, 'MRR*@10': 0.09785435631871224, 'Recall*@5': 0.1564527028799057, 'NDCG*@5': 0.1060212367027998, 'MRR*@5': 0.08946973778307438}
+INFO    [02-25 21:24:26] train in BasicTrainer:
+duration: 44.05848526954651s
+INFO    [02-25 21:24:26] train in BasicTrainer:
+epoch: 35
+INFO    [02-25 21:25:05] _train_one_epoch in BasicTrainer:
+loss = 3.0282608099894435
+INFO    [02-25 21:25:10] log in loggers:
+Update Best NDCG@10 Model at 35
+INFO    [02-25 21:25:10] validate in BasicTrainer:
+{'Recall@10': 0.2247212839126587, 'NDCG@10': 0.12968173682689665, 'MRR@10': 0.10063761956989765, 'Recall@5': 0.1564527028799057, 'NDCG@5': 0.10752464212477207, 'MRR@5': 0.09144242830574513, 'Recall*@10': 0.2247212839126587, 'NDCG*@10': 0.12968173682689665, 'MRR*@10': 0.10063761956989765, 'Recall*@5': 0.1564527028799057, 'NDCG*@5': 0.10752464212477207, 'MRR*@5': 0.09144242830574513}
+INFO    [02-25 21:25:10] train in BasicTrainer:
+duration: 44.30638146400452s
+INFO    [02-25 21:25:10] train in BasicTrainer:
+epoch: 36
+INFO    [02-25 21:25:49] _train_one_epoch in BasicTrainer:
+loss = 3.0268950803842722
+INFO    [02-25 21:25:54] validate in BasicTrainer:
+{'Recall@10': 0.22043074339628219, 'NDCG@10': 0.12496758714318275, 'MRR@10': 0.09580819450318813, 'Recall@5': 0.1530996622145176, 'NDCG@5': 0.10324303708970546, 'MRR@5': 0.08686697755008936, 'Recall*@10': 0.22043074339628219, 'NDCG*@10': 0.12496758714318275, 'MRR*@10': 0.09580819450318813, 'Recall*@5': 0.1530996622145176, 'NDCG*@5': 0.10324303708970546, 'MRR*@5': 0.08686697755008936}
+INFO    [02-25 21:25:54] train in BasicTrainer:
+duration: 44.13055729866028s
+INFO    [02-25 21:25:54] train in BasicTrainer:
+epoch: 37
+INFO    [02-25 21:26:33] _train_one_epoch in BasicTrainer:
+loss = 3.025572792288479
+INFO    [02-25 21:26:38] validate in BasicTrainer:
+{'Recall@10': 0.2209712839126587, 'NDCG@10': 0.12759699419140816, 'MRR@10': 0.09892784938216209, 'Recall@5': 0.15793074339628219, 'NDCG@5': 0.10726621069014072, 'MRR@5': 0.09057320021092892, 'Recall*@10': 0.2209712839126587, 'NDCG*@10': 0.12759699419140816, 'MRR*@10': 0.09892784938216209, 'Recall*@5': 0.15793074339628219, 'NDCG*@5': 0.10726621069014072, 'MRR*@5': 0.09057320021092892}
+INFO    [02-25 21:26:38] train in BasicTrainer:
+duration: 44.111809968948364s
+INFO    [02-25 21:26:38] train in BasicTrainer:
+epoch: 38
+INFO    [02-25 21:27:17] _train_one_epoch in BasicTrainer:
+loss = 3.0206762204435837
+INFO    [02-25 21:27:22] validate in BasicTrainer:
+{'Recall@10': 0.2256587839126587, 'NDCG@10': 0.12879302382469177, 'MRR@10': 0.09918111748993397, 'Recall@5': 0.1576182433962822, 'NDCG@5': 0.10691041700541973, 'MRR@5': 0.09022086389362811, 'Recall*@10': 0.2256587839126587, 'NDCG*@10': 0.12879302382469177, 'MRR*@10': 0.09918111748993397, 'Recall*@5': 0.1576182433962822, 'NDCG*@5': 0.10691041700541973, 'MRR*@5': 0.09022086389362811}
+INFO    [02-25 21:27:22] train in BasicTrainer:
+duration: 44.14334177970886s
+INFO    [02-25 21:27:22] train in BasicTrainer:
+epoch: 39
+INFO    [02-25 21:28:01] _train_one_epoch in BasicTrainer:
+loss = 3.019350483183519
+INFO    [02-25 21:28:07] validate in BasicTrainer:
+{'Recall@10': 0.22378378391265868, 'NDCG@10': 0.12761181265115737, 'MRR@10': 0.09820273101329803, 'Recall@5': 0.1577871622145176, 'NDCG@5': 0.10641006514430046, 'MRR@5': 0.08953758604824542, 'Recall*@10': 0.22378378391265868, 'NDCG*@10': 0.12761181265115737, 'MRR*@10': 0.09820273101329803, 'Recall*@5': 0.1577871622145176, 'NDCG*@5': 0.10641006514430046, 'MRR*@5': 0.08953758604824542}
+INFO    [02-25 21:28:07] train in BasicTrainer:
+duration: 44.10087847709656s
+INFO    [02-25 21:28:07] train in BasicTrainer:
+epoch: 40
+INFO    [02-25 21:28:45] _train_one_epoch in BasicTrainer:
+loss = 3.0184491882273625
+INFO    [02-25 21:28:51] validate in BasicTrainer:
+{'Recall@10': 0.2169087839126587, 'NDCG@10': 0.12633356407284738, 'MRR@10': 0.09842379368841649, 'Recall@5': 0.1558277028799057, 'NDCG@5': 0.10656756781041622, 'MRR@5': 0.09025492914021015, 'Recall*@10': 0.2169087839126587, 'NDCG*@10': 0.12633356407284738, 'MRR*@10': 0.09842379368841649, 'Recall*@5': 0.1558277028799057, 'NDCG*@5': 0.10656756781041622, 'MRR*@5': 0.09025492914021015}
+INFO    [02-25 21:28:51] train in BasicTrainer:
+duration: 44.01347780227661s
+INFO    [02-25 21:28:51] train in BasicTrainer:
+epoch: 41
+INFO    [02-25 21:29:30] _train_one_epoch in BasicTrainer:
+loss = 3.0137779551412445
+INFO    [02-25 21:29:35] validate in BasicTrainer:
+{'Recall@10': 0.2232432433962822, 'NDCG@10': 0.12785777777433396, 'MRR@10': 0.09877761818468571, 'Recall@5': 0.1526182433962822, 'NDCG@5': 0.10499813094735146, 'MRR@5': 0.08933094158768654, 'Recall*@10': 0.2232432433962822, 'NDCG*@10': 0.12785777777433396, 'MRR*@10': 0.09877761818468571, 'Recall*@5': 0.1526182433962822, 'NDCG*@5': 0.10499813094735146, 'MRR*@5': 0.08933094158768654}
+INFO    [02-25 21:29:35] train in BasicTrainer:
+duration: 44.15372061729431s
+INFO    [02-25 21:29:35] train in BasicTrainer:
+epoch: 42
+INFO    [02-25 21:30:14] _train_one_epoch in BasicTrainer:
+loss = 3.0152212861994534
+INFO    [02-25 21:30:19] validate in BasicTrainer:
+{'Recall@10': 0.2206587839126587, 'NDCG@10': 0.1272531048208475, 'MRR@10': 0.09873486556112766, 'Recall@5': 0.1567652028799057, 'NDCG@5': 0.1066621021926403, 'MRR@5': 0.0902808291092515, 'Recall*@10': 0.2206587839126587, 'NDCG*@10': 0.1272531048208475, 'MRR*@10': 0.09873486556112766, 'Recall*@5': 0.1567652028799057, 'NDCG*@5': 0.1066621021926403, 'MRR*@5': 0.0902808291092515}
+INFO    [02-25 21:30:19] train in BasicTrainer:
+duration: 44.08798432350159s
+INFO    [02-25 21:30:19] train in BasicTrainer:
+epoch: 43
+INFO    [02-25 21:30:58] _train_one_epoch in BasicTrainer:
+loss = 3.0121674155050626
+INFO    [02-25 21:31:03] validate in BasicTrainer:
+{'Recall@10': 0.2156587839126587, 'NDCG@10': 0.124618089646101, 'MRR@10': 0.09664104171097279, 'Recall@5': 0.1567652028799057, 'NDCG@5': 0.10553404003381729, 'MRR@5': 0.08874014772474766, 'Recall*@10': 0.2156587839126587, 'NDCG*@10': 0.124618089646101, 'MRR*@10': 0.09664104171097279, 'Recall*@5': 0.1567652028799057, 'NDCG*@5': 0.10553404003381729, 'MRR*@5': 0.08874014772474766}
+INFO    [02-25 21:31:03] train in BasicTrainer:
+duration: 44.19030523300171s
+INFO    [02-25 21:31:03] train in BasicTrainer:
+epoch: 44
+INFO    [02-25 21:31:42] _train_one_epoch in BasicTrainer:
+loss = 3.0093110894650934
+INFO    [02-25 21:31:47] validate in BasicTrainer:
+{'Recall@10': 0.2144087839126587, 'NDCG@10': 0.1235258562862873, 'MRR@10': 0.09572755910456181, 'Recall@5': 0.1526182433962822, 'NDCG@5': 0.10357501000165939, 'MRR@5': 0.0875126713514328, 'Recall*@10': 0.2144087839126587, 'NDCG*@10': 0.1235258562862873, 'MRR*@10': 0.09572755910456181, 'Recall*@5': 0.1526182433962822, 'NDCG*@5': 0.10357501000165939, 'MRR*@5': 0.0875126713514328}
+INFO    [02-25 21:31:47] train in BasicTrainer:
+duration: 44.069519996643066s
+INFO    [02-25 21:31:47] train in BasicTrainer:
+epoch: 45
+INFO    [02-25 21:32:26] _train_one_epoch in BasicTrainer:
+loss = 3.004750687816731
+INFO    [02-25 21:32:31] validate in BasicTrainer:
+{'Recall@10': 0.21918074339628218, 'NDCG@10': 0.12651518538594245, 'MRR@10': 0.09811935402452945, 'Recall@5': 0.1538682433962822, 'NDCG@5': 0.10534498043358326, 'MRR@5': 0.08935360491275787, 'Recall*@10': 0.21918074339628218, 'NDCG*@10': 0.12651518538594245, 'MRR*@10': 0.09811935402452945, 'Recall*@5': 0.1538682433962822, 'NDCG*@5': 0.10534498043358326, 'MRR*@5': 0.08935360491275787}
+INFO    [02-25 21:32:31] train in BasicTrainer:
+duration: 44.09874510765076s
+INFO    [02-25 21:32:31] train in BasicTrainer:
+epoch: 46
+INFO    [02-25 21:33:10] _train_one_epoch in BasicTrainer:
+loss = 3.0011825959941754
+INFO    [02-25 21:33:15] validate in BasicTrainer:
+{'Recall@10': 0.22699324339628218, 'NDCG@10': 0.12745914407074452, 'MRR@10': 0.09714803956449032, 'Recall@5': 0.1523057433962822, 'NDCG@5': 0.10339694291353226, 'MRR@5': 0.08726956836879253, 'Recall*@10': 0.22699324339628218, 'NDCG*@10': 0.12745914407074452, 'MRR*@10': 0.09714803956449032, 'Recall*@5': 0.1523057433962822, 'NDCG*@5': 0.10339694291353226, 'MRR*@5': 0.08726956836879253}
+INFO    [02-25 21:33:15] train in BasicTrainer:
+duration: 44.05382800102234s
+INFO    [02-25 21:33:15] train in BasicTrainer:
+epoch: 47
+INFO    [02-25 21:33:54] _train_one_epoch in BasicTrainer:
+loss = 2.9986085423740216
+INFO    [02-25 21:33:59] validate in BasicTrainer:
+{'Recall@10': 0.2216807433962822, 'NDCG@10': 0.12867822721600533, 'MRR@10': 0.10032232217490673, 'Recall@5': 0.1548902028799057, 'NDCG@5': 0.10735990822315217, 'MRR@5': 0.0916903167963028, 'Recall*@10': 0.2216807433962822, 'NDCG*@10': 0.12867822721600533, 'MRR*@10': 0.10032232217490673, 'Recall*@5': 0.1548902028799057, 'NDCG*@5': 0.10735990822315217, 'MRR*@5': 0.0916903167963028}
+INFO    [02-25 21:33:59] train in BasicTrainer:
+duration: 44.131123304367065s
+INFO    [02-25 21:33:59] train in BasicTrainer:
+epoch: 48
+INFO    [02-25 21:34:38] _train_one_epoch in BasicTrainer:
+loss = 2.998940036214631
+INFO    [02-25 21:34:43] validate in BasicTrainer:
+{'Recall@10': 0.21918074339628218, 'NDCG@10': 0.12579929783940316, 'MRR@10': 0.09710526466369629, 'Recall@5': 0.15793074339628219, 'NDCG@5': 0.10617941945791244, 'MRR@5': 0.0891175415366888, 'Recall*@10': 0.21918074339628218, 'NDCG*@10': 0.12579929783940316, 'MRR*@10': 0.09710526466369629, 'Recall*@5': 0.15793074339628219, 'NDCG*@5': 0.10617941945791244, 'MRR*@5': 0.0891175415366888}
+INFO    [02-25 21:34:43] train in BasicTrainer:
+duration: 44.1317400932312s
+INFO    [02-25 21:34:43] train in BasicTrainer:
+epoch: 49
+INFO    [02-25 21:35:22] _train_one_epoch in BasicTrainer:
+loss = 2.995727883093553
+INFO    [02-25 21:35:28] validate in BasicTrainer:
+{'Recall@10': 0.2201182433962822, 'NDCG@10': 0.1259552203118801, 'MRR@10': 0.09713084630668163, 'Recall@5': 0.1539527028799057, 'NDCG@5': 0.10447020784020424, 'MRR@5': 0.08821734465658665, 'Recall*@10': 0.2201182433962822, 'NDCG*@10': 0.1259552203118801, 'MRR*@10': 0.09713084630668163, 'Recall*@5': 0.1539527028799057, 'NDCG*@5': 0.10447020784020424, 'MRR*@5': 0.08821734465658665}
+INFO    [02-25 21:35:28] train in BasicTrainer:
+duration: 44.17432117462158s
+INFO    [02-25 21:35:28] train in BasicTrainer:
+epoch: 50
+INFO    [02-25 21:36:07] _train_one_epoch in BasicTrainer:
+loss = 2.994295725139446
+INFO    [02-25 21:36:12] validate in BasicTrainer:
+{'Recall@10': 0.2190962839126587, 'NDCG@10': 0.12382293224334717, 'MRR@10': 0.09472834020853042, 'Recall@5': 0.1539527028799057, 'NDCG@5': 0.10297621235251427, 'MRR@5': 0.08625098742544651, 'Recall*@10': 0.2190962839126587, 'NDCG*@10': 0.12382293224334717, 'MRR*@10': 0.09472834020853042, 'Recall*@5': 0.1539527028799057, 'NDCG*@5': 0.10297621235251427, 'MRR*@5': 0.08625098742544651}
+INFO    [02-25 21:36:12] train in BasicTrainer:
+duration: 44.11249399185181s
+INFO    [02-25 21:36:12] train in BasicTrainer:
+epoch: 51
+INFO    [02-25 21:36:51] _train_one_epoch in BasicTrainer:
+loss = 2.993693155066088
+INFO    [02-25 21:36:56] validate in BasicTrainer:
+{'Recall@10': 0.2220777028799057, 'NDCG@10': 0.12749671302735804, 'MRR@10': 0.09870770446956158, 'Recall@5': 0.1518496622145176, 'NDCG@5': 0.10480524018406868, 'MRR@5': 0.08936064377427101, 'Recall*@10': 0.2220777028799057, 'NDCG*@10': 0.12749671302735804, 'MRR*@10': 0.09870770446956158, 'Recall*@5': 0.1518496622145176, 'NDCG*@5': 0.10480524018406868, 'MRR*@5': 0.08936064377427101}
+INFO    [02-25 21:36:56] train in BasicTrainer:
+duration: 44.00733470916748s
+INFO    [02-25 21:36:56] train in BasicTrainer:
+epoch: 52
+INFO    [02-25 21:37:35] _train_one_epoch in BasicTrainer:
+loss = 2.988578731248486
+INFO    [02-25 21:37:40] validate in BasicTrainer:
+{'Recall@10': 0.2228462839126587, 'NDCG@10': 0.12756806522607803, 'MRR@10': 0.09851106144487858, 'Recall@5': 0.15332770287990571, 'NDCG@5': 0.1051866091042757, 'MRR@5': 0.0893289716541767, 'Recall*@10': 0.2228462839126587, 'NDCG*@10': 0.12756806522607803, 'MRR*@10': 0.09851106144487858, 'Recall*@5': 0.15332770287990571, 'NDCG*@5': 0.1051866091042757, 'MRR*@5': 0.0893289716541767}
+INFO    [02-25 21:37:40] train in BasicTrainer:
+duration: 44.148741006851196s
+INFO    [02-25 21:37:40] train in BasicTrainer:
+epoch: 53
+INFO    [02-25 21:38:18] _train_one_epoch in BasicTrainer:
+loss = 2.9901280621318667
+INFO    [02-25 21:38:24] validate in BasicTrainer:
+{'Recall@10': 0.22494932442903517, 'NDCG@10': 0.12825338944792747, 'MRR@10': 0.09881494864821434, 'Recall@5': 0.1595777028799057, 'NDCG@5': 0.10741846024990082, 'MRR@5': 0.09039484977722168, 'Recall*@10': 0.22494932442903517, 'NDCG*@10': 0.12825338944792747, 'MRR*@10': 0.09881494864821434, 'Recall*@5': 0.1595777028799057, 'NDCG*@5': 0.10741846024990082, 'MRR*@5': 0.09039484977722168}
+INFO    [02-25 21:38:24] train in BasicTrainer:
+duration: 43.67474722862244s
+INFO    [02-25 21:38:24] train in BasicTrainer:
+epoch: 54
+INFO    [02-25 21:39:02] _train_one_epoch in BasicTrainer:
+loss = 2.9870630983332425
+INFO    [02-25 21:39:08] validate in BasicTrainer:
+{'Recall@10': 0.2254307433962822, 'NDCG@10': 0.12863104939460754, 'MRR@10': 0.09911907583475113, 'Recall@5': 0.15418074339628218, 'NDCG@5': 0.10567033864557743, 'MRR@5': 0.0896939767897129, 'Recall*@10': 0.2254307433962822, 'NDCG*@10': 0.12863104939460754, 'MRR*@10': 0.09911907583475113, 'Recall*@5': 0.15418074339628218, 'NDCG*@5': 0.10567033864557743, 'MRR*@5': 0.0896939767897129}
+INFO    [02-25 21:39:08] train in BasicTrainer:
+duration: 44.02001929283142s
+INFO    [02-25 21:39:08] train in BasicTrainer:
+epoch: 55
+INFO    [02-25 21:39:47] _train_one_epoch in BasicTrainer:
+loss = 2.9863811064145924
+INFO    [02-25 21:39:52] validate in BasicTrainer:
+{'Recall@10': 0.21918074339628218, 'NDCG@10': 0.12566981449723244, 'MRR@10': 0.09704197712242603, 'Recall@5': 0.1536402028799057, 'NDCG@5': 0.10448185868561267, 'MRR@5': 0.08830208525061607, 'Recall*@10': 0.21918074339628218, 'NDCG*@10': 0.12566981449723244, 'MRR*@10': 0.09704197712242603, 'Recall*@5': 0.1536402028799057, 'NDCG*@5': 0.10448185868561267, 'MRR*@5': 0.08830208525061607}
+INFO    [02-25 21:39:52] train in BasicTrainer:
+duration: 44.270490884780884s
+INFO    [02-25 21:39:52] train in BasicTrainer:
+epoch: 56
+INFO    [02-25 21:40:31] _train_one_epoch in BasicTrainer:
+loss = 2.9829833615047545
+INFO    [02-25 21:40:36] validate in BasicTrainer:
+{'Recall@10': 0.2228462839126587, 'NDCG@10': 0.12721067175269127, 'MRR@10': 0.09805756144225597, 'Recall@5': 0.15372466221451758, 'NDCG@5': 0.10500605598092079, 'MRR@5': 0.08898156136274338, 'Recall*@10': 0.2228462839126587, 'NDCG*@10': 0.12721067175269127, 'MRR*@10': 0.09805756144225597, 'Recall*@5': 0.15372466221451758, 'NDCG*@5': 0.10500605598092079, 'MRR*@5': 0.08898156136274338}
+INFO    [02-25 21:40:36] train in BasicTrainer:
+duration: 44.375534534454346s
+INFO    [02-25 21:40:36] train in BasicTrainer:
+epoch: 57
+INFO    [02-25 21:41:15] _train_one_epoch in BasicTrainer:
+loss = 2.983688125559759
+INFO    [02-25 21:41:20] log in loggers:
+Update Best NDCG@10 Model at 57
+INFO    [02-25 21:41:20] validate in BasicTrainer:
+{'Recall@10': 0.2268243244290352, 'NDCG@10': 0.13100573047995567, 'MRR@10': 0.10188152708113193, 'Recall@5': 0.1570777028799057, 'NDCG@5': 0.10868689611554146, 'MRR@5': 0.09280940525233745, 'Recall*@10': 0.2268243244290352, 'NDCG*@10': 0.13100573047995567, 'MRR*@10': 0.10188152708113193, 'Recall*@5': 0.1570777028799057, 'NDCG*@5': 0.10868689611554146, 'MRR*@5': 0.09280940525233745}
+INFO    [02-25 21:41:20] train in BasicTrainer:
+duration: 44.22292757034302s
+INFO    [02-25 21:41:20] train in BasicTrainer:
+epoch: 58
+INFO    [02-25 21:41:59] _train_one_epoch in BasicTrainer:
+loss = 2.981360684022979
+INFO    [02-25 21:42:05] validate in BasicTrainer:
+{'Recall@10': 0.2262837839126587, 'NDCG@10': 0.12909462064504623, 'MRR@10': 0.0993721192330122, 'Recall@5': 0.1544932433962822, 'NDCG@5': 0.1057987855374813, 'MRR@5': 0.08970861718058586, 'Recall*@10': 0.2262837839126587, 'NDCG*@10': 0.12909462064504623, 'MRR*@10': 0.0993721192330122, 'Recall*@5': 0.1544932433962822, 'NDCG*@5': 0.1057987855374813, 'MRR*@5': 0.08970861718058586}
+INFO    [02-25 21:42:05] train in BasicTrainer:
+duration: 44.139822244644165s
+INFO    [02-25 21:42:05] train in BasicTrainer:
+epoch: 59
+INFO    [02-25 21:42:43] _train_one_epoch in BasicTrainer:
+loss = 2.979998143345355
+INFO    [02-25 21:42:48] validate in BasicTrainer:
+{'Recall@10': 0.2197212839126587, 'NDCG@10': 0.1270308367908001, 'MRR@10': 0.09871973216533661, 'Recall@5': 0.1517652028799057, 'NDCG@5': 0.10509702749550343, 'MRR@5': 0.08969327338039874, 'Recall*@10': 0.2197212839126587, 'NDCG*@10': 0.1270308367908001, 'MRR*@10': 0.09871973216533661, 'Recall*@5': 0.1517652028799057, 'NDCG*@5': 0.10509702749550343, 'MRR*@5': 0.08969327338039874}
+INFO    [02-25 21:42:48] train in BasicTrainer:
+duration: 43.865559101104736s
+INFO    [02-25 21:42:49] close_training in BasicTrainer:
+finished training
+DEBUG   [02-25 21:42:49] debug_summary in loss:
+loss nan summary: nan 0 times, not nan 45240 times, ratio nan / (nan + not_nan) = 0.0
+INFO    [02-25 21:42:49] run_routine in Routine:
+Finished training, Start final validation
+INFO    [02-25 21:42:49] final_validate in BasicTrainer:
+validate model on val set!
+INFO    [02-25 21:42:49] load_state_from_given_path in utils:
+checkpoint epoch: 57
+INFO    [02-25 21:42:49] load_state_from_given_path in utils:
+Loading model's parameters
+INFO    [02-25 21:42:54] validate in BasicTrainer:
+{'Recall@10': 0.2268243244290352, 'NDCG@10': 0.13100573047995567, 'MRR@10': 0.10188152708113193, 'Recall@5': 0.1570777028799057, 'NDCG@5': 0.10868689611554146, 'MRR@5': 0.09280940525233745, 'Recall*@10': 0.2268243244290352, 'NDCG*@10': 0.13100573047995567, 'MRR*@10': 0.10188152708113193, 'Recall*@5': 0.1570777028799057, 'NDCG*@5': 0.10868689611554146, 'MRR*@5': 0.09280940525233745}
+INFO    [02-25 21:42:54] run_routine in Routine:
+Finished final validating. Result: {'Recall@10': 0.2268243244290352, 'NDCG@10': 0.13100573047995567, 'MRR@10': 0.10188152708113193, 'Recall@5': 0.1570777028799057, 'NDCG@5': 0.10868689611554146, 'MRR@5': 0.09280940525233745, 'Recall*@10': 0.2268243244290352, 'NDCG*@10': 0.13100573047995567, 'MRR*@10': 0.10188152708113193, 'Recall*@5': 0.1570777028799057, 'NDCG*@5': 0.10868689611554146, 'MRR*@5': 0.09280940525233745}
