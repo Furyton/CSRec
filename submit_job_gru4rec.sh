@@ -2,9 +2,9 @@
 
 SAVED_PATH=___slurm_log4
 
-JOB_NAME=lfms_gru_test_ed_soft_T_1_2022
+JOB_NAME=lfms_gru_test_dvae_2022
 
-CONFIG_PATH="config2.lastfm_small/gru4rec/config_ensemble.json"
+CONFIG_PATH="config2.lastfm_small/gru4rec/config_test.json"
 
 
 GPU=gpu08

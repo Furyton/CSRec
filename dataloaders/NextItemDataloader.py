@@ -180,7 +180,7 @@ class NextEvalDataset(data_utils.Dataset):
 
         return torch.LongTensor(seq), torch.LongTensor(candidates), torch.LongTensor(labels), torch.LongTensor([rating]), torch.LongTensor([seq_len]), torch.LongTensor([user])
 
-
+ 
 class NextEvalDataset_Without_Neg(data_utils.Dataset):
     def __init__(self, u2seq, u2rating, u2answer, max_len, padding_first=True):
         self.u2seq = deepcopy(u2seq)
