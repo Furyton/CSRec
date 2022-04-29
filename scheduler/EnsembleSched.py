@@ -1,56 +1,24 @@
-"""
-Current target:
-__init__:
-
-    generate one dataloader
-    generate models
-    generate optims
-    generate one lr_sched
-
-    generate trainers
-
-    load state dict
-
-    generate an ensembler
-_fit:
-    create logger service
-
-    dataloader, lr_sched, [(model, optim, trainers, logger, tag), ...]
-
-    take above as input of an ensembler
-
-    tag is the prefix
-
-    train ensembler
-
-_eval:
-
-    test ensembler
-
-set up all these manully without any config
-
-use voting ensembler for now
-"""
-
-# from sklearn import ensemble
 import logging
 import torch
 import dataloaders
 import models
+from models.Ensembler import Ensembler
+from scheduler.Routine import Routine
 import trainers
 from loggers import (BestModelLogger, LoggerService, MetricGraphPrinter,
                      RecentModelLogger)
 from models import MODELS
 from torch.utils.tensorboard import SummaryWriter
-from trainers import VoteEnsembleTrainer
+from trainers import trainer_factory
 from trainers.BasicTrainer import Trainer
+from trainers.tester import Tester
 
 from scheduler.BaseSched import BaseSched
 from scheduler.utils import (generate_lr_scheduler, generate_model,
-                             generate_optim, load_state_from_given_path)
+                             generate_optim, load_state_from_given_path, model_path_finder)
+from trainers.DistillTrainer import DistillTrainer
 from utils import get_exist_path, get_path
 from configuration.config import *
-
 
 class EnsembleScheduler(BaseSched):
     def __init__(self, args, export_root: str) -> None:
@@ -62,98 +30,87 @@ class EnsembleScheduler(BaseSched):
         self.export_root = get_path(export_root)
         self.mode = args.mode
 
+        self.teacher1_code = args.mentor_code
+        self.teacher2_code = args.mentor2_code
+
+        self.weight_list = args.weight_list
+        self.temperature = args.T
+
+        self.teacher1_tag = "teacher1_" + self.teacher1_code
+        self.teacher2_tag = "teacher2_" + self.teacher2_code
+
         self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
-        self.tag_list = self.model_code_list = ['gru4rec', 'caser'] #list(MODELS.keys())
-        self.tag = VoteEnsembleTrainer.code()
+        if args.enable_auto_path_finder:
+            mentor_seed1 = args.mentor_seed1
+            mentor_seed2 = args.mentor_seed2
 
-        self.model_list = generate_model(args, self.tag_list, self.dataset, self.device)
-        self.optim_list = generate_optim(args, args.optimizer, self.model_list)
+            mentor_base_path = args.mentor_state_path
 
-        self.caser_path = "F:\\workspace\\remote-workspace\\soft-rec\\soft-rec\\___exp0_baselines\\lastfm_caser_2022-01-12_4\\caser_logs\\checkpoint\\best_acc_model.pth"
-        self.gru4rec_path = "F:\\workspace\\remote-workspace\\soft-rec\\soft-rec\\___exp0_baselines\\lastfm_gru4rec_2022-01-12_2\\gru4rec_logs\\checkpoint\\best_acc_model.pth"
-        # self.deepfm_path = "/data/wushiguang-slurm/code/soft-rec/_train/ml_10m_cont1_deepfm_2021-12-11_0/deepfm_logs/checkpoint/best_acc_model.pth"
+            mentor_path_pattern = args.mentor_describe
 
-        load_state_from_given_path(self.model_list[0], self.gru4rec_path, self.device)
-        load_state_from_given_path(self.model_list[1], self.caser_path, self.device)
+            arg_dict = dict(args._get_kwargs())
+            arg_dict["sample_seed"] = mentor_seed1
+            arg_dict["model_code"] = self.teacher1_code
+            self.args.mentor_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher1_code)
 
-        # if args.model_state_path is not None:
-        #     state_dict = torch.load(args.model_state_path, map_location=torch.device(self.device))
+            arg_dict["sample_seed"] = mentor_seed2
+            arg_dict["model_code"] = self.teacher2_code
+            self.args.mentor2_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.teacher2_code)
 
-        #     for tag, model, optim in zip(self.tag_list, self.model_list, self.optim_list):
-        #         state = state_dict[tag]
-        #         model.load_state_dict(state[STATE_DICT_KEY])
-        #         optim.load_state_dict(state[OPTIMIZER_STATE_DICT_KEY])		
 
-        #     logging.info(f"checkpoint epoch: {state_dict[EPOCH_DICT_KEY]}")
+        self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
 
-        self.writer_list = []
-        self.logger_list = []
+        self.teacher2, self.t_trainer2, self.t_writer2 = self._generate_teacher_trainer(self.teacher2_code, self.teacher2_tag, self.args.mentor2_state_path)
 
-        for tag in self.tag_list:
-            _writer, _logger = self._create_logger_service(tag)
-            self.writer_list.append(_writer)
-            self.logger_list.append(_logger)
-        
-        self.trainer_list = [
-            trainers.trainer_factory(args,
-                                     Trainer.code(),
-                                     model,
-                                     tag,
-                                     self.train_loader,
-                                     self.val_loader,
-                                     self.test_loader,
-                                     self.device,
-                                     logger,
-                                     generate_lr_scheduler(optim, args),
-                                     optim) 
-            for tag, model, optim, logger in zip(self.tag_list, self.model_list, self.optim_list, self.logger_list)]
+        self.mix_teacher = Ensembler(self.device, [self.teacher1, self.teacher2], self.weight_list, self.temperature)
 
-        self.ensembler_writer, self.ensembler_logger = self._create_logger_service(self.tag)
+        self.ensemble_tester = Tester(self.args, self.mix_teacher, self.test_loader, self.device, 'ensemble_model')
 
-        self.ensembler = trainers.trainer_factory(args,
-                                                  VoteEnsembleTrainer.code(),
-                                                  self.model_list,
-                                                  self.tag_list,
-                                                  self.train_loader,
-                                                  self.val_loader,
-                                                  self.test_loader,
-                                                  self.device,
-                                                  self.ensembler_logger,
-                                                  trainer_list=self.trainer_list)
+        self.routine = Routine(["teacher1", "teacher2"], [self.t_trainer1, self.t_trainer2], self.args, self.export_root)
 
-        self.ensembler: VoteEnsembleTrainer
-        # self.ensembler = ensemble
+    def _generate_teacher_trainer(self, code: str, tag: str, state_path: str=None):
+        teacher = generate_model(self.args, code, self.dataset, self.device)
+
+        optimizer = generate_optim(self.args, self.args.optimizer, teacher)
+
+        writer, logger = self._create_logger_service(tag)
+
+        accum_iter = load_state_from_given_path(teacher, state_path, self.device, optimizer, must_exist=False)
+
+        logging.debug(f"{tag}: \n{teacher}")
+
+        trainer = trainer_factory(self.args,
+                        Trainer.code(),
+                        teacher,
+                        tag,
+                        self.train_loader,
+                        self.val_loader,
+                        self.test_loader,
+                        self.device,
+                        logger,
+                        generate_lr_scheduler(optimizer, self.args),
+                        optimizer,
+                        accum_iter)
+
+        return teacher, trainer, writer
 
     def run(self):
-        if self.mode == 'train':
-            self._fit()
-        self._evaluate()
-        self._close_writer()
+        return super().run()
 
-    def _close_writer(self):
-        for writer in self.writer_list + [self.ensembler_writer]:
-            writer.close()
+    def _finishing(self):
+        self.t_writer1.close()
+        self.t_writer2.close()
 
     def _fit(self):
-        logging.info("Start training ensembler.")
-
-        self.ensembler.train()
+        self.routine.run_routine()
 
     def _evaluate(self):
-        if self.mode == "test":
-            for trainer in self.trainer_list:
-                trainer: Trainer
-                trainer._test()
+        logging.info("Start testing ensemble model on test set")
 
-            logging.info("evaluate ensembler")
-            results = self.ensembler._test()
-        else:
-            results = self.ensembler.test(self.export_root)
+        results = self.ensemble_tester.test(self.export_root)
 
         logging.info(f"!!Final Result!!: {results}")
-
-        # result_folder = self.export_root.joinpath()
 
     def _create_logger_service(self, prefix: str, metric_only: bool = False):
         """
@@ -209,5 +166,3 @@ class EnsembleScheduler(BaseSched):
             val_loggers.append(BestModelLogger(model_checkpoint, metric_key=self.best_metric))
 
         return log_folder, writer, train_loggers, val_loggers
-
-

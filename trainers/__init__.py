@@ -1,8 +1,3 @@
-# from configuration.config import FINE_TUNE_STAGE, NORMAL_STAGE, PRETRAIN_STAGE
-# from trainers.NormalTrainer import NormalTrainer
-
-
-
 import logging
 
 import torch.optim as optm

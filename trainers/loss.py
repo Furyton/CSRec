@@ -40,7 +40,7 @@ class SoftLoss:
         self.mentor.eval()
 
         self.nan = 0
-        self.not_nan = 0
+        self.not_nan = 1
         self.debug = 40
         self.accum_iter = 0
 
@@ -145,7 +145,7 @@ class DVAELoss:
         self.debug = 8
 
         self.nan = 0
-        self.not_nan = 0
+        self.not_nan = 1
 
         self.accum_iter = 0
 
