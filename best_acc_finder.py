@@ -22,8 +22,8 @@ def gen_metrics_file_path(base_dir: str, secondary_prefix: str, tertiary_prefix:
 if __name__=="__main__":
     # BASE_DIR, SECOND, TERTIARY, metric = sys.argv[1:]
 
-    BASE_DIR = "___el_dvae_2022"
-    SECOND = "teacher"
+    BASE_DIR = "___el_ep_2022"
+    SECOND = "ep"
     TERTIARY = "student"
     metric = "NDCG@10"
 
