@@ -20,7 +20,7 @@ class NextItemDataloader(AbstractDataloader):
         self.rating_test = dataset[7]
         # args.num_items = self.item_count
 
-        self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec')
+        self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec' and args.model_code.lower() != 'narm')
 
         logging.info("there are {} items in this dataset, {} users, padding_first? {}".format(args.num_items, self.user_count, self.padding_first))
 
