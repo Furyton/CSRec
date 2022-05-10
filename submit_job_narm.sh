@@ -1,16 +1,16 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log4
+SAVED_PATH=___slurm_log2
 
-# JOB_NAME=lfms_narm_base_2020
-# JOB_NAME=yelp_narm_base_2020
-# JOB_NAME=movies_narm_base_2020
-JOB_NAME=el_narm_partial_base_2001
+#JOB_NAME=lfms_narm_ed_2020
+# JOB_NAME=yelp_narm_dvae_2020
+# JOB_NAME=movies_narm_dvae_2020
+JOB_NAME=el_narm_dvae_2020
 
-# CONFIG_PATH="config2.lastfm_small/narm/config.json"
-# CONFIG_PATH="config2.yelp/narm/config.json"
-# CONFIG_PATH="config2.movies/narm/config.json"
-CONFIG_PATH="config2.electronics/narm/config_partial.json"
+#CONFIG_PATH="config2.lastfm_small/narm/config_distill_ensemble.json"
+# CONFIG_PATH="config2.yelp/narm/config_dvae.json"
+# CONFIG_PATH="config2.movies/narm/config_dvae.json"
+CONFIG_PATH="config2.electronics/narm/config_dvae.json"
 
 
 GPU=gpu08
