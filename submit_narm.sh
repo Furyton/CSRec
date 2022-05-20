@@ -2,21 +2,21 @@
 
 SAVED_PATH=___slurm_log
 
-# HPARAMS_FILE=partial_base_hyperparameters.txt
-HPARAMS_FILE=dvae_hyperparameters.txt
+HPARAMS_FILE=partial_base_hyperparameters.txt
+# HPARAMS_FILE=dvae_hyperparameters.txt
 # HPARAMS_FILE=soft_hyperparameters.txt
 # HPARAMS_FILE=ensemble_hyperparameters.txt
-ARRAY_CONFIG=1-26%3
+ARRAY_CONFIG=1-10%3
 
 # JOB_NAME=lfms_narm_dvae_2022
 # JOB_NAME=yelp_narm_dvae_2022
 # JOB_NAME=movies_narm_dvae_2022
-JOB_NAME=el_narm_ep_2022
+JOB_NAME=movies_narm_partial_2022
 
 # CONFIG_PATH="config2.yelp/narm/config_dvae.json"
 # CONFIG_PATH="config2.lastfm_small/narm/config_dvae.json"
 # CONFIG_PATH="config2.movies/narm/config_dvae.json"
-CONFIG_PATH="config2.electronics/narm/config_dvae.json"
+CONFIG_PATH="config2.movies/narm/config_partial.json"
 
 
 GPU=gpu08
