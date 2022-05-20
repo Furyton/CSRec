@@ -47,14 +47,30 @@ class EnsembleDistillScheduler(BaseSched):
 
         assert(len(self.weight_list) == len(self.teacher_path_list))
 
-        self.teacher_tag_list = [f"teacher{i+1}_{code}" for i, code in enumerate(self.teacher_code_list)]
-        self.student_tag = "student_" + self.student_code
-
-        self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
-
         if args.enable_auto_path_finder:
             if args.use_sampled_mentor:
-                raise NotImplementedError
+                # raise NotImplementedError
+                arg_dict = dict(args._get_kwargs())
+                sample_seeds = args.mentor_seed
+                mentor_path_pattern = args.mentor_describe
+
+                if len(self.weight_list) == 1 and len(sample_seeds) != 1:
+                    n_teacher = len(sample_seeds)
+                    self.weight_list *= n_teacher
+                    self.teacher_path_list *= n_teacher
+                    self.teacher_code_list *= n_teacher
+                else:
+                    assert(len(self.weight_list) == len(sample_seeds))
+
+                new_mentor_state_path = []
+                for code, base, seed in zip(self.teacher_code_list, self.teacher_path_list, sample_seeds):
+                    arg_dict["sample_seed"] = seed
+                    arg_dict["model_code"] = code
+                    new_mentor_state_path.append(model_path_finder(base, mentor_path_pattern, arg_dict, code))
+
+                self.teacher_path_list = new_mentor_state_path
+
+                logging.debug(f"teacher path lish: {self.teacher_path_list}")
             else:
                 arg_dict = dict(args._get_kwargs())
                 mentor_path_pattern = args.mentor_describe
@@ -66,6 +82,11 @@ class EnsembleDistillScheduler(BaseSched):
                     new_mentor_state_path.append(model_path_finder(base, mentor_path_pattern, arg_dict, code))
 
                 self.teacher_path_list = new_mentor_state_path
+
+        self.teacher_tag_list = [f"teacher{i+1}_{code}" for i, code in enumerate(self.teacher_code_list)]
+        self.student_tag = "student_" + self.student_code
+
+        self.train_loader, self.val_loader, self.test_loader, self.dataset = dataloaders.dataloader_factory(args)
 
         # self.teacher1, self.t_trainer1, self.t_writer1 = self._generate_teacher_trainer(self.teacher1_code, self.teacher1_tag, self.args.mentor_state_path)
 
@@ -150,7 +171,7 @@ class EnsembleDistillScheduler(BaseSched):
     def _finishing(self):
         # self.t_writer1.close()
         # self.t_writer2.close()
-        for tw in self.t_trainer_list:
+        for tw in self.t_writer_list:
             tw.close()
         self.s_writer.close()
 
