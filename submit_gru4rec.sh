@@ -8,12 +8,10 @@ ARRAY_CONFIG=1-1%1
 JOB_NAME=movies_gru_abla_partial_2022
 # JOB_NAME=lfms_base_gru
 # JOB_NAME=lfms_soft_gru
-# JOB_NAME=el_dvae_gru
 # JOB_NAME=lfms_ed_gru
 # JOB_NAME=video_ad_gru
 
 #CONFIG_PATH="config2.movies/gru4rec/config_dvae.json"
-# CONFIG_PATH="config2.lastfm_small/gru4rec/config_partial.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
 CONFIG_PATH="config2.movies/gru4rec/config_distill_ensemble_partial.json"
 # CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble.json"

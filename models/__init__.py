@@ -10,6 +10,7 @@ from models.pop import POPModel
 from models.NextItNet import NextItNet
 from models.SASrec import SASRecModel
 from models.auxiliary_models.PriorPreferModel import PriorModel
+from models.NARM import NARM
 
 MODELS = {
     BERTModel.code(): BERTModel,
@@ -20,6 +21,7 @@ MODELS = {
     NextItNet.code(): NextItNet,
     SASRecModel.code(): SASRecModel,
     PriorModel.code(): PriorModel,
+    NARM.code(): NARM
 }
 
 def model_factory(args, model_type: str, dataset: list) -> BaseModel:

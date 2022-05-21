@@ -20,7 +20,7 @@ class NextItemDataloader(AbstractDataloader):
         self.rating_test = dataset[7]
         # args.num_items = self.item_count
 
-        self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec')
+        self.padding_first = (args.model_code.lower() != 'gru4rec' and args.model_code.lower() != 'sasrec' and args.model_code.lower() != 'narm')
 
         logging.info("there are {} items in this dataset, {} users, padding_first? {}".format(args.num_items, self.user_count, self.padding_first))
 
@@ -180,7 +180,7 @@ class NextEvalDataset(data_utils.Dataset):
 
         return torch.LongTensor(seq), torch.LongTensor(candidates), torch.LongTensor(labels), torch.LongTensor([rating]), torch.LongTensor([seq_len]), torch.LongTensor([user])
 
-
+ 
 class NextEvalDataset_Without_Neg(data_utils.Dataset):
     def __init__(self, u2seq, u2rating, u2answer, max_len, padding_first=True):
         self.u2seq = deepcopy(u2seq)
