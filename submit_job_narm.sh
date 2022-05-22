@@ -5,12 +5,9 @@ SAVED_PATH=___slurm_log5
 #JOB_NAME=lfms_narm_ed_2020
 # JOB_NAME=yelp_narm_dvae_2020
 # JOB_NAME=movies_narm_dvae_2020
-JOB_NAME=movies_narm_base_2019
+JOB_NAME=abla_el_narm_ed_test_teacher
 
-#CONFIG_PATH="config2.lastfm_small/narm/config_distill_ensemble.json"
-# CONFIG_PATH="config2.yelp/narm/config_dvae.json"
-# CONFIG_PATH="config2.movies/narm/config_dvae.json"
-CONFIG_PATH="config2.movies/narm/config.json"
+CONFIG_PATH="config2.electronics/narm/config_test.json"
 
 
 GPU=gpu08

@@ -41,7 +41,7 @@ class SoftLoss:
 
         self.nan = 0
         self.not_nan = 1
-        self.debug = 40
+        self.debug = 5
         self.accum_iter = 0
 
     def debug_summary(self):
