@@ -35,6 +35,8 @@ class EnsembleDistillScheduler(BaseSched):
 
         self.student_code = args.model_code
 
+        # len(mentor_list) = len(weight_list)
+
         self.teacher_code_list = args.mentor_list
 
         assert(self.teacher_code_list is not None)
@@ -45,7 +47,6 @@ class EnsembleDistillScheduler(BaseSched):
 
         self.teacher_path_list = args.mentor_path_list
 
-        assert(len(self.weight_list) == len(self.teacher_path_list))
 
         if args.enable_auto_path_finder:
             if args.use_sampled_mentor:
@@ -75,6 +76,11 @@ class EnsembleDistillScheduler(BaseSched):
                 arg_dict = dict(args._get_kwargs())
                 mentor_path_pattern = args.mentor_describe
 
+                if len(self.weight_list) == 1 and len(self.teacher_path_list) != 1:
+                    n_teacher = len(self.teacher_path_list)
+                    self.weight_list*= n_teacher
+                    self.teacher_code_list *= n_teacher
+
                 new_mentor_state_path = []
                 for code, base in zip(self.teacher_code_list, self.teacher_path_list):
                     arg_dict["model_code"] = code
@@ -82,6 +88,8 @@ class EnsembleDistillScheduler(BaseSched):
                     new_mentor_state_path.append(model_path_finder(base, mentor_path_pattern, arg_dict, code))
 
                 self.teacher_path_list = new_mentor_state_path
+        else:
+            assert(len(self.weight_list) == len(self.teacher_path_list))
 
         self.teacher_tag_list = [f"teacher{i+1}_{code}" for i, code in enumerate(self.teacher_code_list)]
         self.student_tag = "student_" + self.student_code
