@@ -17,6 +17,8 @@ class Ensembler(nn.Module):
             model.set_temperature(temp)
         if predefined_weight is not None:
             self.weight = predefined_weight
+        else:
+            self.weight = [1.] * len(self.model_list)
         self._device = device
         self.debug = 5
 
