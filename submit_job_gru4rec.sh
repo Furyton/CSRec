@@ -1,10 +1,10 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log4
+SAVED_PATH=___slurm_log6
 
-JOB_NAME=lfms_gru_test_ep_T_3_2022
+JOB_NAME=abla_movies_ed_test_teacher_gru_T_1
 
-CONFIG_PATH="config2.lastfm_small/gru4rec/config_ensemble.json"
+CONFIG_PATH="config2.movies/gru4rec/config_ensemble.json"
 
 
 GPU=gpu08

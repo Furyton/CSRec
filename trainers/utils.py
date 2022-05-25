@@ -89,9 +89,14 @@ def recalls_ndcgs_and_mrr_for_ks(scores, labels, ks, ratings):
     _cal_metrics(labels, scores, metrics, ks)
 
     ratings = ratings.squeeze()
-    scores = scores[ratings == 1.]
-    labels = labels[ratings == 1.]
+    scores_1 = scores[ratings == 1.]
+    labels_1 = labels[ratings == 1.]
 
-    _cal_metrics(labels, scores, metrics, ks, '*')
+    _cal_metrics(labels_1, scores_1, metrics, ks, '*')
+
+    scores_0 = scores[ratings == 0.]
+    labels_0 = labels[ratings == 0.]
+
+    _cal_metrics(labels_0, scores_0, metrics, ks, '**')
 
     return metrics
