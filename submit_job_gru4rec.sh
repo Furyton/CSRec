@@ -2,9 +2,9 @@
 
 SAVED_PATH=___slurm_log6
 
-JOB_NAME=abla_movies_ed_test_teacher_gru_T_1
+JOB_NAME=abla_gru_movies_base_new_m
 
-CONFIG_PATH="config2.movies/gru4rec/config_ensemble.json"
+CONFIG_PATH="config2.movies/gru4rec/config_test.json"
 
 
 GPU=gpu08

@@ -5,7 +5,7 @@ SAVED_PATH=___slurm_log5
 #JOB_NAME=lfms_narm_ed_2020
 # JOB_NAME=yelp_narm_dvae_2020
 # JOB_NAME=movies_narm_dvae_2020
-JOB_NAME=abla_movies_ed_test_T_1
+JOB_NAME=abla_movies_ep_test_teacher_narm_T_1
 
 CONFIG_PATH="config2.movies/narm/config_ensemble.json"
 

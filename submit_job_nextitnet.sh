@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SAVED_PATH=___slurm_log3
+SAVED_PATH=___slurm_log7
 
 #JOB_NAME=movies_next_test_soft_2022
-JOB_NAME=abla_movies_next_dvae_2020
+JOB_NAME=abla_el_next_ed_test_teacher_T_3
 #JOB_NAME=movies_next_dvae_2020
 #JOB_NAME=test_el_next_dvae_2022
 #JOB_NAME=el_next_dvae_2020
@@ -13,7 +13,7 @@ JOB_NAME=abla_movies_next_dvae_2020
 # JOB_NAME=yelp_ad_next
 # JOB_NAME=lfms_next_soft_test
 
-CONFIG_PATH="config2.movies/nextitnet/config_dvae.json"
+CONFIG_PATH="config2.electronics/nextitnet/config_ensemble.json"
 
 #CONFIG_PATH="config2.movies/nextitnet/config.json"
 # config_path="config2.lastfm_small/nextitnet/config.json"config_distill
