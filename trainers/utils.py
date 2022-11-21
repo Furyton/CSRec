@@ -81,6 +81,19 @@ def _cal_metrics(labels, scores, metrics, ks, star=''):
 
         metrics['MRR' + star + '@%d' % k] = mrr
 
+        weights.to('cpu')
+        idcg.to('cpu')
+        position_mrr.to('cpu')
+
+        del weights, idcg, position_mrr
+
+    answer_count.to('cpu')
+    answer_count_float.to('cpu')
+    labels_float.to('cpu')
+    rank.to('cpu')
+
+    del answer_count, answer_count_float, labels_float, rank
+
 
 # B x C, B x C
 def recalls_ndcgs_and_mrr_for_ks(scores, labels, ks, ratings):
