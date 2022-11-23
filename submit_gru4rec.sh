@@ -3,7 +3,7 @@
 SAVED_PATH=___slurm_log_effect_of_length
 
 HPARAMS_FILE=len_parameters.txt
-ARRAY_CONFIG=1-3%1
+ARRAY_CONFIG=1-1%1
 
 # JOB_NAME=movies_gru_ep_2022
 JOB_NAME=lfms_dvae_gru_effect_of_len
