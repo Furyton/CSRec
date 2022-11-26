@@ -54,7 +54,7 @@ def _get_detailed_description(args):
         return detailed_desc
 
 def get_name_of_experiment_path(experiment_dir, experiment_description, detailed_desc="", task_id=-1):
-    experiment_path = os.path.join(experiment_dir, (experiment_description + "_" + detailed_desc + "_" + str(datetime.now().strftime("%m-%d_%H:%M"))))
+    experiment_path = os.path.join(experiment_dir, (experiment_description + "_" + detailed_desc + "_" + str(datetime.now().strftime("%m-%d_%H-%M"))))
     if task_id != -1:
         experiment_path = experiment_path + "_t" + str(task_id)
     else:

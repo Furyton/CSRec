@@ -3,7 +3,6 @@ import pickle
 import logging
 from os import path
 from pathlib import Path
-from this import d
 
 import numpy as np
 import pandas as pd
@@ -184,6 +183,8 @@ def _sample_from_dataset(dataset: list, rate: float, use_rating: bool=False, see
     new_item_train = _select_from(item_train, selected_users)
     new_item_valid = _select_from(item_valid, selected_users)
     new_item_test = _select_from(item_test, selected_users)
+
+    logging.info(f"#users after sampling: {len(new_item_train)}, #item after sampling: {itemnum}")
 
     if not use_rating:
         return [new_item_train, new_item_valid, new_item_test, n_sampled_user, itemnum]
