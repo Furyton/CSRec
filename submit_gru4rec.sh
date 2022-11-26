@@ -3,21 +3,19 @@
 SAVED_PATH=___slurm_log_effect_of_length
 
 HPARAMS_FILE=len_parameters.txt
-ARRAY_CONFIG=1-1%1
+ARRAY_CONFIG=1-7%1
 
-# JOB_NAME=movies_gru_ep_2022
-JOB_NAME=lfms_dvae_gru_effect_of_len
-# JOB_NAME=lfms_soft_gru
-# JOB_NAME=movies_partial_base_gru
-# JOB_NAME=lfms_ed_gru
-# JOB_NAME=video_ad_gru
+#JOB_NAME=lfms_base_gru_effect_of_len
+#JOB_NAME=lfms_soft_gru_effect_of_len
+#JOB_NAME=lfms_ed_gru_effect_of_len
+JOB_NAME=lfms_ep_gru_effect_of_len
+#JOB_NAME=lfms_dvae_gru_effect_of_len
 
-#CONFIG_PATH="config2.movies/gru4rec/config_dvae.json"
-#CONFIG_PATH="config2.movies/gru4rec/config_partial.json"
-# CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
-# CONFIG_PATH="config2.movies/gru4rec/config_distill_ensemble_partial.json"
- CONFIG_PATH="config2.lastfm_small/gru4rec/config_dvae.json"
-# CONFIG_PATH="config2.yelp/gru4rec/config_dvae_ensemble.json"
+#CONFIG_PATH="config2.lastfm_small/gru4rec/config.json"
+#CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
+#CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble.json"
+CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble_partial.json"
+#CONFIG_PATH="config2.lastfm_small/gru4rec/config_dvae.json"
 
 
 GPU=gpu08
