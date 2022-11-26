@@ -1,3 +1,4 @@
+from copy import deepcopy
 import logging
 
 from dataloaders import dataloader_factory
@@ -52,7 +53,7 @@ class DVAEDistillScheduler(BaseSched):
             arg_dict["model_code"] = self.auxiliary_code
             self.args.mentor_state_path = model_path_finder(mentor_base_path, mentor_path_pattern, arg_dict, self.auxiliary_code)
 
-        self._generate_auxliary_trainer()
+        self._generate_auxliary_trainer(args.sample_seed)
         self._generate_teacher_trainer()
         self._genearte_student_trainer()
 
@@ -79,9 +80,26 @@ class DVAEDistillScheduler(BaseSched):
 
         logging.info(f"!!Final Result!!: {results}")
 
-    def _generate_auxliary_trainer(self):
-        
-        self.auxiliary = generate_model(self.args, self.auxiliary_code, self.dataset, self.device)
+    def _generate_auxiliary_args(self, seed: int):
+        new_args = deepcopy(self.args)
+        new_args.do_sampling = True
+        new_args.load_processed_dataset = new_args.load_sampled_dataset
+        new_args.save_processed_dataset = new_args.save_sampled_dataset
+        new_args.sample_seed = seed
+
+        return new_args
+    
+    def _gen_auxiliary_dataloader(self, seed: int):
+        new_args = self._generate_auxiliary_args(seed)
+
+        return dataloader_factory(new_args)
+
+    def _generate_auxliary_trainer(self, seed: int):
+        logging.info(f"generating dataset (sampled with seed {seed}) and dataloader")
+
+        tr, val, ts, dataset = self._gen_auxiliary_dataloader(seed)
+
+        self.auxiliary = generate_model(self.args, self.auxiliary_code, dataset, self.device)
 
         self.a_optimizer = generate_optim(self.args, self.args.optimizer, self.auxiliary)
 
@@ -95,9 +113,9 @@ class DVAEDistillScheduler(BaseSched):
                         Trainer.code(),
                         self.auxiliary,
                         self.auxiliary_tag,
-                        self.train_loader,
-                        self.val_loader,
-                        self.test_loader,
+                        tr,
+                        val,
+                        ts,
                         self.device,
                         self.a_logger,
                         generate_lr_scheduler(self.a_optimizer, self.args),
