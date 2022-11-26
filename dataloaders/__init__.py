@@ -13,6 +13,25 @@ def dataloader_factory(args):
     """
     input:
         args: config
+        required args:
+            - dataloader_factory():
+                - num_items
+                - dataloader_type
+            - get_dataset():
+                - do_sampling
+                - dataset_cache_filename
+                - load_processed_dataset
+                - save_processed_dataset
+                - min_item_inter
+                - path_for_sample
+                - max_len
+                - min_length
+                - do_remap
+                - good_only
+                - do_reindex
+                - use_rating
+                - sample_rate
+                - sample_seed
     return:
         train, val, test, dataset
 
