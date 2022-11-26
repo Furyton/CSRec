@@ -8,6 +8,7 @@ from scheduler.DVAEDistillSched import DVAEDistillScheduler
 from scheduler.DVAEEnsembleDistillSched import DVAEEnsembleDistillScheduler
 from scheduler.DistillSched import DistillScheduler
 from scheduler.EnsembleDistillSched import EnsembleDistillScheduler
+from scheduler.EnsemblePartialDistillSched import EnsemblePartialDistillSched
 from scheduler.EnsembleSched import EnsembleScheduler
 from utils import *
 
@@ -29,6 +30,8 @@ if __name__ == '__main__':
         sched = DistillScheduler(args, export_root)
     elif args.sched.lower() == 'ensemble_distill':
         sched = EnsembleDistillScheduler(args, export_root)
+    elif args.sched.lower() == 'ensemble_partial_distill':
+        sched = EnsemblePartialDistillSched(args, export_root)
     elif args.sched.lower() == 'dvae_ensemble':
         sched = DVAEEnsembleDistillScheduler(args, export_root)
     elif args.sched.lower() == "dvae":    
