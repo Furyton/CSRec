@@ -1,0 +1,913 @@
+INFO    [11-27 14:31:09] setup_train in utils:
+{
+    "experiment_dir": "_____lfms_base",
+    "experiment_description": "base",
+    "describe": "{config[model_code]}-len-{config[max_len]}",
+    "dataset_name": "lastfm_small.csv",
+    "sched": "basic",
+    "model_code": "gru4rec",
+    "num_epochs": 80,
+    "mode": [
+        "train",
+        "test"
+    ],
+    "max_len": 20,
+    "test_state_path": null,
+    "model_state_path": null,
+    "rand_seed": 2021,
+    "load_processed_dataset": false,
+    "save_processed_dataset": false,
+    "dataset_cache_filename": null,
+    "weight_decay": 0,
+    "decay_step": 15,
+    "gamma": 0.99,
+    "lr": 0.001,
+    "min_length": 5,
+    "min_item_inter": 5,
+    "good_only": false,
+    "use_rating": true,
+    "test_negative_sampler_code": "random",
+    "test_negative_sample_size": 0,
+    "dataloader_type": "next",
+    "train_batch_size": 256,
+    "val_batch_size": 256,
+    "test_batch_size": 256,
+    "prop_sliding_window": -1.0,
+    "worker_number": 2,
+    "metric_ks": [
+        10
+    ],
+    "device": "cuda",
+    "num_gpu": 1,
+    "optimizer": "Adam",
+    "best_metric": "NDCG@10",
+    "show_process_bar": false,
+    "enable_sample": false,
+    "samples_ratio": 0.1,
+    "config_file": "config2.lastfm_small/gru4rec/config.json",
+    "task_id": -1,
+    "split": "leave_one_out",
+    "do_remap": true,
+    "do_sampling": false,
+    "path_for_sample": null,
+    "sample_rate": 0.5,
+    "sample_seed": 0,
+    "train_negative_sampler_code": "random",
+    "train_negative_sample_size": 100,
+    "device_idx": "0",
+    "momentum": null,
+    "log_period_as_iter": 12800,
+    "mentor_code": "bert",
+    "training_routine": null,
+    "T": 1,
+    "alpha": 0.1,
+    "dvae_alpha": 0.5,
+    "softmaxed_mentor": false,
+    "weight_list": [
+        0.5,
+        0.5
+    ],
+    "validation_rate": 0.2,
+    "num_items": null,
+    "start_index": 1,
+    "kwargs": null
+}
+DEBUG   [11-27 14:31:09] __init__ in BasicSched:
+BasicScheduler attribs: tag=gru4rec
+INFO    [11-27 14:31:09] _gen_dataset in utils:
+processing dataset lastfm_small.csv
+INFO    [11-27 14:31:09] _drop_cold in utils:
+filtering out cold users (who interacts with less or eq than 5 items) and cold items (which is interacted by less or eq than 5 users)
+DEBUG   [11-27 14:31:09] _drop_cold in utils:
+before filtering, there are 1090 users, 3646 items 
+DEBUG   [11-27 14:31:09] _drop_cold in utils:
+after 0 filterings, there are 1090 users, 3646 items
+INFO    [11-27 14:31:09] _drop_cold in utils:
+user desc 
+            seq_len
+count  1090.000000
+mean     48.211927
+std      77.730410
+min       5.000000
+25%       9.000000
+50%      19.000000
+75%      49.750000
+max     899.000000
+INFO    [11-27 14:31:09] _drop_cold in utils:
+item desc 
+           item_pop
+count  3646.000000
+mean     14.413330
+std      16.072829
+min       5.000000
+25%       6.000000
+50%       9.000000
+75%      15.000000
+max     177.000000
+INFO    [11-27 14:31:09] _df_data_partition in utils:
+dataset summary:
+         session_id       item_id   rating
+count  52551.000000  52551.000000  52551.0
+mean     527.873799   1828.243915      1.0
+std      316.650738   1049.669215      0.0
+min        1.000000      1.000000      1.0
+25%      248.000000    928.000000      1.0
+50%      515.000000   1834.000000      1.0
+75%      813.000000   2718.500000      1.0
+max     1090.000000   3646.000000      1.0
+INFO    [11-27 14:31:09] __init__ in NextItemDataloader:
+there are 3646 items in this dataset, 3173 users, padding_first? False
+DEBUG   [11-27 14:31:10] generate_model in utils:
+model_code_list=['gru4rec']
+INFO    [11-27 14:31:10] load_model_config in utils:
+loading model gru4rec's config file at asset/config/model/gru4rec.json
+INFO    [11-27 14:31:10] load_model_config in utils:
+{
+    "embed_size": 64,
+    "hidden_units": 64,
+    "num_layers": 2,
+    "hidden_dropout": 0.5,
+    "loss_type": "CE"
+}
+WARNING [11-27 14:31:15] get_exist_path in utils:
+dir _____lfms_base/base_gru4rec-len-20_11-27_14-31_0/gru4rec_logs does not exist! Create one.
+WARNING [11-27 14:31:15] get_exist_path in utils:
+dir _____lfms_base/base_gru4rec-len-20_11-27_14-31_0/gru4rec_logs/tb_vis does not exist! Create one.
+WARNING [11-27 14:31:15] get_exist_path in utils:
+dir _____lfms_base/base_gru4rec-len-20_11-27_14-31_0/gru4rec_logs/checkpoint does not exist! Create one.
+INFO    [11-27 14:31:15] __init__ in BasicSched:
+GRU4RecModel(
+  (item_embedding): Embedding(3647, 64, padding_idx=0)
+  (emb_dropout): Dropout(p=0.5, inplace=False)
+  (gru_layers): GRU(64, 64, num_layers=2, bias=False, batch_first=True)
+  (dense): Linear(in_features=64, out_features=64, bias=True)
+  (loss_fct): CrossEntropyLoss()
+)
+WARNING [11-27 14:31:15] get_path in utils:
+Path is None
+WARNING [11-27 14:31:15] load_state_from_given_path in utils:
+Not given any path.
+INFO    [11-27 14:31:15] assert_model_device in utils:
+model gru4rec has 1.09375 MB params.
+INFO    [11-27 14:31:15] __init__ in BasicTrainer:
+48128 iter per epoch
+INFO    [11-27 14:31:15] _fit in BasicSched:
+Start training.
+INFO    [11-27 14:31:17] log in loggers:
+Update Best NDCG@10 Model at 0
+INFO    [11-27 14:31:17] validate in BasicTrainer:
+{'Recall@10': 0.0015024038461538462, 'NDCG@10': 0.0006671053840993688, 'MRR@10': 0.0004173344059381634, 'Recall*@10': 0.0015024038461538462, 'NDCG*@10': 0.0006671053840993688, 'MRR*@10': 0.0004173344059381634}
+INFO    [11-27 14:31:17] train in BasicTrainer:
+epoch: 0
+INFO    [11-27 14:31:20] _train_one_epoch in BasicTrainer:
+loss = 7.821329446549111
+INFO    [11-27 14:31:22] log in loggers:
+Update Best NDCG@10 Model at 0
+INFO    [11-27 14:31:22] validate in BasicTrainer:
+{'Recall@10': 0.02059334538017328, 'NDCG@10': 0.010243493884515304, 'MRR@10': 0.007139676859459052, 'Recall*@10': 0.02059334538017328, 'NDCG*@10': 0.010243493884515304, 'MRR*@10': 0.007139676859459052}
+INFO    [11-27 14:31:22] train in BasicTrainer:
+duration: 4.738139867782593s
+INFO    [11-27 14:31:22] train in BasicTrainer:
+epoch: 1
+INFO    [11-27 14:31:25] _train_one_epoch in BasicTrainer:
+loss = 7.4510356187820435
+INFO    [11-27 14:31:26] log in loggers:
+Update Best NDCG@10 Model at 1
+INFO    [11-27 14:31:26] validate in BasicTrainer:
+{'Recall@10': 0.040026418291605435, 'NDCG@10': 0.02061630986057795, 'MRR@10': 0.01478087855502963, 'Recall*@10': 0.040026418291605435, 'NDCG*@10': 0.02061630986057795, 'MRR*@10': 0.01478087855502963}
+INFO    [11-27 14:31:26] train in BasicTrainer:
+duration: 4.591739177703857s
+INFO    [11-27 14:31:26] train in BasicTrainer:
+epoch: 2
+INFO    [11-27 14:31:29] _train_one_epoch in BasicTrainer:
+loss = 7.171132069952945
+INFO    [11-27 14:31:31] log in loggers:
+Update Best NDCG@10 Model at 2
+INFO    [11-27 14:31:31] validate in BasicTrainer:
+{'Recall@10': 0.05869787702193627, 'NDCG@10': 0.030451585323764727, 'MRR@10': 0.02195164210234697, 'Recall*@10': 0.05869787702193627, 'NDCG*@10': 0.030451585323764727, 'MRR*@10': 0.02195164210234697}
+INFO    [11-27 14:31:31] train in BasicTrainer:
+duration: 4.527771234512329s
+INFO    [11-27 14:31:31] train in BasicTrainer:
+epoch: 3
+INFO    [11-27 14:31:34] _train_one_epoch in BasicTrainer:
+loss = 6.985462531130365
+INFO    [11-27 14:31:35] log in loggers:
+Update Best NDCG@10 Model at 3
+INFO    [11-27 14:31:35] validate in BasicTrainer:
+{'Recall@10': 0.06168185919523239, 'NDCG@10': 0.03148029357768022, 'MRR@10': 0.022513059612650137, 'Recall*@10': 0.06168185919523239, 'NDCG*@10': 0.03148029357768022, 'MRR*@10': 0.022513059612650137}
+INFO    [11-27 14:31:35] train in BasicTrainer:
+duration: 4.62751030921936s
+INFO    [11-27 14:31:35] train in BasicTrainer:
+epoch: 4
+INFO    [11-27 14:31:38] _train_one_epoch in BasicTrainer:
+loss = 6.847830437599344
+INFO    [11-27 14:31:40] log in loggers:
+Update Best NDCG@10 Model at 4
+INFO    [11-27 14:31:40] validate in BasicTrainer:
+{'Recall@10': 0.07041662702193627, 'NDCG@10': 0.03537873279016752, 'MRR@10': 0.02485024993522809, 'Recall*@10': 0.07041662702193627, 'NDCG*@10': 0.03537873279016752, 'MRR*@10': 0.02485024993522809}
+INFO    [11-27 14:31:40] train in BasicTrainer:
+duration: 4.463811159133911s
+INFO    [11-27 14:31:40] train in BasicTrainer:
+epoch: 5
+INFO    [11-27 14:31:43] _train_one_epoch in BasicTrainer:
+loss = 6.71512760000026
+INFO    [11-27 14:31:44] log in loggers:
+Update Best NDCG@10 Model at 5
+INFO    [11-27 14:31:45] validate in BasicTrainer:
+{'Recall@10': 0.08586014864536431, 'NDCG@10': 0.04369353947158043, 'MRR@10': 0.031091110064433172, 'Recall*@10': 0.08586014864536431, 'NDCG*@10': 0.04369353947158043, 'MRR*@10': 0.031091110064433172}
+INFO    [11-27 14:31:45] train in BasicTrainer:
+duration: 4.683610916137695s
+INFO    [11-27 14:31:45] train in BasicTrainer:
+epoch: 6
+INFO    [11-27 14:31:48] _train_one_epoch in BasicTrainer:
+loss = 6.5851361650101685
+INFO    [11-27 14:31:49] log in loggers:
+Update Best NDCG@10 Model at 6
+INFO    [11-27 14:31:49] validate in BasicTrainer:
+{'Recall@10': 0.09443426304138623, 'NDCG@10': 0.046481148268167786, 'MRR@10': 0.03196636931254314, 'Recall*@10': 0.09443426304138623, 'NDCG*@10': 0.046481148268167786, 'MRR*@10': 0.03196636931254314}
+INFO    [11-27 14:31:49] train in BasicTrainer:
+duration: 4.517112731933594s
+INFO    [11-27 14:31:49] train in BasicTrainer:
+epoch: 7
+INFO    [11-27 14:31:52] _train_one_epoch in BasicTrainer:
+loss = 6.454839551702459
+INFO    [11-27 14:31:54] log in loggers:
+Update Best NDCG@10 Model at 7
+INFO    [11-27 14:31:54] validate in BasicTrainer:
+{'Recall@10': 0.09581766449488126, 'NDCG@10': 0.05029399521075762, 'MRR@10': 0.03655643474597197, 'Recall*@10': 0.09581766449488126, 'NDCG*@10': 0.05029399521075762, 'MRR*@10': 0.03655643474597197}
+INFO    [11-27 14:31:54] train in BasicTrainer:
+duration: 4.687376499176025s
+INFO    [11-27 14:31:54] train in BasicTrainer:
+epoch: 8
+INFO    [11-27 14:31:57] _train_one_epoch in BasicTrainer:
+loss = 6.337540499707486
+INFO    [11-27 14:31:58] log in loggers:
+Update Best NDCG@10 Model at 8
+INFO    [11-27 14:31:58] validate in BasicTrainer:
+{'Recall@10': 0.10453160680257358, 'NDCG@10': 0.053261201828718185, 'MRR@10': 0.03771269822923037, 'Recall*@10': 0.10453160680257358, 'NDCG*@10': 0.053261201828718185, 'MRR*@10': 0.03771269822923037}
+INFO    [11-27 14:31:58] train in BasicTrainer:
+duration: 4.675467491149902s
+INFO    [11-27 14:31:58] train in BasicTrainer:
+epoch: 9
+INFO    [11-27 14:32:02] _train_one_epoch in BasicTrainer:
+loss = 6.252663779766001
+INFO    [11-27 14:32:03] log in loggers:
+Update Best NDCG@10 Model at 9
+INFO    [11-27 14:32:03] validate in BasicTrainer:
+{'Recall@10': 0.12033808575226711, 'NDCG@10': 0.061695275971522696, 'MRR@10': 0.044023849070072174, 'Recall*@10': 0.12033808575226711, 'NDCG*@10': 0.061695275971522696, 'MRR*@10': 0.044023849070072174}
+INFO    [11-27 14:32:03] train in BasicTrainer:
+duration: 4.480242490768433s
+INFO    [11-27 14:32:03] train in BasicTrainer:
+epoch: 10
+INFO    [11-27 14:32:06] _train_one_epoch in BasicTrainer:
+loss = 6.170849635245952
+INFO    [11-27 14:32:07] validate in BasicTrainer:
+{'Recall@10': 0.11685131834103511, 'NDCG@10': 0.05983700746527085, 'MRR@10': 0.04254486855979149, 'Recall*@10': 0.11685131834103511, 'NDCG*@10': 0.05983700746527085, 'MRR*@10': 0.04254486855979149}
+INFO    [11-27 14:32:07] train in BasicTrainer:
+duration: 4.43401575088501s
+INFO    [11-27 14:32:07] train in BasicTrainer:
+epoch: 11
+INFO    [11-27 14:32:11] _train_one_epoch in BasicTrainer:
+loss = 6.1092016417929464
+INFO    [11-27 14:32:12] log in loggers:
+Update Best NDCG@10 Model at 11
+INFO    [11-27 14:32:12] validate in BasicTrainer:
+{'Recall@10': 0.12225997218718895, 'NDCG@10': 0.06360081325356777, 'MRR@10': 0.04591013491153717, 'Recall*@10': 0.12225997218718895, 'NDCG*@10': 0.06360081325356777, 'MRR*@10': 0.04591013491153717}
+INFO    [11-27 14:32:12] train in BasicTrainer:
+duration: 4.707404613494873s
+INFO    [11-27 14:32:12] train in BasicTrainer:
+epoch: 12
+INFO    [11-27 14:32:15] _train_one_epoch in BasicTrainer:
+loss = 6.038854378335019
+INFO    [11-27 14:32:17] log in loggers:
+Update Best NDCG@10 Model at 12
+INFO    [11-27 14:32:17] validate in BasicTrainer:
+{'Recall@10': 0.12664818190611327, 'NDCG@10': 0.06549634555211434, 'MRR@10': 0.04708267920292341, 'Recall*@10': 0.12664818190611327, 'NDCG*@10': 0.06549634555211434, 'MRR*@10': 0.04708267920292341}
+INFO    [11-27 14:32:17] train in BasicTrainer:
+duration: 4.604772090911865s
+INFO    [11-27 14:32:17] train in BasicTrainer:
+epoch: 13
+INFO    [11-27 14:32:20] _train_one_epoch in BasicTrainer:
+loss = 5.980149799204887
+INFO    [11-27 14:32:21] log in loggers:
+Update Best NDCG@10 Model at 13
+INFO    [11-27 14:32:21] validate in BasicTrainer:
+{'Recall@10': 0.12424433575226711, 'NDCG@10': 0.0675179181763759, 'MRR@10': 0.050400749708597474, 'Recall*@10': 0.12424433575226711, 'NDCG*@10': 0.0675179181763759, 'MRR*@10': 0.050400749708597474}
+INFO    [11-27 14:32:21] train in BasicTrainer:
+duration: 4.653622388839722s
+INFO    [11-27 14:32:21] train in BasicTrainer:
+epoch: 14
+INFO    [11-27 14:32:24] _train_one_epoch in BasicTrainer:
+loss = 5.9329755534517
+INFO    [11-27 14:32:26] validate in BasicTrainer:
+{'Recall@10': 0.124042031283562, 'NDCG@10': 0.06638031997359715, 'MRR@10': 0.04882721545604559, 'Recall*@10': 0.124042031283562, 'NDCG*@10': 0.06638031997359715, 'MRR*@10': 0.04882721545604559}
+INFO    [11-27 14:32:26] train in BasicTrainer:
+duration: 4.5236852169036865s
+INFO    [11-27 14:32:26] train in BasicTrainer:
+epoch: 15
+INFO    [11-27 14:32:29] _train_one_epoch in BasicTrainer:
+loss = 5.878080961552072
+INFO    [11-27 14:32:30] log in loggers:
+Update Best NDCG@10 Model at 15
+INFO    [11-27 14:32:30] validate in BasicTrainer:
+{'Recall@10': 0.13111374240655166, 'NDCG@10': 0.06892600569587487, 'MRR@10': 0.050092296818128, 'Recall*@10': 0.13111374240655166, 'NDCG*@10': 0.06892600569587487, 'MRR*@10': 0.050092296818128}
+INFO    [11-27 14:32:30] train in BasicTrainer:
+duration: 4.551975250244141s
+INFO    [11-27 14:32:30] train in BasicTrainer:
+epoch: 16
+INFO    [11-27 14:32:33] _train_one_epoch in BasicTrainer:
+loss = 5.828455179295641
+INFO    [11-27 14:32:35] log in loggers:
+Update Best NDCG@10 Model at 16
+INFO    [11-27 14:32:35] validate in BasicTrainer:
+{'Recall@10': 0.1359630857522671, 'NDCG@10': 0.07127482845233037, 'MRR@10': 0.0517734160216955, 'Recall*@10': 0.1359630857522671, 'NDCG*@10': 0.07127482845233037, 'MRR*@10': 0.0517734160216955}
+INFO    [11-27 14:32:35] train in BasicTrainer:
+duration: 4.604483366012573s
+INFO    [11-27 14:32:35] train in BasicTrainer:
+epoch: 17
+INFO    [11-27 14:32:38] _train_one_epoch in BasicTrainer:
+loss = 5.782384512272287
+INFO    [11-27 14:32:39] log in loggers:
+Update Best NDCG@10 Model at 17
+INFO    [11-27 14:32:39] validate in BasicTrainer:
+{'Recall@10': 0.13790579713307893, 'NDCG@10': 0.07183946239260527, 'MRR@10': 0.05178865962303602, 'Recall*@10': 0.13790579713307893, 'NDCG*@10': 0.07183946239260527, 'MRR*@10': 0.05178865962303602}
+INFO    [11-27 14:32:39] train in BasicTrainer:
+duration: 4.427659034729004s
+INFO    [11-27 14:32:39] train in BasicTrainer:
+epoch: 18
+INFO    [11-27 14:32:43] _train_one_epoch in BasicTrainer:
+loss = 5.733041233204781
+INFO    [11-27 14:32:44] log in loggers:
+Update Best NDCG@10 Model at 18
+INFO    [11-27 14:32:44] validate in BasicTrainer:
+{'Recall@10': 0.1353204731757824, 'NDCG@10': 0.07470947561355737, 'MRR@10': 0.0563019304894484, 'Recall*@10': 0.1353204731757824, 'NDCG*@10': 0.07470947561355737, 'MRR*@10': 0.0563019304894484}
+INFO    [11-27 14:32:44] train in BasicTrainer:
+duration: 4.513187885284424s
+INFO    [11-27 14:32:44] train in BasicTrainer:
+epoch: 19
+INFO    [11-27 14:32:47] _train_one_epoch in BasicTrainer:
+loss = 5.6908962472956235
+INFO    [11-27 14:32:49] log in loggers:
+Update Best NDCG@10 Model at 19
+INFO    [11-27 14:32:49] validate in BasicTrainer:
+{'Recall@10': 0.14620025685200325, 'NDCG@10': 0.07877554171360455, 'MRR@10': 0.05844297747199352, 'Recall*@10': 0.14620025685200325, 'NDCG*@10': 0.07877554171360455, 'MRR*@10': 0.05844297747199352}
+INFO    [11-27 14:32:49] train in BasicTrainer:
+duration: 4.739771127700806s
+INFO    [11-27 14:32:49] train in BasicTrainer:
+epoch: 20
+INFO    [11-27 14:32:52] _train_one_epoch in BasicTrainer:
+loss = 5.648587135558433
+INFO    [11-27 14:32:53] validate in BasicTrainer:
+{'Recall@10': 0.14209170295641974, 'NDCG@10': 0.07558593411858265, 'MRR@10': 0.05538833227295142, 'Recall*@10': 0.14209170295641974, 'NDCG*@10': 0.07558593411858265, 'MRR*@10': 0.05538833227295142}
+INFO    [11-27 14:32:53] train in BasicTrainer:
+duration: 4.521681785583496s
+INFO    [11-27 14:32:53] train in BasicTrainer:
+epoch: 21
+INFO    [11-27 14:32:56] _train_one_epoch in BasicTrainer:
+loss = 5.604403627679703
+INFO    [11-27 14:32:58] log in loggers:
+Update Best NDCG@10 Model at 21
+INFO    [11-27 14:32:58] validate in BasicTrainer:
+{'Recall@10': 0.14766100966013396, 'NDCG@10': 0.07992630910414916, 'MRR@10': 0.05928868513840895, 'Recall*@10': 0.14766100966013396, 'NDCG*@10': 0.07992630910414916, 'MRR*@10': 0.05928868513840895}
+INFO    [11-27 14:32:58] train in BasicTrainer:
+duration: 4.662586688995361s
+INFO    [11-27 14:32:58] train in BasicTrainer:
+epoch: 22
+INFO    [11-27 14:33:01] _train_one_epoch in BasicTrainer:
+loss = 5.570452616569844
+INFO    [11-27 14:33:02] log in loggers:
+Update Best NDCG@10 Model at 22
+INFO    [11-27 14:33:02] validate in BasicTrainer:
+{'Recall@10': 0.15553598564404708, 'NDCG@10': 0.08153145473736984, 'MRR@10': 0.05902909774046678, 'Recall*@10': 0.15553598564404708, 'NDCG*@10': 0.08153145473736984, 'MRR*@10': 0.05902909774046678}
+INFO    [11-27 14:33:02] train in BasicTrainer:
+duration: 4.4308388233184814s
+INFO    [11-27 14:33:02] train in BasicTrainer:
+epoch: 23
+INFO    [11-27 14:33:05] _train_one_epoch in BasicTrainer:
+loss = 5.525622984196278
+INFO    [11-27 14:33:07] log in loggers:
+Update Best NDCG@10 Model at 23
+INFO    [11-27 14:33:07] validate in BasicTrainer:
+{'Recall@10': 0.15114777707136595, 'NDCG@10': 0.0826569921695269, 'MRR@10': 0.061743803608876005, 'Recall*@10': 0.15114777707136595, 'NDCG*@10': 0.0826569921695269, 'MRR*@10': 0.061743803608876005}
+INFO    [11-27 14:33:07] train in BasicTrainer:
+duration: 4.491255044937134s
+INFO    [11-27 14:33:07] train in BasicTrainer:
+epoch: 24
+INFO    [11-27 14:33:10] _train_one_epoch in BasicTrainer:
+loss = 5.486384708830651
+INFO    [11-27 14:33:11] log in loggers:
+Update Best NDCG@10 Model at 24
+INFO    [11-27 14:33:11] validate in BasicTrainer:
+{'Recall@10': 0.15339097036765173, 'NDCG@10': 0.08297210129407737, 'MRR@10': 0.0615585558116436, 'Recall*@10': 0.15339097036765173, 'NDCG*@10': 0.08297210129407737, 'MRR*@10': 0.0615585558116436}
+INFO    [11-27 14:33:11] train in BasicTrainer:
+duration: 4.5426530838012695s
+INFO    [11-27 14:33:11] train in BasicTrainer:
+epoch: 25
+INFO    [11-27 14:33:14] _train_one_epoch in BasicTrainer:
+loss = 5.450114285692256
+INFO    [11-27 14:33:16] log in loggers:
+Update Best NDCG@10 Model at 25
+INFO    [11-27 14:33:16] validate in BasicTrainer:
+{'Recall@10': 0.15519385498303634, 'NDCG@10': 0.0837061433837964, 'MRR@10': 0.06206563974802311, 'Recall*@10': 0.15519385498303634, 'NDCG*@10': 0.0837061433837964, 'MRR*@10': 0.06206563974802311}
+INFO    [11-27 14:33:16] train in BasicTrainer:
+duration: 4.598942518234253s
+INFO    [11-27 14:33:16] train in BasicTrainer:
+epoch: 26
+INFO    [11-27 14:33:19] _train_one_epoch in BasicTrainer:
+loss = 5.414675646639885
+INFO    [11-27 14:33:20] log in loggers:
+Update Best NDCG@10 Model at 26
+INFO    [11-27 14:33:20] validate in BasicTrainer:
+{'Recall@10': 0.1552355048748163, 'NDCG@10': 0.08561030087562707, 'MRR@10': 0.06438545567485002, 'Recall*@10': 0.1552355048748163, 'NDCG*@10': 0.08561030087562707, 'MRR*@10': 0.06438545567485002}
+INFO    [11-27 14:33:20] train in BasicTrainer:
+duration: 4.437792778015137s
+INFO    [11-27 14:33:20] train in BasicTrainer:
+epoch: 27
+INFO    [11-27 14:33:24] _train_one_epoch in BasicTrainer:
+loss = 5.382866981181692
+INFO    [11-27 14:33:25] log in loggers:
+Update Best NDCG@10 Model at 27
+INFO    [11-27 14:33:25] validate in BasicTrainer:
+{'Recall@10': 0.15461371839046478, 'NDCG@10': 0.0877467949803059, 'MRR@10': 0.06741043094259042, 'Recall*@10': 0.15461371839046478, 'NDCG*@10': 0.0877467949803059, 'MRR*@10': 0.06741043094259042}
+INFO    [11-27 14:33:25] train in BasicTrainer:
+duration: 4.643028974533081s
+INFO    [11-27 14:33:25] train in BasicTrainer:
+epoch: 28
+INFO    [11-27 14:33:28] _train_one_epoch in BasicTrainer:
+loss = 5.3465183136310985
+INFO    [11-27 14:33:30] validate in BasicTrainer:
+{'Recall@10': 0.1613641232252121, 'NDCG@10': 0.08681034640623973, 'MRR@10': 0.06418465479062153, 'Recall*@10': 0.1613641232252121, 'NDCG*@10': 0.08681034640623973, 'MRR*@10': 0.06418465479062153}
+INFO    [11-27 14:33:30] train in BasicTrainer:
+duration: 4.497010707855225s
+INFO    [11-27 14:33:30] train in BasicTrainer:
+epoch: 29
+INFO    [11-27 14:33:33] _train_one_epoch in BasicTrainer:
+loss = 5.309703854804344
+INFO    [11-27 14:33:34] validate in BasicTrainer:
+{'Recall@10': 0.16272669915969556, 'NDCG@10': 0.08744090050458908, 'MRR@10': 0.06454598903656006, 'Recall*@10': 0.16272669915969556, 'NDCG*@10': 0.08744090050458908, 'MRR*@10': 0.06454598903656006}
+INFO    [11-27 14:33:34] train in BasicTrainer:
+duration: 4.432227373123169s
+INFO    [11-27 14:33:34] train in BasicTrainer:
+epoch: 30
+INFO    [11-27 14:33:37] _train_one_epoch in BasicTrainer:
+loss = 5.274821007505376
+INFO    [11-27 14:33:38] validate in BasicTrainer:
+{'Recall@10': 0.15761852608277246, 'NDCG@10': 0.08752171494639836, 'MRR@10': 0.06613633838983682, 'Recall*@10': 0.15761852608277246, 'NDCG*@10': 0.08752171494639836, 'MRR*@10': 0.06613633838983682}
+INFO    [11-27 14:33:38] train in BasicTrainer:
+duration: 4.358215808868408s
+INFO    [11-27 14:33:38] train in BasicTrainer:
+epoch: 31
+INFO    [11-27 14:33:41] _train_one_epoch in BasicTrainer:
+loss = 5.237465249731185
+INFO    [11-27 14:33:43] log in loggers:
+Update Best NDCG@10 Model at 31
+INFO    [11-27 14:33:43] validate in BasicTrainer:
+{'Recall@10': 0.16501154349400446, 'NDCG@10': 0.0886429502413823, 'MRR@10': 0.06549104646994518, 'Recall*@10': 0.16501154349400446, 'NDCG*@10': 0.0886429502413823, 'MRR*@10': 0.06549104646994518}
+INFO    [11-27 14:33:43] train in BasicTrainer:
+duration: 4.580245018005371s
+INFO    [11-27 14:33:43] train in BasicTrainer:
+epoch: 32
+INFO    [11-27 14:33:46] _train_one_epoch in BasicTrainer:
+loss = 5.205299856814932
+INFO    [11-27 14:33:47] validate in BasicTrainer:
+{'Recall@10': 0.15912092992892632, 'NDCG@10': 0.0881009056017949, 'MRR@10': 0.06650881927746993, 'Recall*@10': 0.15912092992892632, 'NDCG*@10': 0.0881009056017949, 'MRR*@10': 0.06650881927746993}
+INFO    [11-27 14:33:47] train in BasicTrainer:
+duration: 4.508151531219482s
+INFO    [11-27 14:33:47] train in BasicTrainer:
+epoch: 33
+INFO    [11-27 14:33:51] _train_one_epoch in BasicTrainer:
+loss = 5.175733442002154
+INFO    [11-27 14:33:52] validate in BasicTrainer:
+{'Recall@10': 0.15974271641327784, 'NDCG@10': 0.08789356969870053, 'MRR@10': 0.06610085270725764, 'Recall*@10': 0.15974271641327784, 'NDCG*@10': 0.08789356969870053, 'MRR*@10': 0.06610085270725764}
+INFO    [11-27 14:33:52] train in BasicTrainer:
+duration: 4.555755138397217s
+INFO    [11-27 14:33:52] train in BasicTrainer:
+epoch: 34
+INFO    [11-27 14:33:55] _train_one_epoch in BasicTrainer:
+loss = 5.143911458076315
+INFO    [11-27 14:33:57] log in loggers:
+Update Best NDCG@10 Model at 34
+INFO    [11-27 14:33:57] validate in BasicTrainer:
+{'Recall@10': 0.1647110627247737, 'NDCG@10': 0.09016408026218414, 'MRR@10': 0.06760574648013482, 'Recall*@10': 0.1647110627247737, 'NDCG*@10': 0.09016408026218414, 'MRR*@10': 0.06760574648013482}
+INFO    [11-27 14:33:57] train in BasicTrainer:
+duration: 4.6806275844573975s
+INFO    [11-27 14:33:57] train in BasicTrainer:
+epoch: 35
+INFO    [11-27 14:34:00] _train_one_epoch in BasicTrainer:
+loss = 5.1149198983577975
+INFO    [11-27 14:34:01] validate in BasicTrainer:
+{'Recall@10': 0.16168542894033286, 'NDCG@10': 0.08853060408280446, 'MRR@10': 0.06632151597967514, 'Recall*@10': 0.16168542894033286, 'NDCG*@10': 0.08853060408280446, 'MRR*@10': 0.06632151597967514}
+INFO    [11-27 14:34:01] train in BasicTrainer:
+duration: 4.641430616378784s
+INFO    [11-27 14:34:01] train in BasicTrainer:
+epoch: 36
+INFO    [11-27 14:34:04] _train_one_epoch in BasicTrainer:
+loss = 5.091759757792696
+INFO    [11-27 14:34:06] log in loggers:
+Update Best NDCG@10 Model at 36
+INFO    [11-27 14:34:06] validate in BasicTrainer:
+{'Recall@10': 0.16679360201725593, 'NDCG@10': 0.09123834509115952, 'MRR@10': 0.06842154665635182, 'Recall*@10': 0.16679360201725593, 'NDCG*@10': 0.09123834509115952, 'MRR*@10': 0.06842154665635182}
+INFO    [11-27 14:34:06] train in BasicTrainer:
+duration: 4.717700004577637s
+INFO    [11-27 14:34:06] train in BasicTrainer:
+epoch: 37
+INFO    [11-27 14:34:09] _train_one_epoch in BasicTrainer:
+loss = 5.061552522030283
+INFO    [11-27 14:34:11] log in loggers:
+Update Best NDCG@10 Model at 37
+INFO    [11-27 14:34:11] validate in BasicTrainer:
+{'Recall@10': 0.16529119817110208, 'NDCG@10': 0.09148600210364048, 'MRR@10': 0.06903117837814185, 'Recall*@10': 0.16529119817110208, 'NDCG*@10': 0.09148600210364048, 'MRR*@10': 0.06903117837814185}
+INFO    [11-27 14:34:11] train in BasicTrainer:
+duration: 4.709379196166992s
+INFO    [11-27 14:34:11] train in BasicTrainer:
+epoch: 38
+INFO    [11-27 14:34:14] _train_one_epoch in BasicTrainer:
+loss = 5.03200042501409
+INFO    [11-27 14:34:15] log in loggers:
+Update Best NDCG@10 Model at 38
+INFO    [11-27 14:34:15] validate in BasicTrainer:
+{'Recall@10': 0.1673737386098275, 'NDCG@10': 0.09191282322773567, 'MRR@10': 0.06906826249681987, 'Recall*@10': 0.1673737386098275, 'NDCG*@10': 0.09191282322773567, 'MRR*@10': 0.06906826249681987}
+INFO    [11-27 14:34:15] train in BasicTrainer:
+duration: 4.606674909591675s
+INFO    [11-27 14:34:15] train in BasicTrainer:
+epoch: 39
+INFO    [11-27 14:34:18] _train_one_epoch in BasicTrainer:
+loss = 5.005874359861333
+INFO    [11-27 14:34:20] log in loggers:
+Update Best NDCG@10 Model at 39
+INFO    [11-27 14:34:20] validate in BasicTrainer:
+{'Recall@10': 0.17102115887861985, 'NDCG@10': 0.093539231385176, 'MRR@10': 0.06998970330907749, 'Recall*@10': 0.17102115887861985, 'NDCG*@10': 0.093539231385176, 'MRR*@10': 0.06998970330907749}
+INFO    [11-27 14:34:20] train in BasicTrainer:
+duration: 4.707627296447754s
+INFO    [11-27 14:34:20] train in BasicTrainer:
+epoch: 40
+INFO    [11-27 14:34:23] _train_one_epoch in BasicTrainer:
+loss = 4.98203883526173
+INFO    [11-27 14:34:25] log in loggers:
+Update Best NDCG@10 Model at 40
+INFO    [11-27 14:34:25] validate in BasicTrainer:
+{'Recall@10': 0.169518755032466, 'NDCG@10': 0.09400734162101379, 'MRR@10': 0.0709737682571778, 'Recall*@10': 0.169518755032466, 'NDCG*@10': 0.09400734162101379, 'MRR*@10': 0.0709737682571778}
+INFO    [11-27 14:34:25] train in BasicTrainer:
+duration: 4.6506187915802s
+INFO    [11-27 14:34:25] train in BasicTrainer:
+epoch: 41
+INFO    [11-27 14:34:28] _train_one_epoch in BasicTrainer:
+loss = 4.953080212816279
+INFO    [11-27 14:34:29] validate in BasicTrainer:
+{'Recall@10': 0.1708605048748163, 'NDCG@10': 0.09283554582641675, 'MRR@10': 0.06941676340424098, 'Recall*@10': 0.1708605048748163, 'NDCG*@10': 0.09283554582641675, 'MRR*@10': 0.06941676340424098}
+INFO    [11-27 14:34:29] train in BasicTrainer:
+duration: 4.735510587692261s
+INFO    [11-27 14:34:29] train in BasicTrainer:
+epoch: 42
+INFO    [11-27 14:34:33] _train_one_epoch in BasicTrainer:
+loss = 4.932805609195791
+INFO    [11-27 14:34:34] log in loggers:
+Update Best NDCG@10 Model at 42
+INFO    [11-27 14:34:34] validate in BasicTrainer:
+{'Recall@10': 0.16875713949020094, 'NDCG@10': 0.09536063441863427, 'MRR@10': 0.0730069987475872, 'Recall*@10': 0.16875713949020094, 'NDCG*@10': 0.09536063441863427, 'MRR*@10': 0.0730069987475872}
+INFO    [11-27 14:34:34] train in BasicTrainer:
+duration: 4.824772596359253s
+INFO    [11-27 14:34:34] train in BasicTrainer:
+epoch: 43
+INFO    [11-27 14:34:37] _train_one_epoch in BasicTrainer:
+loss = 4.907055913133824
+INFO    [11-27 14:34:39] validate in BasicTrainer:
+{'Recall@10': 0.16392862223661864, 'NDCG@10': 0.09243986354424404, 'MRR@10': 0.07067968810980137, 'Recall*@10': 0.16392862223661864, 'NDCG*@10': 0.09243986354424404, 'MRR*@10': 0.07067968810980137}
+INFO    [11-27 14:34:39] train in BasicTrainer:
+duration: 4.732510328292847s
+INFO    [11-27 14:34:39] train in BasicTrainer:
+epoch: 44
+INFO    [11-27 14:34:42] _train_one_epoch in BasicTrainer:
+loss = 4.878590157691469
+INFO    [11-27 14:34:44] validate in BasicTrainer:
+{'Recall@10': 0.1643897558634098, 'NDCG@10': 0.0902401996919742, 'MRR@10': 0.06771135358856274, 'Recall*@10': 0.1643897558634098, 'NDCG*@10': 0.0902401996919742, 'MRR*@10': 0.06771135358856274}
+INFO    [11-27 14:34:44] train in BasicTrainer:
+duration: 4.62401008605957s
+INFO    [11-27 14:34:44] train in BasicTrainer:
+epoch: 45
+INFO    [11-27 14:34:47] _train_one_epoch in BasicTrainer:
+loss = 4.854787151864234
+INFO    [11-27 14:34:48] validate in BasicTrainer:
+{'Recall@10': 0.166031987621234, 'NDCG@10': 0.09286715663396396, 'MRR@10': 0.0706496023787902, 'Recall*@10': 0.166031987621234, 'NDCG*@10': 0.09286715663396396, 'MRR*@10': 0.0706496023787902}
+INFO    [11-27 14:34:48] train in BasicTrainer:
+duration: 4.618906259536743s
+INFO    [11-27 14:34:48] train in BasicTrainer:
+epoch: 46
+INFO    [11-27 14:34:51] _train_one_epoch in BasicTrainer:
+loss = 4.834172705386547
+INFO    [11-27 14:34:53] log in loggers:
+Update Best NDCG@10 Model at 46
+INFO    [11-27 14:34:53] validate in BasicTrainer:
+{'Recall@10': 0.17388613865925714, 'NDCG@10': 0.0964345932006836, 'MRR@10': 0.07298528804228856, 'Recall*@10': 0.17388613865925714, 'NDCG*@10': 0.0964345932006836, 'MRR*@10': 0.07298528804228856}
+INFO    [11-27 14:34:53] train in BasicTrainer:
+duration: 4.96496319770813s
+INFO    [11-27 14:34:53] train in BasicTrainer:
+epoch: 47
+INFO    [11-27 14:34:56] _train_one_epoch in BasicTrainer:
+loss = 4.805176189605226
+INFO    [11-27 14:34:57] validate in BasicTrainer:
+{'Recall@10': 0.17388613865925714, 'NDCG@10': 0.09491699704757103, 'MRR@10': 0.07102467893407895, 'Recall*@10': 0.17388613865925714, 'NDCG*@10': 0.09491699704757103, 'MRR*@10': 0.07102467893407895}
+INFO    [11-27 14:34:57] train in BasicTrainer:
+duration: 4.279459714889526s
+INFO    [11-27 14:34:57] train in BasicTrainer:
+epoch: 48
+INFO    [11-27 14:35:00] _train_one_epoch in BasicTrainer:
+loss = 4.78318785099273
+INFO    [11-27 14:35:02] validate in BasicTrainer:
+{'Recall@10': 0.17056002410558554, 'NDCG@10': 0.09473758993240503, 'MRR@10': 0.07173897956426327, 'Recall*@10': 0.17056002410558554, 'NDCG*@10': 0.09473758993240503, 'MRR*@10': 0.07173897956426327}
+INFO    [11-27 14:35:02] train in BasicTrainer:
+duration: 4.34128475189209s
+INFO    [11-27 14:35:02] train in BasicTrainer:
+epoch: 49
+INFO    [11-27 14:35:05] _train_one_epoch in BasicTrainer:
+loss = 4.764567119009952
+INFO    [11-27 14:35:06] validate in BasicTrainer:
+{'Recall@10': 0.1686173127247737, 'NDCG@10': 0.09431247241221942, 'MRR@10': 0.07168893315471135, 'Recall*@10': 0.1686173127247737, 'NDCG*@10': 0.09431247241221942, 'MRR*@10': 0.07168893315471135}
+INFO    [11-27 14:35:06] train in BasicTrainer:
+duration: 4.306131601333618s
+INFO    [11-27 14:35:06] train in BasicTrainer:
+epoch: 50
+INFO    [11-27 14:35:09] _train_one_epoch in BasicTrainer:
+loss = 4.742120752943323
+INFO    [11-27 14:35:10] validate in BasicTrainer:
+{'Recall@10': 0.1696794078900264, 'NDCG@10': 0.09501467301295353, 'MRR@10': 0.07237062230706215, 'Recall*@10': 0.1696794078900264, 'NDCG*@10': 0.09501467301295353, 'MRR*@10': 0.07237062230706215}
+INFO    [11-27 14:35:10] train in BasicTrainer:
+duration: 4.3528406620025635s
+INFO    [11-27 14:35:10] train in BasicTrainer:
+epoch: 51
+INFO    [11-27 14:35:13] _train_one_epoch in BasicTrainer:
+loss = 4.723087800310013
+INFO    [11-27 14:35:15] validate in BasicTrainer:
+{'Recall@10': 0.16997988865925714, 'NDCG@10': 0.09532267313737136, 'MRR@10': 0.07249354370511495, 'Recall*@10': 0.16997988865925714, 'NDCG*@10': 0.09532267313737136, 'MRR*@10': 0.07249354370511495}
+INFO    [11-27 14:35:15] train in BasicTrainer:
+duration: 4.243428468704224s
+INFO    [11-27 14:35:15] train in BasicTrainer:
+epoch: 52
+INFO    [11-27 14:35:18] _train_one_epoch in BasicTrainer:
+loss = 4.70237878789293
+INFO    [11-27 14:35:19] validate in BasicTrainer:
+{'Recall@10': 0.17460610201725593, 'NDCG@10': 0.09538806115205471, 'MRR@10': 0.07140846091967362, 'Recall*@10': 0.17460610201725593, 'NDCG*@10': 0.09538806115205471, 'MRR*@10': 0.07140846091967362}
+INFO    [11-27 14:35:19] train in BasicTrainer:
+duration: 4.233041286468506s
+INFO    [11-27 14:35:19] train in BasicTrainer:
+epoch: 53
+INFO    [11-27 14:35:22] _train_one_epoch in BasicTrainer:
+loss = 4.68107201190705
+INFO    [11-27 14:35:23] validate in BasicTrainer:
+{'Recall@10': 0.1716221204170814, 'NDCG@10': 0.09459693271380204, 'MRR@10': 0.07116040902642104, 'Recall*@10': 0.1716221204170814, 'NDCG*@10': 0.09459693271380204, 'MRR*@10': 0.07116040902642104}
+INFO    [11-27 14:35:23] train in BasicTrainer:
+duration: 4.192162275314331s
+INFO    [11-27 14:35:23] train in BasicTrainer:
+epoch: 54
+INFO    [11-27 14:35:26] _train_one_epoch in BasicTrainer:
+loss = 4.667546234232314
+INFO    [11-27 14:35:28] log in loggers:
+Update Best NDCG@10 Model at 54
+INFO    [11-27 14:35:28] validate in BasicTrainer:
+{'Recall@10': 0.173425005032466, 'NDCG@10': 0.09744135576945084, 'MRR@10': 0.074387326836586, 'Recall*@10': 0.173425005032466, 'NDCG*@10': 0.09744135576945084, 'MRR*@10': 0.074387326836586}
+INFO    [11-27 14:35:28] train in BasicTrainer:
+duration: 4.562873125076294s
+INFO    [11-27 14:35:28] train in BasicTrainer:
+epoch: 55
+INFO    [11-27 14:35:31] _train_one_epoch in BasicTrainer:
+loss = 4.636913624215634
+INFO    [11-27 14:35:32] log in loggers:
+Update Best NDCG@10 Model at 55
+INFO    [11-27 14:35:32] validate in BasicTrainer:
+{'Recall@10': 0.177331255032466, 'NDCG@10': 0.10026348439546731, 'MRR@10': 0.07688686710137588, 'Recall*@10': 0.177331255032466, 'NDCG*@10': 0.10026348439546731, 'MRR*@10': 0.07688686710137588}
+INFO    [11-27 14:35:32] train in BasicTrainer:
+duration: 4.3093225955963135s
+INFO    [11-27 14:35:32] train in BasicTrainer:
+epoch: 56
+INFO    [11-27 14:35:35] _train_one_epoch in BasicTrainer:
+loss = 4.627659138212812
+INFO    [11-27 14:35:36] log in loggers:
+Update Best NDCG@10 Model at 56
+INFO    [11-27 14:35:36] validate in BasicTrainer:
+{'Recall@10': 0.177331255032466, 'NDCG@10': 0.10091633865466484, 'MRR@10': 0.0776716576745877, 'Recall*@10': 0.177331255032466, 'NDCG*@10': 0.10091633865466484, 'MRR*@10': 0.0776716576745877}
+INFO    [11-27 14:35:36] train in BasicTrainer:
+duration: 4.462673902511597s
+INFO    [11-27 14:35:36] train in BasicTrainer:
+epoch: 57
+INFO    [11-27 14:35:39] _train_one_epoch in BasicTrainer:
+loss = 4.60379129775027
+INFO    [11-27 14:35:41] validate in BasicTrainer:
+{'Recall@10': 0.173425005032466, 'NDCG@10': 0.09795617312192917, 'MRR@10': 0.07503103035000655, 'Recall*@10': 0.173425005032466, 'NDCG*@10': 0.09795617312192917, 'MRR*@10': 0.07503103035000655}
+INFO    [11-27 14:35:41] train in BasicTrainer:
+duration: 4.275281667709351s
+INFO    [11-27 14:35:41] train in BasicTrainer:
+epoch: 58
+INFO    [11-27 14:35:44] _train_one_epoch in BasicTrainer:
+loss = 4.58755967211216
+INFO    [11-27 14:35:45] log in loggers:
+Update Best NDCG@10 Model at 58
+INFO    [11-27 14:35:45] validate in BasicTrainer:
+{'Recall@10': 0.18171946360514715, 'NDCG@10': 0.1010210938178576, 'MRR@10': 0.0767193683064901, 'Recall*@10': 0.18171946360514715, 'NDCG*@10': 0.1010210938178576, 'MRR*@10': 0.0767193683064901}
+INFO    [11-27 14:35:45] train in BasicTrainer:
+duration: 4.504656076431274s
+INFO    [11-27 14:35:45] train in BasicTrainer:
+epoch: 59
+INFO    [11-27 14:35:48] _train_one_epoch in BasicTrainer:
+loss = 4.568989746114041
+INFO    [11-27 14:35:49] log in loggers:
+Update Best NDCG@10 Model at 59
+INFO    [11-27 14:35:50] validate in BasicTrainer:
+{'Recall@10': 0.17779238865925714, 'NDCG@10': 0.10154305341152045, 'MRR@10': 0.07838098074381168, 'Recall*@10': 0.17779238865925714, 'NDCG*@10': 0.10154305341152045, 'MRR*@10': 0.07838098074381168}
+INFO    [11-27 14:35:50] train in BasicTrainer:
+duration: 4.3313353061676025s
+INFO    [11-27 14:35:50] train in BasicTrainer:
+epoch: 60
+INFO    [11-27 14:35:53] _train_one_epoch in BasicTrainer:
+loss = 4.543042464459196
+INFO    [11-27 14:35:54] log in loggers:
+Update Best NDCG@10 Model at 60
+INFO    [11-27 14:35:54] validate in BasicTrainer:
+{'Recall@10': 0.18037771261655366, 'NDCG@10': 0.10295541297930938, 'MRR@10': 0.07953582990628022, 'Recall*@10': 0.18037771261655366, 'NDCG*@10': 0.10295541297930938, 'MRR*@10': 0.07953582990628022}
+INFO    [11-27 14:35:54] train in BasicTrainer:
+duration: 4.656723499298096s
+INFO    [11-27 14:35:54] train in BasicTrainer:
+epoch: 61
+INFO    [11-27 14:35:57] _train_one_epoch in BasicTrainer:
+loss = 4.52176071227865
+INFO    [11-27 14:35:59] validate in BasicTrainer:
+{'Recall@10': 0.177352079978356, 'NDCG@10': 0.10139912137618431, 'MRR@10': 0.07842056969037423, 'Recall*@10': 0.177352079978356, 'NDCG*@10': 0.10139912137618431, 'MRR*@10': 0.07842056969037423}
+INFO    [11-27 14:35:59] train in BasicTrainer:
+duration: 4.539630651473999s
+INFO    [11-27 14:35:59] train in BasicTrainer:
+epoch: 62
+INFO    [11-27 14:36:02] _train_one_epoch in BasicTrainer:
+loss = 4.509247663173269
+INFO    [11-27 14:36:03] validate in BasicTrainer:
+{'Recall@10': 0.1790359616279602, 'NDCG@10': 0.1028158154625159, 'MRR@10': 0.07964545373733227, 'Recall*@10': 0.1790359616279602, 'NDCG*@10': 0.1028158154625159, 'MRR*@10': 0.07964545373733227}
+INFO    [11-27 14:36:03] train in BasicTrainer:
+duration: 4.299930095672607s
+INFO    [11-27 14:36:03] train in BasicTrainer:
+epoch: 63
+INFO    [11-27 14:36:06] _train_one_epoch in BasicTrainer:
+loss = 4.497859538869655
+INFO    [11-27 14:36:07] validate in BasicTrainer:
+{'Recall@10': 0.18236207503538865, 'NDCG@10': 0.10237854489913353, 'MRR@10': 0.07825171947479248, 'Recall*@10': 0.18236207503538865, 'NDCG*@10': 0.10237854489913353, 'MRR*@10': 0.07825171947479248}
+INFO    [11-27 14:36:07] train in BasicTrainer:
+duration: 4.292706489562988s
+INFO    [11-27 14:36:07] train in BasicTrainer:
+epoch: 64
+INFO    [11-27 14:36:10] _train_one_epoch in BasicTrainer:
+loss = 4.470031431380739
+INFO    [11-27 14:36:12] validate in BasicTrainer:
+{'Recall@10': 0.17494823382450983, 'NDCG@10': 0.09972460109453934, 'MRR@10': 0.0768683197406622, 'Recall*@10': 0.17494823382450983, 'NDCG*@10': 0.09972460109453934, 'MRR*@10': 0.0768683197406622}
+INFO    [11-27 14:36:12] train in BasicTrainer:
+duration: 4.2223801612854s
+INFO    [11-27 14:36:12] train in BasicTrainer:
+epoch: 65
+INFO    [11-27 14:36:15] _train_one_epoch in BasicTrainer:
+loss = 4.462617037144113
+INFO    [11-27 14:36:16] validate in BasicTrainer:
+{'Recall@10': 0.17510888668207023, 'NDCG@10': 0.10259214960611783, 'MRR@10': 0.08047915851840606, 'Recall*@10': 0.17510888668207023, 'NDCG*@10': 0.10259214960611783, 'MRR*@10': 0.08047915851840606}
+INFO    [11-27 14:36:16] train in BasicTrainer:
+duration: 4.341907501220703s
+INFO    [11-27 14:36:16] train in BasicTrainer:
+epoch: 66
+INFO    [11-27 14:36:19] _train_one_epoch in BasicTrainer:
+loss = 4.448617143833891
+INFO    [11-27 14:36:20] validate in BasicTrainer:
+{'Recall@10': 0.17659046558233407, 'NDCG@10': 0.10211604145857003, 'MRR@10': 0.07956273051408622, 'Recall*@10': 0.17659046558233407, 'NDCG*@10': 0.10211604145857003, 'MRR*@10': 0.07956273051408622}
+INFO    [11-27 14:36:20] train in BasicTrainer:
+duration: 4.237940311431885s
+INFO    [11-27 14:36:20] train in BasicTrainer:
+epoch: 67
+INFO    [11-27 14:36:23] _train_one_epoch in BasicTrainer:
+loss = 4.417885019424114
+INFO    [11-27 14:36:25] log in loggers:
+Update Best NDCG@10 Model at 67
+INFO    [11-27 14:36:25] validate in BasicTrainer:
+{'Recall@10': 0.1809786741550152, 'NDCG@10': 0.10555679637652177, 'MRR@10': 0.08263329015328334, 'Recall*@10': 0.1809786741550152, 'NDCG*@10': 0.10555679637652177, 'MRR*@10': 0.08263329015328334}
+INFO    [11-27 14:36:25] train in BasicTrainer:
+duration: 4.475273370742798s
+INFO    [11-27 14:36:25] train in BasicTrainer:
+epoch: 68
+INFO    [11-27 14:36:28] _train_one_epoch in BasicTrainer:
+loss = 4.407514871434962
+INFO    [11-27 14:36:29] validate in BasicTrainer:
+{'Recall@10': 0.18426313767066368, 'NDCG@10': 0.10490369624816455, 'MRR@10': 0.08086602504436786, 'Recall*@10': 0.18426313767066368, 'NDCG*@10': 0.10490369624816455, 'MRR*@10': 0.08086602504436786}
+INFO    [11-27 14:36:29] train in BasicTrainer:
+duration: 4.293335199356079s
+INFO    [11-27 14:36:29] train in BasicTrainer:
+epoch: 69
+INFO    [11-27 14:36:32] _train_one_epoch in BasicTrainer:
+loss = 4.389572990701554
+INFO    [11-27 14:36:33] validate in BasicTrainer:
+{'Recall@10': 0.17991657898976252, 'NDCG@10': 0.10111557634977195, 'MRR@10': 0.07711806463507506, 'Recall*@10': 0.17991657898976252, 'NDCG*@10': 0.10111557634977195, 'MRR*@10': 0.07711806463507506}
+INFO    [11-27 14:36:33] train in BasicTrainer:
+duration: 4.3865015506744385s
+INFO    [11-27 14:36:33] train in BasicTrainer:
+epoch: 70
+INFO    [11-27 14:36:36] _train_one_epoch in BasicTrainer:
+loss = 4.376112704581403
+INFO    [11-27 14:36:38] validate in BasicTrainer:
+{'Recall@10': 0.18005640690143293, 'NDCG@10': 0.10318489773915364, 'MRR@10': 0.07968206703662872, 'Recall*@10': 0.18005640690143293, 'NDCG*@10': 0.10318489773915364, 'MRR*@10': 0.07968206703662872}
+INFO    [11-27 14:36:38] train in BasicTrainer:
+duration: 4.540024995803833s
+INFO    [11-27 14:36:38] train in BasicTrainer:
+epoch: 71
+INFO    [11-27 14:36:41] _train_one_epoch in BasicTrainer:
+loss = 4.354064337750699
+INFO    [11-27 14:36:42] validate in BasicTrainer:
+{'Recall@10': 0.1839834818473229, 'NDCG@10': 0.10456171689125207, 'MRR@10': 0.08042011725214812, 'Recall*@10': 0.1839834818473229, 'NDCG*@10': 0.10456171689125207, 'MRR*@10': 0.08042011725214812}
+INFO    [11-27 14:36:42] train in BasicTrainer:
+duration: 4.193230390548706s
+INFO    [11-27 14:36:42] train in BasicTrainer:
+epoch: 72
+INFO    [11-27 14:36:45] _train_one_epoch in BasicTrainer:
+loss = 4.342403269828634
+INFO    [11-27 14:36:47] validate in BasicTrainer:
+{'Recall@10': 0.17931561745130098, 'NDCG@10': 0.10370956246669476, 'MRR@10': 0.08061631940878354, 'Recall*@10': 0.17931561745130098, 'NDCG*@10': 0.10370956246669476, 'MRR*@10': 0.08061631940878354}
+INFO    [11-27 14:36:47] train in BasicTrainer:
+duration: 4.438788652420044s
+INFO    [11-27 14:36:47] train in BasicTrainer:
+epoch: 73
+INFO    [11-27 14:36:49] _train_one_epoch in BasicTrainer:
+loss = 4.329065150402962
+INFO    [11-27 14:36:51] log in loggers:
+Update Best NDCG@10 Model at 73
+INFO    [11-27 14:36:51] validate in BasicTrainer:
+{'Recall@10': 0.1839834818473229, 'NDCG@10': 0.10676398414831895, 'MRR@10': 0.08320296383821048, 'Recall*@10': 0.1839834818473229, 'NDCG*@10': 0.10676398414831895, 'MRR*@10': 0.08320296383821048}
+INFO    [11-27 14:36:51] train in BasicTrainer:
+duration: 4.416595220565796s
+INFO    [11-27 14:36:51] train in BasicTrainer:
+epoch: 74
+INFO    [11-27 14:36:54] _train_one_epoch in BasicTrainer:
+loss = 4.317495357482992
+INFO    [11-27 14:36:55] validate in BasicTrainer:
+{'Recall@10': 0.18264173085872942, 'NDCG@10': 0.10514741562880002, 'MRR@10': 0.08172598223273571, 'Recall*@10': 0.18264173085872942, 'NDCG*@10': 0.10514741562880002, 'MRR*@10': 0.08172598223273571}
+INFO    [11-27 14:36:55] train in BasicTrainer:
+duration: 4.429700613021851s
+INFO    [11-27 14:36:55] train in BasicTrainer:
+epoch: 75
+INFO    [11-27 14:36:58] _train_one_epoch in BasicTrainer:
+loss = 4.299333647210547
+INFO    [11-27 14:37:00] validate in BasicTrainer:
+{'Recall@10': 0.1830820395396306, 'NDCG@10': 0.10454095498873638, 'MRR@10': 0.08066005775561699, 'Recall*@10': 0.1830820395396306, 'NDCG*@10': 0.10454095498873638, 'MRR*@10': 0.08066005775561699}
+INFO    [11-27 14:37:00] train in BasicTrainer:
+duration: 4.357955694198608s
+INFO    [11-27 14:37:00] train in BasicTrainer:
+epoch: 76
+INFO    [11-27 14:37:03] _train_one_epoch in BasicTrainer:
+loss = 4.274375164762456
+INFO    [11-27 14:37:04] log in loggers:
+Update Best NDCG@10 Model at 76
+INFO    [11-27 14:37:04] validate in BasicTrainer:
+{'Recall@10': 0.18278155877039984, 'NDCG@10': 0.10678670784601799, 'MRR@10': 0.0836745984852314, 'Recall*@10': 0.18278155877039984, 'NDCG*@10': 0.10678670784601799, 'MRR*@10': 0.0836745984852314}
+INFO    [11-27 14:37:04] train in BasicTrainer:
+duration: 4.55413031578064s
+INFO    [11-27 14:37:04] train in BasicTrainer:
+epoch: 77
+INFO    [11-27 14:37:07] _train_one_epoch in BasicTrainer:
+loss = 4.270746166401721
+INFO    [11-27 14:37:09] log in loggers:
+Update Best NDCG@10 Model at 77
+INFO    [11-27 14:37:09] validate in BasicTrainer:
+{'Recall@10': 0.17947627030886137, 'NDCG@10': 0.10699538256113346, 'MRR@10': 0.08482079952955246, 'Recall*@10': 0.17947627030886137, 'NDCG*@10': 0.10699538256113346, 'MRR*@10': 0.08482079952955246}
+INFO    [11-27 14:37:09] train in BasicTrainer:
+duration: 4.439173936843872s
+INFO    [11-27 14:37:09] train in BasicTrainer:
+epoch: 78
+INFO    [11-27 14:37:12] _train_one_epoch in BasicTrainer:
+loss = 4.257979219264173
+INFO    [11-27 14:37:13] log in loggers:
+Update Best NDCG@10 Model at 78
+INFO    [11-27 14:37:13] validate in BasicTrainer:
+{'Recall@10': 0.18141898283591637, 'NDCG@10': 0.1078514691728812, 'MRR@10': 0.08529527542682794, 'Recall*@10': 0.18141898283591637, 'NDCG*@10': 0.1078514691728812, 'MRR*@10': 0.08529527542682794}
+INFO    [11-27 14:37:13] train in BasicTrainer:
+duration: 4.455571889877319s
+INFO    [11-27 14:37:13] train in BasicTrainer:
+epoch: 79
+INFO    [11-27 14:37:16] _train_one_epoch in BasicTrainer:
+loss = 4.238723592555269
+INFO    [11-27 14:37:17] validate in BasicTrainer:
+{'Recall@10': 0.18083884624334481, 'NDCG@10': 0.10414145141839981, 'MRR@10': 0.08077663670365627, 'Recall*@10': 0.18083884624334481, 'NDCG*@10': 0.10414145141839981, 'MRR*@10': 0.08077663670365627}
+INFO    [11-27 14:37:17] train in BasicTrainer:
+duration: 4.318658351898193s
+INFO    [11-27 14:37:18] close_training in BasicTrainer:
+finished training
+INFO    [11-27 14:37:18] final_validate in BasicTrainer:
+validate model on val set!
+INFO    [11-27 14:37:18] load_state_from_given_path in utils:
+checkpoint epoch: 78
+INFO    [11-27 14:37:18] load_state_from_given_path in utils:
+Loading model's parameters
+INFO    [11-27 14:37:19] validate in BasicTrainer:
+{'Recall@10': 0.18141898283591637, 'NDCG@10': 0.1078514691728812, 'MRR@10': 0.08529527542682794, 'Recall*@10': 0.18141898283591637, 'NDCG*@10': 0.1078514691728812, 'MRR*@10': 0.08529527542682794}
+INFO    [11-27 14:37:19] test in BasicTrainer:
+Test model on test set!
+INFO    [11-27 14:37:19] test_with_given_state_path in BasicTrainer:
+Loading model params from _____lfms_base/base_gru4rec-len-20_11-27_14-31_0/gru4rec_logs/checkpoint/best_acc_model.pth.
+INFO    [11-27 14:37:19] load_state_from_given_path in utils:
+checkpoint epoch: 78
+INFO    [11-27 14:37:19] load_state_from_given_path in utils:
+Loading model's parameters
+INFO    [11-27 14:37:19] test_with_given_state_path in BasicTrainer:
+Finished loading. Start testing.
+INFO    [11-27 14:37:20] test_with_given_state_path in BasicTrainer:
+{'Recall@10': 0.16649312124802515, 'NDCG@10': 0.09842270096907249, 'MRR@10': 0.0777400084413015, 'Recall*@10': 0.16649312124802515, 'NDCG*@10': 0.09842270096907249, 'MRR*@10': 0.0777400084413015}
+INFO    [11-27 14:37:20] _evaluate in BasicSched:
+!!Final Result!!: {'Recall@10': 0.16649312124802515, 'NDCG@10': 0.09842270096907249, 'MRR@10': 0.0777400084413015, 'Recall*@10': 0.16649312124802515, 'NDCG*@10': 0.09842270096907249, 'MRR*@10': 0.0777400084413015}

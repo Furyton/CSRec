@@ -6,15 +6,15 @@ HPARAMS_FILE=len_parameters.txt
 ARRAY_CONFIG=1-7%1
 
 #JOB_NAME=lfms_base_gru_effect_of_len
-#JOB_NAME=lfms_soft_gru_effect_of_len
+JOB_NAME=lfms_soft_gru_effect_of_len
 #JOB_NAME=lfms_ed_gru_effect_of_len
-JOB_NAME=lfms_ep_gru_effect_of_len
+#JOB_NAME=lfms_ep_gru_effect_of_len
 #JOB_NAME=lfms_dvae_gru_effect_of_len
 
 #CONFIG_PATH="config2.lastfm_small/gru4rec/config.json"
-#CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
+CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill.json"
 #CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble.json"
-CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble_partial.json"
+#CONFIG_PATH="config2.lastfm_small/gru4rec/config_distill_ensemble_partial.json"
 #CONFIG_PATH="config2.lastfm_small/gru4rec/config_dvae.json"
 
 

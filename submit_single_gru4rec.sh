@@ -2,9 +2,9 @@
 
 SAVED_PATH=___slurm_log
 
-JOB_NAME=abla_gru_movies_base_new_m
+JOB_NAME=lfsm_gru_base
 
-CONFIG_PATH="config2.movies/gru4rec/config_test.json"
+CONFIG_PATH="config2.lastfm_small/gru4rec/config.json"
 
 
 GPU=gpu08
